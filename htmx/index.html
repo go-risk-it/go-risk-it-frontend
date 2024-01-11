@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <style>
+        body {
+            font-size: 12pt;
+            font-family: SF Mono, monospace;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 50px;
+        }
+
+        input {
+            background-color: #333;
+            border: 1px solid #555;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 400px;
+        }
+
+        textarea {
+            background-color: #333;
+            border: 1px solid #555;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div hx-ext="ws" ws-connect="ws://localhost:8080/ws">
+        Websockets status: <span id="status"></span><br>
+        <br>
+        <br>
+        Request:
+        <br>
+        <br>
+        <form id="form" ws-send>
+            <input name="msg">
+        </form>
+        <br>
+        <br>
+        Response:
+        <br>
+        <br>
+        <textarea name="text" rows="10" cols="60" wrap="soft" id="serverResponse" placeholder="Server Response"
+            readonly></textarea>
+    </div>
+
+    <script type="text/javascript" defer>
+        let status = document.getElementById('status');
+        let message = document.getElementById('message');
+        let serverResponse = document.getElementById('serverResponse');
+
+        let socket;
+        let elt;
+
+        document.addEventListener("visibilitychange", function (evt) {
+            if (socket) {
+                socket.send(document.visibilityState, elt);
+            }
+        });
+
+        document.body.addEventListener('htmx:wsOpen', function (evt) {
+            socket = evt.detail.socketWrapper;
+            elt = evt.detail.elt;
+
+            status.innerText = 'Connected';
+            status.setAttribute('data-status', 'connected');
+        });
+
+        document.body.addEventListener('htmx:wsClose', function (evt) {
+            status.innerText = 'Disconnected';
+            status.setAttribute('data-status', 'disconnected');
+        });
+
+        document.body.addEventListener('htmx:wsAfterMessage', function (evt) {
+            console.log(evt.detail.message)
+            var obj = JSON.parse(evt.detail.message);
+            var pretty = JSON.stringify(obj, undefined, 4);
+            serverResponse.value = pretty;
+        });
+
+    </script>
+</body>
+
+</html>
