@@ -2,8 +2,7 @@
 import React from 'react';
 import { VectorMap } from '@south-paw/react-vector-maps';
 
-import italy from '../../public/italy.json';
-import world from '../../public/world.json';
+import world from '../../public/risk.json';
 
 const Map: React.FC = () => {
 
@@ -18,7 +17,7 @@ const Map: React.FC = () => {
         onBlur: ({ target }) => setFocused('None'),
         onClick: ({ target }) => setClicked(target.attributes.name.value),
     };
-    const style = { margin: '1rem auto', width: '600px' };
+    const style = { margin: '1rem auto', width: '100vw' };
 
     return (
         <div style={style}>
@@ -27,7 +26,6 @@ const Map: React.FC = () => {
             <p>Hovered: {hovered && <code>{hovered}</code>}</p>
             <p>Focused: {focused && <code>{focused}</code>}</p>
             <p>Clicked: {clicked && <code>{clicked}</code>}</p>
-
         </div>
 
     );
