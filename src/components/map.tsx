@@ -45,8 +45,6 @@ svg {
 }
 `;
 
-
-
 const Map: React.FC = () => {
 
     const style = { margin: '1rem auto', width: '300px' };
