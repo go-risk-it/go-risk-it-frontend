@@ -3,6 +3,7 @@ import React from 'react';
 import { VectorMap } from '@south-paw/react-vector-maps';
 import styled from 'styled-components';
 import world from '../../public/risk.json';
+import WebSocketService from "@/components/websocket";
 
 const MapContainer = styled.div`
 margin: 1rem auto;
@@ -47,14 +48,19 @@ svg {
 
 const Map: React.FC = () => {
 
+
+    const webSocketService = WebSocketService();
+
     const style = { margin: '1rem auto', width: '300px' };
 
     const [selected, setSelected] = React.useState([]);
 
+    // @ts-ignore
     const onClick = ({ target }) => {
         const id = target.attributes.id.value;
 
         // If selected includes the id already, remove it - otherwise add it
+        // @ts-ignore
         selected.includes(id)
             ? setSelected(selected.filter(sid => sid !== id))
             : setSelected([...selected, id]);
