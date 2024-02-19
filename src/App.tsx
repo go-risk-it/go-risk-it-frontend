@@ -1,38 +1,42 @@
-import React, {useEffect, useRef, useState} from 'react';
-
+import {useEffect, useRef, useState} from 'react'
+import './App.css'
 
 function App() {
     // create a state containing the message
-    const [message, setMessage] = useState("");
-    const ws = useRef<WebSocket | null>(null);
+    const [message, setMessage] = useState("")
+    const ws = useRef<WebSocket | null>(null)
 
     useEffect(() => {
-        ws.current = new WebSocket("ws://localhost:8080/ws");
+        ws.current = new WebSocket("ws://localhost:8080/ws")
+        if (!ws.current) {
+            throw new Error("Websocket is not initialized")
+        }
+        
         ws.current.onopen = (event: Event) => {
-            console.log("Connected to server", event);
-        };
+            console.log("Connected to server", event)
+        }
 
         ws.current.onmessage = async (event: MessageEvent) => {
-            console.log("Message received: ", event.data.text);
+            console.log("Message received: ", event.data.text)
             try {
                 const msg = JSON.parse(event.data)
-                console.log("Parsed message: ", msg);
-                setMessage(msg);
+                console.log("Parsed message: ", msg)
+                setMessage(msg)
             } catch (e) {
-                console.log("Invalid JSON: ", event.data);
+                console.log("Invalid JSON: ", event.data)
             }
         }
 
         ws.current.onclose = (event: CloseEvent) => {
-            console.log("Connection closed: ", event);
+            console.log("Connection closed: ", event)
         }
 
-        const wsCurrent = ws.current;
+        const wsCurrent = ws.current
 
         return () => {
-            wsCurrent?.close();
+            wsCurrent?.close()
         }
-    }, []);
+    }, [])
 
 
     return (
@@ -45,7 +49,7 @@ function App() {
                 <pre>{JSON.stringify(message, null, 2)}</pre>
             </p>
         </div>
-    );
+    )
 }
 
 function Button({onClick}: { onClick: () => void }) {
@@ -54,4 +58,5 @@ function Button({onClick}: { onClick: () => void }) {
     );
 }
 
-export default App;
+
+export default App
