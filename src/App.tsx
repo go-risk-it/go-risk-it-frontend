@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 import './App.css'
+import Map from "./components/map.tsx";
 
 function App() {
     // create a state containing the message
@@ -11,7 +12,7 @@ function App() {
         if (!ws.current) {
             throw new Error("Websocket is not initialized")
         }
-        
+
         ws.current.onopen = (event: Event) => {
             console.log("Connected to server", event)
         }
@@ -48,6 +49,7 @@ function App() {
             <p>
                 <pre>{JSON.stringify(message, null, 2)}</pre>
             </p>
+            <Map/>
         </div>
     )
 }
