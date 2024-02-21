@@ -1,10 +1,12 @@
 import {useEffect, useRef, useState} from 'react'
 import './App.css'
 import Map from "./components/map.tsx";
+import {BoardState} from "./api/message/boardState.ts";
 
 function App() {
     // create a state containing the message
     const [message, setMessage] = useState("")
+    const [boardState, setBoardState] = useState({regions: []} as BoardState)
     const ws = useRef<WebSocket | null>(null)
 
     useEffect(() => {
@@ -23,6 +25,9 @@ function App() {
                 const msg = JSON.parse(event.data)
                 console.log("Parsed message: ", msg)
                 setMessage(msg)
+                if (msg.type === "boardState") {
+                    setBoardState(msg.data)
+                }
             } catch (e) {
                 console.log("Invalid JSON: ", event.data)
             }
@@ -47,7 +52,7 @@ function App() {
                 JSON.stringify({type: "game_state_request", data: {"userId": 10, "gameId": 11}})
             )}/>
             <pre>{JSON.stringify(message, null, 2)}</pre>
-            <Map/>
+            <Map boardState={boardState}/>
         </div>
     )
 }
