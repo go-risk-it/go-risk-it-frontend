@@ -52,17 +52,17 @@ const MapContainer = styled.div`
 `;
 
 
-
 const Map: React.FC = () => {
 
 
-    const [selected, setSelected] = React.useState([]);
+    const [selected, setSelected] = React.useState<string[]>([]);
 
-    // @ts-ignore
-    const onClick = ({ target }) => {
-        const id = target.attributes.id.value;
+    const onClick = (event: React.MouseEvent<SVGPathElement, MouseEvent>) => {
+        const target = event.target as SVGElement;
+        const id = target.getAttribute('id');
 
         // If selected includes the id already, remove it - otherwise add it
+        if (!id) return;
         selected.includes(id)
             ? setSelected(selected.filter(sid => sid !== id))
             : setSelected([...selected, id]);
@@ -70,11 +70,11 @@ const Map: React.FC = () => {
 
     return (
         <MapContainer>
-            <VectorMap {...world} checkedLayers={['indonesia']} layerProps={{ onClick }} />
-    <p>Selected:</p>
-    <pre>{JSON.stringify(selected, null, 2)}</pre>
-    </MapContainer>
-);
+            <VectorMap {...world} checkedLayers={['indonesia']} layerProps={{onClick}}/>
+            <p>Selected:</p>
+            <pre>{JSON.stringify(selected, null, 2)}</pre>
+        </MapContainer>
+    );
 };
 
 export default Map;

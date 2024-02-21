@@ -46,9 +46,7 @@ function App() {
             <Button onClick={() => ws.current?.send(
                 JSON.stringify({type: "game_state_request", data: {"userId": 10, "gameId": 11}})
             )}/>
-            <p>
-                <pre>{JSON.stringify(message, null, 2)}</pre>
-            </p>
+            <pre>{JSON.stringify(message, null, 2)}</pre>
             <Map/>
         </div>
     )
