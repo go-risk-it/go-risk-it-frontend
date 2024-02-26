@@ -2,11 +2,13 @@ import {useEffect, useRef, useState} from 'react'
 import './App.css'
 import Map from "./components/map.tsx";
 import {BoardState} from "./api/message/boardState.ts";
+import {PlayersState} from "./api/message/playersState.ts";
 
 function App() {
     // create a state containing the message
     const [message, setMessage] = useState("")
-    const [boardState, setBoardState] = useState({regions: []} as BoardState)
+    const [boardState, setBoardState] = useState<BoardState>({regions: []})
+    const [playersState, setPlayersState] = useState<PlayersState>({players: []})
     const ws = useRef<WebSocket | null>(null)
 
     useEffect(() => {
@@ -27,6 +29,8 @@ function App() {
                 setMessage(msg)
                 if (msg.type === "boardState") {
                     setBoardState(msg.data)
+                } else if (msg.type === "playerState") {
+                    setPlayersState(msg.data)
                 }
             } catch (e) {
                 console.log("Invalid JSON: ", event.data)
@@ -52,7 +56,7 @@ function App() {
                 JSON.stringify({type: "game_state_request", data: {"userId": 10, "gameId": 11}})
             )}/>
             <pre>{JSON.stringify(message, null, 2)}</pre>
-            <Map boardState={boardState}/>
+            <Map boardState={boardState} playersState={playersState}/>
         </div>
     )
 }

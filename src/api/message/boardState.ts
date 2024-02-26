@@ -1,6 +1,6 @@
 export interface Region {
     id: string;
-    ownerId: number;
+    ownerId: string;
     troops: number;
 }
 

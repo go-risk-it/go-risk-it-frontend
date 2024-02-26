@@ -1,70 +1,32 @@
 'use client';
 import React from 'react';
 import {VectorMap} from '@south-paw/react-vector-maps';
-import styled, {StyleSheetManager} from 'styled-components';
+import {StyleSheetManager} from 'styled-components';
 import world from '../../public/risk.json';
 import {BoardState} from "../api/message/boardState.ts";
-
-interface MapContainerProps {
-    boardstate: BoardState;
-}
-
-const MapContainer = styled.div<MapContainerProps>`
-    margin: 1rem auto;
-    width: 1000px;
-
-    svg {
-        stroke: #fff;
-
-        // All layers are just path elements
-
-        path {
-            fill: #a82b2b;
-            cursor: pointer;
-            outline: none;
-
-            // When a layer is hovered
-
-            &:hover {
-                fill: rgba(168, 43, 43, 0.83);
-            }
-
-            // When a layer is focused.
-
-            &:focus {
-                fill: rgba(168, 43, 43, 0.6);
-            }
-
-            // When a layer is 'checked' (via checkedLayers prop).
-
-            &[aria-checked='true'] {
-                fill: rgba(56, 43, 168, 1);
-            }
-
-            // When a layer is 'selected' (via currentLayers prop).
-
-            &[aria-current='true'] {
-                fill: rgba(56, 43, 168, 0.83);
-            }
-
-            // color each region based on the owner. For each region, generate a style with the fill color based on the owner
-            ${props => Object.entries(props.boardstate.regions).map(([, region]) => {
-                return `&[id=${region.id}] {
-                    fill: ${region.ownerId === 1 ? 'red' : 'blue'};
-                }`
-            }).join('')}
-        }
-    }
-`;
+import {PlayersState} from "../api/message/playersState.ts";
 
 
-function Map({boardState}: {boardState: BoardState}) {
+function Map({boardState}: { boardState: BoardState },
+             {playersState}: { playersState: PlayersState }) {
 
     const [selected, setSelected] = React.useState<string[]>([])
+    // for each region, assign it a color based on the owner
+    boardState.regions.forEach(region => {
+        // the player cannot be undefined, as the region is owned by a player
+        const player = playersState.players.find(player => player.userId === region.ownerId)
+        if (!player) {
+            throw new Error(`Player with id ${region.ownerId} not found`)
+        }
+        const className = `player${player.index}`
+        document.getElementById(region.id)?.classList.add(className)
+    })
 
     const onClick = (event: React.MouseEvent<SVGPathElement, MouseEvent>) => {
         const target = event.target as SVGElement
         const id = target.getAttribute('id')
+        // assign the path element to active css class
+        target.classList.toggle('active')
 
         // If selected includes the id already, remove it - otherwise add it
         if (!id) return
@@ -75,11 +37,11 @@ function Map({boardState}: {boardState: BoardState}) {
 
     return (
         <StyleSheetManager shouldForwardProp={() => true}>
-            <MapContainer boardstate={boardState}>
-                <VectorMap {...world} checkedLayers={['indonesia']} layerProps={{onClick}}/>
+            <div className={'map-container'}>
+                <VectorMap {...world} layerProps={{onClick}}/>
                 <p>Selected:</p>
-                <pre>{JSON.stringify(selected, null,   2)}</pre>
-            </MapContainer>
+                <pre>{JSON.stringify(selected, null, 2)}</pre>
+            </div>
         </StyleSheetManager>
     )
 }
