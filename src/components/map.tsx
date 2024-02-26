@@ -48,8 +48,8 @@ const MapContainer = styled.div<MapContainerProps>`
             }
 
             // color each region based on the owner. For each region, generate a style with the fill color based on the owner
-            ${props => Object.entries(props.boardstate.regions).map(([id, region]) => {
-                return `#${id} {
+            ${props => Object.entries(props.boardstate.regions).map(([, region]) => {
+                return `&[id=${region.id}] {
                     fill: ${region.ownerId === 1 ? 'red' : 'blue'};
                 }`
             }).join('')}
