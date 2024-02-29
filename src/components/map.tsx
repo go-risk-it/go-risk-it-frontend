@@ -7,14 +7,13 @@ import {BoardState} from "../api/message/boardState.ts";
 import {PlayersState} from "../api/message/playersState.ts";
 
 
-function Map({boardState}: { boardState: BoardState },
-             {playersState}: { playersState: PlayersState }) {
+function Map({boardState, playersState}: { boardState: BoardState; playersState: PlayersState }) {
 
     const [selected, setSelected] = React.useState<string[]>([])
     // for each region, assign it a color based on the owner
     boardState.regions.forEach(region => {
         // the player cannot be undefined, as the region is owned by a player
-        const player = playersState.players.find(player => player.userId === region.ownerId)
+        const player = playersState.players.find(player => player.id === region.ownerId)
         if (!player) {
             throw new Error(`Player with id ${region.ownerId} not found`)
         }

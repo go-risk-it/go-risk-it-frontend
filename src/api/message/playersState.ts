@@ -1,5 +1,5 @@
 interface PlayerState {
-    userId: string;
+    id: string;
     index: number;
 }
 
