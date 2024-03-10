@@ -1,0 +1,59 @@
+.map-container {
+    position: relative;
+    margin: 1rem auto;
+    width: 100%;
+    height: 100%;
+}
+
+/* Style svg within the map-container */
+.map-container svg {
+    stroke: #fff;
+}
+
+.map-container svg path {
+    fill: #8c8c8c;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Define two classes for inactive and active paths. Set hover and focus for active paths */
+.map-container svg path.active {
+    filter: saturate(150%);
+}
+
+.map-container svg path.active:hover {
+    filter: saturate(120%);
+}
+
+.map-container svg path.active:focus {
+    filter: drop-shadow(0 0 5px #fff);
+}
+
+.map-container svg path.inactive {
+    filter: saturate(50%);
+}
+
+/* Define 6 classes for the 6 different colors */
+.map-container svg path.player0 {
+    fill: #00ffff;
+}
+
+.map-container svg path.player1 {
+    fill: #ff0000;
+}
+
+.map-container svg path.player2 {
+    fill: #0000ff;
+}
+
+.map-container svg path.player3 {
+    fill: #00ff00;
+}
+
+.map-container svg path.player4 {
+    fill: #ff00ff;
+}
+
+.map-container svg path.player5 {
+    fill: #ffff00;
+}

@@ -1,19 +1,21 @@
-'use client';
 import React from 'react';
 import {VectorMap} from '@south-paw/react-vector-maps';
 import {StyleSheetManager} from 'styled-components';
-import world from '../../public/risk.json';
-import {BoardState} from "../api/message/boardState.ts";
-import {PlayersState} from "../api/message/playersState.ts";
-import {GameState} from "../api/message/gameState.ts";
+import world from '../../../public/risk.json';
+import {BoardState} from "../../api/message/boardState.ts";
+import {PlayersState} from "../../api/message/playersState.ts";
+import {GameState} from "../../api/message/gameState.ts";
 
+import './Board.css'
 
-function Map({boardState, gameState, playersState, playerIndex}: {
+interface BoardProps {
     boardState: BoardState;
-    gameState: GameState,
-    playersState: PlayersState,
-    playerIndex: number
-}) {
+    gameState: GameState;
+    playersState: PlayersState;
+    playerIndex: number;
+}
+
+const Board: React.FC<BoardProps> = ({boardState, gameState, playersState, playerIndex}) => {
 
     const [selected, setSelected] = React.useState<string[]>([])
     // for each region, assign it a color based on the owner
@@ -73,4 +75,4 @@ function Map({boardState, gameState, playersState, playerIndex}: {
     )
 }
 
-export default Map;
+export default Board;
