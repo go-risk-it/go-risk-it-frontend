@@ -75,8 +75,11 @@ const Board: React.FC<BoardProps> = ({
         }
     }
 
-    return <VectorMap {...world} layerProps={{onClick}} className="risk-it-board"/>
-
+    return (
+        <div className={'risk-it-map-container'}>
+            <VectorMap {...world} layerProps={{onClick}}/>
+        </div>
+    )
 }
 
 export default Board;
