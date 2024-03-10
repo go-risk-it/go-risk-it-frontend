@@ -1,4 +1,4 @@
-.map-container {
+.risk-it-map-container {
     position: relative;
     margin: 1rem auto;
     width: 100%;
@@ -6,54 +6,80 @@
 }
 
 /* Style svg within the map-container */
-.map-container svg {
+.risk-it-map-container svg {
     stroke: #fff;
 }
 
-.map-container svg path {
+.risk-it-map-container svg path {
     fill: #8c8c8c;
     cursor: pointer;
     outline: none;
 }
 
 /* Define two classes for inactive and active paths. Set hover and focus for active paths */
-.map-container svg path.active {
+.risk-it-map-container svg path.active {
     filter: saturate(150%);
 }
 
-.map-container svg path.active:hover {
+.risk-it-map-container svg path.active:hover {
     filter: saturate(120%);
 }
 
-.map-container svg path.active:focus {
+.risk-it-map-container svg path.active:focus {
     filter: drop-shadow(0 0 5px #fff);
 }
 
-.map-container svg path.inactive {
+.risk-it-map-container svg path.inactive {
     filter: saturate(50%);
 }
 
 /* Define 6 classes for the 6 different colors */
-.map-container svg path.player0 {
+.risk-it-map-container svg path.risk-it-player0 {
     fill: #00ffff;
 }
 
-.map-container svg path.player1 {
+.risk-it-map-container svg path.risk-it-player1 {
     fill: #ff0000;
 }
 
-.map-container svg path.player2 {
+.risk-it-map-container svg path.risk-it-player2 {
     fill: #0000ff;
 }
 
-.map-container svg path.player3 {
+.risk-it-map-container svg path.risk-it-player3 {
     fill: #00ff00;
 }
 
-.map-container svg path.player4 {
+.risk-it-map-container svg path.risk-it-player4 {
     fill: #ff00ff;
 }
 
-.map-container svg path.player5 {
+.risk-it-map-container svg path.risk-it-player5 {
     fill: #ffff00;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* Define a CSS class for selectable regions with pulsing animation */
+.risk-it-map-container svg path.risk-it-region-selectable {
+    cursor: pointer;
+    animation: pulse 1s infinite; /* Adjust the animation duration and iteration count as needed */
+}
+
+.risk-it-map-container svg path.risk-it-region-not-selectable {
+    filter: saturate(50%);
+    cursor: not-allowed;
 }

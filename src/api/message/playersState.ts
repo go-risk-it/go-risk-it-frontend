@@ -1,4 +1,4 @@
-interface PlayerState {
+export interface PlayerState {
     id: string;
     index: number;
     troopsToDeploy: number;

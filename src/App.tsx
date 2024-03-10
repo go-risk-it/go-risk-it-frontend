@@ -5,14 +5,23 @@ import StatusBar from "./components/StatusBar/StatusBar.tsx";
 
 import {BoardState} from "./api/message/boardState.ts";
 import {PlayersState} from "./api/message/playersState.ts";
-import {GameState} from "./api/message/gameState.ts";
+import {GameState, Phase} from "./api/message/gameState.ts";
+import {DeployAction} from "./api/message/deployAction.ts";
+import DeployPopup from "./components/DeployPopup/DeployPopup.tsx";
+
 
 function App() {
-    // create a state containing the message
+    // backend states
     const [boardState, setBoardState] = useState<BoardState>({regions: []})
-    const [gameState, setGameState] = useState<GameState>({gameId: 0, currentTurn: 0, currentPhase: ""})
+    const [gameState, setGameState] = useState<GameState>({gameId: 0, currentTurn: 0, currentPhase: Phase.DEPLOY})
     const [playersState, setPlayersState] = useState<PlayersState>({players: []})
+
+    // UI states
+    const [deployAction, setDeployAction] = useState<DeployAction>({regionId: null, troops: 0})
+
+
     const playerIndex = 0
+    const playerState = playersState.players[playerIndex]
     const ws = useRef<WebSocket | null>(null)
 
     useEffect(() => {
@@ -56,9 +65,12 @@ function App() {
 
     return (
         <div>
-            <h1>Risk it!</h1>
+            <h1>Go risk it!</h1>
             <StatusBar gameState={gameState} playersState={playersState}/>
-            <Board boardState={boardState} gameState={gameState} playersState={playersState} playerIndex={playerIndex}/>
+            <Board boardState={boardState} gameState={gameState} playersState={playersState} playerState={playerState}
+                   deployAction={deployAction} setDeployAction={setDeployAction}/>
+             <DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}
+                             gameState={gameState} playerState={playerState}/>
         </div>
     )
 }
