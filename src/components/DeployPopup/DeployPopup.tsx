@@ -23,7 +23,8 @@ const DeployPopup: React.FC<DeployPopupProps> = ({deployAction, setDeployAction,
         return null
     }
     return (
-        <div className={`risk-it-troop-deployment-popup ${shouldShow(gameState, playerState, deployAction) ? 'visible' : ''}`}>
+        <div
+            className={`risk-it-troop-deployment-popup ${shouldShow(gameState, playerState, deployAction) ? 'visible' : ''}`}>
             <h3>Deploy Troops on region {deployAction.regionId}</h3>
             <p>Player ID: {playerState.id}, Turn: {playerState.index}, Troops to
                 Deploy: {playerState.troopsToDeploy}</p>

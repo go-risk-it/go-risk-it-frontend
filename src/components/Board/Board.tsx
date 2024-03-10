@@ -1,13 +1,12 @@
 import React from 'react';
 import {VectorMap} from '@south-paw/react-vector-maps';
-import {StyleSheetManager} from 'styled-components';
 import world from '../../assets/risk.json';
 import {BoardState, Region} from "../../api/message/boardState.ts";
 import {PlayersState, PlayerState} from "../../api/message/playersState.ts";
 import {GameState, Phase} from "../../api/message/gameState.ts";
+import {DeployAction} from "../../api/message/deployAction.ts";
 
 import './Board.css'
-import {DeployAction} from "../../api/message/deployAction.ts";
 
 interface BoardProps {
     boardState: BoardState;
@@ -37,14 +36,17 @@ const Board: React.FC<BoardProps> = ({
         if (!player) {
             throw new Error(`Player with id ${region.ownerId} not found`)
         }
-        const playerClass = `risk-it-player${player.index}`
-        const activeClass = isRegionSelectable(region, playerState, gameState, deployAction) ? 'risk-it-region-selectable' : 'region-not-selectable'
+
         // remove all classes from the region that start with 'risk-it'
         document.getElementById(region.id)?.classList.forEach(className => {
             if (className.startsWith('risk-it')) {
                 document.getElementById(region.id)?.classList.remove(className)
             }
         })
+
+        // add classes to style the region based on the game state
+        const playerClass = `risk-it-player${player.index}`
+        const activeClass = isRegionSelectable(region, playerState, gameState, deployAction) ? 'risk-it-region-selectable' : 'region-not-selectable'
         document.getElementById(region.id)?.classList.add(playerClass, activeClass)
     })
 
@@ -73,13 +75,8 @@ const Board: React.FC<BoardProps> = ({
         }
     }
 
-    return (
-        <StyleSheetManager shouldForwardProp={() => true}>
-            <div className={'risk-it-map-container'}>
-                <VectorMap {...world} layerProps={{onClick}}/>
-            </div>
-        </StyleSheetManager>
-    )
+    return <VectorMap {...world} layerProps={{onClick}} className="risk-it-board"/>
+
 }
 
 export default Board;

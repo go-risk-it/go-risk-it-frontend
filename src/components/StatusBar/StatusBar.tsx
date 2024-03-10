@@ -1,6 +1,6 @@
 import React from 'react';
-import { GameState } from '../../api/message/gameState.ts';
-import { PlayersState } from '../../api/message/playersState.ts';
+import {GameState} from '../../api/message/gameState.ts';
+import {PlayersState} from '../../api/message/playersState.ts';
 
 import './StatusBar.css';
 
@@ -9,7 +9,7 @@ interface StatusBarProps {
     playersState: PlayersState;
 }
 
-const StatusBar: React.FC<StatusBarProps> = ({ gameState, playersState }) => {
+const StatusBar: React.FC<StatusBarProps> = ({gameState, playersState}) => {
     return (
         <div className="status-bar">
             {/* Display Game Status in the first line */}

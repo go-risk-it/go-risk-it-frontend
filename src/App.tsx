@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from 'react'
-import './App.css'
 import Board from "./components/Board/Board.tsx";
 import StatusBar from "./components/StatusBar/StatusBar.tsx";
 
@@ -8,6 +7,8 @@ import {PlayersState} from "./api/message/playersState.ts";
 import {GameState, Phase} from "./api/message/gameState.ts";
 import {DeployAction} from "./api/message/deployAction.ts";
 import DeployPopup from "./components/DeployPopup/DeployPopup.tsx";
+
+import './App.css'
 
 
 function App() {
@@ -69,8 +70,8 @@ function App() {
             <StatusBar gameState={gameState} playersState={playersState}/>
             <Board boardState={boardState} gameState={gameState} playersState={playersState} playerState={playerState}
                    deployAction={deployAction} setDeployAction={setDeployAction}/>
-             <DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}
-                             gameState={gameState} playerState={playerState}/>
+            <DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}
+                         gameState={gameState} playerState={playerState}/>
         </div>
     )
 }
