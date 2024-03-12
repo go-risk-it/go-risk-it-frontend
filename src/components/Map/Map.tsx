@@ -6,9 +6,9 @@ import {PlayersState, PlayerState} from "../../api/message/playersState.ts";
 import {GameState, Phase} from "../../api/message/gameState.ts";
 import {DeployAction} from "../../api/message/deployAction.ts";
 
-import './Board.css'
+import './Map.css'
 
-interface BoardProps {
+interface MapProps {
     boardState: BoardState;
     gameState: GameState;
     playersState: PlayersState;
@@ -24,7 +24,7 @@ function isRegionSelectable(region: Region, playersState: PlayerState, gameState
     return false
 }
 
-const Board: React.FC<BoardProps> = ({
+const Map: React.FC<MapProps> = ({
                                          boardState, gameState, playersState, playerState,
                                          deployAction, setDeployAction
                                      }) => {
@@ -82,4 +82,4 @@ const Board: React.FC<BoardProps> = ({
     )
 }
 
-export default Board;
+export default Map;
