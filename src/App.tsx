@@ -14,7 +14,7 @@ import './App.css'
 function App() {
     // backend states
     const [boardState, setBoardState] = useState<BoardState>({regions: []})
-    const [gameState, setGameState] = useState<GameState>({gameId: 0, currentTurn: 0, currentPhase: Phase.DEPLOY})
+    const [gameState, setGameState] = useState<GameState>({gameId: 1, currentTurn: 0, currentPhase: Phase.DEPLOY})
     const [playersState, setPlayersState] = useState<PlayersState>({players: []})
 
     // UI states
@@ -33,6 +33,7 @@ function App() {
 
         ws.current.onopen = (event: Event) => {
             console.log("Connected to server", event)
+            ws.current?.send(JSON.stringify({type: "subscribe", data: {gameId: gameState.gameId}}))
         }
 
         ws.current.onmessage = async (event: MessageEvent) => {
