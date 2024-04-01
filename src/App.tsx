@@ -1,81 +1,28 @@
-import {useEffect, useRef, useState} from 'react'
-import Map from "./components/Map/Map.tsx";
-import StatusBar from "./components/StatusBar/StatusBar.tsx";
-
-import {BoardState} from "./api/message/boardState.ts";
-import {PlayersState} from "./api/message/playersState.ts";
-import {GameState, Phase} from "./api/message/gameState.ts";
-import {DeployAction} from "./api/message/deployAction.ts";
-import DeployPopup from "./components/DeployPopup/DeployPopup.tsx";
-
 import './App.css'
 
-
-function App() {
-    // backend states
-    const [boardState, setBoardState] = useState<BoardState>({regions: []})
-    const [gameState, setGameState] = useState<GameState>({gameId: 1, currentTurn: 0, currentPhase: Phase.DEPLOY})
-    const [playersState, setPlayersState] = useState<PlayersState>({players: []})
-
-    // UI states
-    const [deployAction, setDeployAction] = useState<DeployAction>({regionId: null, troops: 0})
-
-
-    const playerIndex = 0
-    const playerState = playersState.players[playerIndex]
-    const ws = useRef<WebSocket | null>(null)
-
-    useEffect(() => {
-        ws.current = new WebSocket("ws://localhost:8080/ws")
-        if (!ws.current) {
-            throw new Error("Websocket is not initialized")
-        }
-
-        ws.current.onopen = (event: Event) => {
-            console.log("Connected to server", event)
-            ws.current?.send(JSON.stringify({type: "subscribe", data: {gameId: gameState.gameId}}))
-        }
-
-        ws.current.onmessage = async (event: MessageEvent) => {
-            console.log("Message received: ", event.data.text)
-            try {
-                const msg = JSON.parse(event.data)
-                console.log("Parsed message: ", msg)
-                if (msg.type === "boardState") {
-                    setBoardState(msg.data)
-                } else if (msg.type === "playerState") {
-                    setPlayersState(msg.data)
-                } else if (msg.type === "gameState") {
-                    setGameState(msg.data)
-                }
-            } catch (e) {
-                console.log("Invalid JSON: ", event.data)
-            }
-        }
-
-        ws.current.onclose = (event: CloseEvent) => {
-            console.log("Connection closed: ", event)
-        }
-
-        const wsCurrent = ws.current
-
-        return () => {
-            wsCurrent?.close()
-        }
-    }, [])
+// App.js
+// import React from 'react';
+import Game from "./components/Game/Game/Game.tsx";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import SignIn from "./components/Auth/SignIn/SignIn.tsx";
+import SignUp from "./components/Auth/SignUp/SignUp.tsx";
+import {AuthContext} from './contexts/AuthContext.ts';
+import {useAuth} from "./hooks/useAuth.ts";
 
 
+const App = () => {
+    const {user, setUser} = useAuth();
     return (
-        <div>
-            <h1>Go risk it!</h1>
-            <StatusBar gameState={gameState} playersState={playersState}/>
-            <Map boardState={boardState} gameState={gameState} playersState={playersState} playerState={playerState}
-                 deployAction={deployAction} setDeployAction={setDeployAction}/>
-            <DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}
-                         gameState={gameState} playerState={playerState}/>
-        </div>
-    )
-}
+        <AuthContext.Provider value={{user, setUser}}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Game/>}/>
+                    <Route path="/signin" element={<SignIn/>}/>
+                    <Route path="/signup" element={<SignUp/>}/>
+                </Routes>
+            </BrowserRouter>
+        </AuthContext.Provider>
+    );
+};
 
-
-export default App
+export default App;

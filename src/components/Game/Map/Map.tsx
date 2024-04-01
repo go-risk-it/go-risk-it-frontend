@@ -1,10 +1,10 @@
 import React from 'react';
 import {VectorMap} from '@south-paw/react-vector-maps';
-import world from '../../assets/risk.json';
-import {BoardState, Region} from "../../api/message/boardState.ts";
-import {PlayersState, PlayerState} from "../../api/message/playersState.ts";
-import {GameState, Phase} from "../../api/message/gameState.ts";
-import {DeployAction} from "../../api/message/deployAction.ts";
+import world from '../../../assets/risk.json';
+import {BoardState, Region} from "../../../api/message/boardState.ts";
+import {PlayersState, PlayerState} from "../../../api/message/playersState.ts";
+import {GameState, Phase} from "../../../api/message/gameState.ts";
+import {DeployAction} from "../../../api/message/deployAction.ts";
 
 import './Map.css'
 

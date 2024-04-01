@@ -1,6 +1,6 @@
 import React from 'react';
-import {GameState} from '../../api/message/gameState.ts';
-import {PlayersState} from '../../api/message/playersState.ts';
+import {GameState} from '../../../api/message/gameState.ts';
+import {PlayersState} from '../../../api/message/playersState.ts';
 
 import './StatusBar.css';
 

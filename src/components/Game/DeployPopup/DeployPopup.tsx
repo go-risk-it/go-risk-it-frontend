@@ -1,7 +1,7 @@
-import {PlayerState} from "../../api/message/playersState.ts";
+import {PlayerState} from "../../../api/message/playersState.ts";
 import React from "react";
-import {DeployAction} from "../../api/message/deployAction.ts";
-import {GameState, Phase} from "../../api/message/gameState.ts";
+import {DeployAction} from "../../../api/message/deployAction.ts";
+import {GameState, Phase} from "../../../api/message/gameState.ts";
 
 import './DeployPopup.css'
 
