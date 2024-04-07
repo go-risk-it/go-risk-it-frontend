@@ -8,6 +8,7 @@ import SignIn from "./components/Auth/SignIn/SignIn.tsx";
 import SignUp from "./components/Auth/SignUp/SignUp.tsx";
 import {AuthContext} from './contexts/AuthContext.ts';
 import {useAuth} from "./hooks/useAuth.ts";
+import {ProtectedRoute} from "./components/Auth/PrivateRoute/PrivateRoute.tsx";
 
 
 const App = () => {
@@ -16,7 +17,9 @@ const App = () => {
         <AuthContext.Provider value={{user, setUser}}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Game/>}/>
+                    <Route element={<ProtectedRoute/>}>
+                        <Route path="/" element={<Game/>}/>
+                    </Route>
                     <Route path="/signin" element={<SignIn/>}/>
                     <Route path="/signup" element={<SignUp/>}/>
                 </Routes>

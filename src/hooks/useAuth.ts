@@ -3,7 +3,6 @@ import {useUser, User} from "./useUser";
 import {useSessionStorage} from "usehooks-ts";
 
 export const useAuth = () => {
-    // we can re export the user methods or object from this hook
     const {user, addUser, removeUser, setUser} = useUser();
     const [item,] = useSessionStorage("user", "");
 
