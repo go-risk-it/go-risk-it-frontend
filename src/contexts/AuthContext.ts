@@ -1,13 +1,13 @@
 import {createContext} from "react";
-import {User} from "../hooks/useUser";
+import {Session} from "@supabase/supabase-js";
 
 interface AuthContext {
-    user: User | null;
-    setUser: (user: User | null) => void;
+    session: Session | null;
+    setSession: (session: Session | null) => void;
 }
 
 export const AuthContext = createContext<AuthContext>({
-    user: null,
-    setUser: () => {
-    },
+    session: null,
+    setSession: () => {
+    }
 });

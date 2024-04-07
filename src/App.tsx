@@ -12,9 +12,9 @@ import {ProtectedRoute} from "./components/Auth/PrivateRoute/PrivateRoute.tsx";
 
 
 const App = () => {
-    const {user, setUser} = useAuth();
+    const {session, setSession} = useAuth();
     return (
-        <AuthContext.Provider value={{user, setUser}}>
+        <AuthContext.Provider value={{session, setSession}}>
             <BrowserRouter>
                 <Routes>
                     <Route element={<ProtectedRoute/>}>

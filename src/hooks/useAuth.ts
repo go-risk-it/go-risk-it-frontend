@@ -1,25 +1,41 @@
-import {useEffect} from "react";
-import {useUser, User} from "./useUser";
-import {useSessionStorage} from "usehooks-ts";
+import {User, useSupabase} from "./useSupabase.ts";
 
 export const useAuth = () => {
-    const {user, addUser, removeUser, setUser} = useUser();
-    const [item,] = useSessionStorage("user", "");
+    const {supabase, session, setSession} = useSupabase();
 
-    useEffect(() => {
-        const user = item
-        if (user) {
-            addUser(JSON.parse(user));
+    const signin = async (user: User) => {
+        const {data, error} = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: user.password,
+        })
+        if (error) {
+            console.error(error)
+            return
         }
-    }, [addUser, item]);
+        setSession(data.session)
+    }
 
-    const login = (user: User) => {
-        addUser(user);
+    const signup = async (user: User) => {
+        const {data, error} = await supabase.auth.signUp({
+            email: user.email,
+            password: user.password,
+        })
+        if (error) {
+            console.error(error)
+            return
+        }
+        setSession(data.session)
+    }
+
+
+    const signout = async () => {
+        const {error} = await supabase.auth.signOut()
+        setSession(null)
+        if (error) {
+            console.error(error)
+            return
+        }
     };
 
-    const logout = () => {
-        removeUser();
-    };
-
-    return {user, login, logout, setUser};
+    return {session, signin, signup, signout, setSession};
 };
