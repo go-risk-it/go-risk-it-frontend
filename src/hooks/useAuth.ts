@@ -12,7 +12,7 @@ export const useAuth = () => {
             console.error(error)
             return
         }
-        setSession(data.session)
+        console.log("Logged in user", data)
     }
 
     const signup = async (user: User) => {
@@ -24,17 +24,17 @@ export const useAuth = () => {
             console.error(error)
             return
         }
-        setSession(data.session)
+        console.log("Signed up user", data)
     }
 
 
     const signout = async () => {
         const {error} = await supabase.auth.signOut()
-        setSession(null)
         if (error) {
             console.error(error)
             return
         }
+        console.log("Signed out")
     };
 
     return {session, signin, signup, signout, setSession};

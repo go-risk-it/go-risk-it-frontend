@@ -34,7 +34,7 @@ export default function SignUp() {
             email: email,
             password: password
         }).then(() => {
-            console.log('Logged in')
+            console.log('Signed up')
         }).catch((error) => {
             console.error(error)
         })

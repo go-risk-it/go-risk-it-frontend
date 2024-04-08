@@ -13,12 +13,14 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {ThemeProvider, useTheme} from '@mui/material/styles';
+import {useAuth} from "../../../hooks/useAuth.ts";
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 export default function SignIn() {
     const theme = useTheme();
+    const {signin} = useAuth();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -27,6 +29,17 @@ export default function SignIn() {
             email: data.get('email'),
             password: data.get('password'),
         });
+        const email: string = data.get('email') as string;
+        const password: string = data.get('password') as string;
+
+        signin({
+            email: email,
+            password: password
+        }).then(() => {
+            console.log('Logged in')
+        }).catch((error) => {
+            console.error(error)
+        })
     };
 
     return (

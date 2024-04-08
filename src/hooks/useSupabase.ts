@@ -8,19 +8,21 @@ export interface User {
 }
 
 export const useSupabase = () => {
-    const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb29yamRtcmF2eHpuYWRtdGllIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMTcwNzA4OSwiZXhwIjoyMDI3MjgzMDg5fQ.zdO7Z7FS37H5Nt0D6EtLGNn6rVSeNEhBRc6q5H3iF2Y'
-    const supabase = createClient('https://aioorjdmravxznadmtie.supabase.co', key)
+    const key = 'public_anon_key'
+    const supabase = createClient('http://localhost:8000', key)
     const {session, setSession} = useContext(AuthContext);
 
     useEffect(() => {
-        supabase.auth.getSession().then(({data: {session}}) => {
-            setSession(session)
+        supabase.auth.getSession().then(({data: {session: sex}}) => {
+            console.log("Got session", sex)
+            setSession(sex)
         })
 
         const {
             data: {subscription},
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
+        } = supabase.auth.onAuthStateChange((_event, sex) => {
+            console.log("Auth state change", _event, sex)
+            setSession(sex)
         })
 
         return () => subscription.unsubscribe()
