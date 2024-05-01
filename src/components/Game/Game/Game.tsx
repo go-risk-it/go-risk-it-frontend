@@ -9,6 +9,8 @@ import {DeployAction} from "../../../api/message/deployAction.ts";
 import DeployPopup from "../DeployPopup/DeployPopup.tsx";
 
 import './Game.css'
+import Button from "@mui/material/Button";
+import {useAuth} from "../../../hooks/Auth.tsx";
 
 
 function Game() {
@@ -64,10 +66,14 @@ function Game() {
         }
     }, [])
 
+    const {signout} = useAuth()
+
 
     return (
         <div>
             <h1>Go risk it!</h1>
+            {/*logout button*/}
+            <Button onClick={signout}>Sign out</Button>
             <StatusBar gameState={gameState} playersState={playersState}/>
             <Map boardState={boardState} gameState={gameState} playersState={playersState} playerState={playerState}
                  deployAction={deployAction} setDeployAction={setDeployAction}/>
