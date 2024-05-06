@@ -10,7 +10,7 @@ import DeployPopup from "../DeployPopup/DeployPopup.tsx";
 
 import './Game.css'
 import Button from "@mui/material/Button";
-import {useAuth} from "../../../hooks/Auth.tsx";
+import {useAuth} from "../../../hooks/useAuth.tsx";
 
 
 function Game() {

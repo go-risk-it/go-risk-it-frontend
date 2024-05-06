@@ -11,12 +11,20 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {ThemeProvider, useTheme} from '@mui/material/styles';
-import {useAuth} from "../../../hooks/Auth.tsx";
+import {useAuth} from "../../../hooks/useAuth.tsx";
+import {useState} from "react";
+import {Navigate} from "react-router-dom";
 
 
 export default function SignUp() {
     const theme = useTheme();
-    const {signup} = useAuth();
+    const {user, signup} = useAuth();
+    const [error, setError] = useState("")
+
+    if (user) {
+        return <Navigate to="/"/>;
+    }
+
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -28,11 +36,17 @@ export default function SignUp() {
         const email: string = data.get('email') as string;
         const password: string = data.get('password') as string;
 
+
         signup({
             email: email,
             password: password
-        }).then(() => {
-            console.log('Signed up')
+        }).then(({data, error}) => {
+            if (error) {
+                setError(error.message)
+            } else {
+                setError("")
+                console.log('Signed up' + data)
+            }
         }).catch((error) => {
             console.error(error)
         })
@@ -66,6 +80,8 @@ export default function SignUp() {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
+                                    error={Boolean(error)}
+                                    helperText={error}
                                 />
                             </Grid>
                             <Grid item xs={12}>

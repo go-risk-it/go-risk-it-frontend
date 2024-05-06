@@ -1,14 +1,10 @@
 import {Session, User} from '@supabase/supabase-js';
-import {useContext, useState, useEffect, createContext} from 'react';
+import {createContext, useEffect, useState} from 'react';
 import {supabaseClient} from '../config/supabase-client';
 
-export interface Credentials {
-    email: string;
-    password: string;
-}
 
 // create a context for authentication
-const AuthContext = createContext<{
+export const AuthContext = createContext<{
     session: Session | null | undefined,
     user: User | null | undefined,
 }>({
@@ -55,44 +51,3 @@ export const AuthProvider = ({children}: any) => {
     );
 };
 
-// export the useAuth hook
-export const useAuth = () => {
-    const signin = async (credentials: Credentials) => {
-        const {data, error} = await supabaseClient.auth.signInWithPassword({
-            email: credentials.email,
-            password: credentials.password,
-        })
-        if (error) {
-            console.error(error)
-            return
-        }
-        console.log("Logged in user", data)
-    }
-
-    const signup = async (credentials: Credentials) => {
-        const {data, error} = await supabaseClient.auth.signUp({
-            email: credentials.email,
-            password: credentials.password,
-        })
-        if (error) {
-            console.error(error)
-            return
-        }
-        console.log("Signed up user", data)
-    }
-
-
-    const signout = async () => {
-        const {error} = await supabaseClient.auth.signOut()
-        if (error) {
-            console.error(error)
-            return
-        }
-        console.log("Signed out")
-    };
-
-    const {session, user} = useContext(AuthContext);
-
-    return {session, user, signin, signup, signout};
-
-};
