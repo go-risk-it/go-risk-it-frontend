@@ -2,15 +2,16 @@ import {useContext, useEffect, useState} from 'react'
 import Map from "../Map/Map.tsx";
 import StatusBar from "../StatusBar/StatusBar.tsx";
 
-import {BoardState} from "../../../api/message/boardState.ts";
-import {PlayersState} from "../../../api/message/playersState.ts";
-import {GameState, Phase} from "../../../api/message/gameState.ts";
-import {DeployAction} from "../../../api/message/deployAction.ts";
-import DeployPopup from "../DeployPopup/DeployPopup.tsx";
+import {BoardState} from "../../../api/message/boardState.ts"
+import {PlayersState} from "../../../api/message/playersState.ts"
+import {GameState, Phase} from "../../../api/message/gameState.ts"
+import {DeployAction} from "../../../api/message/deployAction.ts"
+import DeployPopup from "../DeployPopup/DeployPopup.tsx"
 
 import './Game.css'
 import Button from "@mui/material/Button";
 import {useAuth} from "../../../hooks/useAuth.tsx";
+import "./Game.css"
 import {WebsocketContext, WebsocketMessage} from "../../../hooks/Websocket.tsx";
 
 
@@ -23,7 +24,7 @@ function Game() {
     const [playersState, setPlayersState] = useState<PlayersState>({players: []})
 
     // UI states
-    const [deployAction, setDeployAction] = useState<DeployAction>({regionId: null, troops: 0})
+    const [deployAction, setDeployAction] = useState<DeployAction>({regionId: null, playerId: "francesco", troops: 0})
 
 
     const playerIndex = 0
@@ -62,6 +63,5 @@ function Game() {
         </div>
     )
 }
-
 
 export default Game

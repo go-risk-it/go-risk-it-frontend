@@ -13,9 +13,9 @@ export const WebsocketContext = createContext<{
     subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => void
     unsubscribe: (topic: string) => void
 }>({
-    subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => {
+    subscribe: () => {
     },
-    unsubscribe: (topic: string) => {
+    unsubscribe: () => {
     }
 });
 

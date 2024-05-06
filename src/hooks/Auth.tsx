@@ -1,6 +1,6 @@
-import {Session, User} from '@supabase/supabase-js';
-import {createContext, ReactElement, useEffect, useState} from 'react';
-import {supabaseClient} from '../config/supabase-client';
+import {Session, User} from '@supabase/supabase-js'
+import {createContext, ReactElement, useEffect, useState} from 'react'
+import {supabaseClient} from '../config/supabase-client'
 
 
 // create a context for authentication
@@ -9,47 +9,46 @@ export const AuthContext = createContext<{
     user: User | null | undefined,
 }>({
     session: null, user: null
-});
+})
 
 export const AuthProvider = ({children}: { children: ReactElement }) => {
     const [user, setUser] = useState<User>()
-    const [session, setSession] = useState<Session | null>();
-    const [loading, setLoading] = useState(true);
+    const [session, setSession] = useState<Session | null>()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const setData = async () => {
-            const {data: {session}, error} = await supabaseClient.auth.getSession();
-            if (error) throw error;
+            const {data: {session}, error} = await supabaseClient.auth.getSession()
+            if (error) throw error
             setSession(session)
             setUser(session?.user)
-            setLoading(false);
-        };
+            setLoading(false)
+        }
 
         const {data: listener} = supabaseClient.auth.onAuthStateChange((_event, session) => {
-            console.log('session' + session?.access_token);
-            console.log('event' + _event);
-            setSession(session);
+            console.log('session' + session?.access_token)
+            console.log('event' + _event)
+            setSession(session)
             setUser(session?.user)
             setLoading(false)
-        });
+        })
 
-        setData();
+        setData()
 
         return () => {
-            listener?.subscription.unsubscribe();
-        };
-    }, []);
+            listener?.subscription.unsubscribe()
+        }
+    }, [])
 
     const value = {
         session,
         user,
-    };
+    }
 
     // use a provider to pass down the value
     return (
         <AuthContext.Provider value={value}>
             {!loading && children}
         </AuthContext.Provider>
-    );
-};
-
+    )
+}

@@ -57,7 +57,7 @@ const Map: React.FC<MapProps> = ({
         }
         if (region.ownerId === playerState.id) {
             console.log(`Deploying troops to region ${id}`)
-            setDeployAction({regionId: id, troops: playerState.troopsToDeploy})
+            setDeployAction({regionId: id, playerId: playerState.id, troops: 0})
         } else {
             console.log(`Cannot deploy troops to region ${id} as it is owned by player ${region.ownerId}`)
         }

@@ -1,16 +1,16 @@
-import {PlayerState} from "../../../api/message/playersState.ts";
-import React from "react";
-import {DeployAction} from "../../../api/message/deployAction.ts";
-import {GameState, Phase} from "../../../api/message/gameState.ts";
+import {PlayerState} from "../../../api/message/playersState.ts"
+import React from "react"
+import {DeployAction} from "../../../api/message/deployAction.ts"
+import {GameState, Phase} from "../../../api/message/gameState.ts"
 
 import './DeployPopup.css'
-import {useAuth} from "../../../hooks/useAuth.tsx";
+import {useAuth} from "../../../hooks/useAuth.tsx"
 
 interface DeployPopupProps {
-    deployAction: DeployAction;
-    setDeployAction: (action: DeployAction) => void;
-    gameState: GameState;
-    playerState: PlayerState;
+    deployAction: DeployAction
+    setDeployAction: (action: DeployAction) => void
+    gameState: GameState
+    playerState: PlayerState
 }
 
 function shouldShow(gameState: GameState, playerState: PlayerState, deployAction: DeployAction) {
@@ -56,7 +56,7 @@ const DeployPopup: React.FC<DeployPopupProps> = ({deployAction, setDeployAction,
             }>Deploy
             </button>
         </div>
-    );
+    )
 }
 
-export default DeployPopup;
+export default DeployPopup
