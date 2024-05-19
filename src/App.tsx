@@ -8,6 +8,7 @@ import SignIn from "./components/Auth/SignIn/SignIn.tsx";
 import SignUp from "./components/Auth/SignUp/SignUp.tsx";
 import {AuthProvider} from "./hooks/Auth.tsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute/ProtectedRoute.tsx";
+import {WebsocketProvider} from "./hooks/Websocket.tsx";
 
 
 const App = () => {
@@ -17,7 +18,9 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={
                         <ProtectedRoute>
-                            <Game/>
+                            <WebsocketProvider>
+                                <Game/>
+                            </WebsocketProvider>
                         </ProtectedRoute>
                     }>
                     </Route>

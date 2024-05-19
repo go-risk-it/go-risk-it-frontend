@@ -1,5 +1,5 @@
 import {Session, User} from '@supabase/supabase-js';
-import {createContext, useEffect, useState} from 'react';
+import {createContext, ReactElement, useEffect, useState} from 'react';
 import {supabaseClient} from '../config/supabase-client';
 
 
@@ -11,7 +11,7 @@ export const AuthContext = createContext<{
     session: null, user: null
 });
 
-export const AuthProvider = ({children}: any) => {
+export const AuthProvider = ({children}: { children: ReactElement }) => {
     const [user, setUser] = useState<User>()
     const [session, setSession] = useState<Session | null>();
     const [loading, setLoading] = useState(true);
@@ -26,6 +26,8 @@ export const AuthProvider = ({children}: any) => {
         };
 
         const {data: listener} = supabaseClient.auth.onAuthStateChange((_event, session) => {
+            console.log('session' + session?.access_token);
+            console.log('event' + _event);
             setSession(session);
             setUser(session?.user)
             setLoading(false)

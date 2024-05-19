@@ -4,6 +4,7 @@ import {DeployAction} from "../../../api/message/deployAction.ts";
 import {GameState, Phase} from "../../../api/message/gameState.ts";
 
 import './DeployPopup.css'
+import {useAuth} from "../../../hooks/useAuth.tsx";
 
 interface DeployPopupProps {
     deployAction: DeployAction;
@@ -19,6 +20,10 @@ function shouldShow(gameState: GameState, playerState: PlayerState, deployAction
 }
 
 const DeployPopup: React.FC<DeployPopupProps> = ({deployAction, setDeployAction, gameState, playerState}) => {
+    const {session} = useAuth()
+    if (!session) {
+        throw new Error("User is not authenticated")
+    }
     if (playerState === undefined) {
         return null
     }
@@ -31,18 +36,22 @@ const DeployPopup: React.FC<DeployPopupProps> = ({deployAction, setDeployAction,
             <input type="number" value={playerState.troopsToDeploy}
                    onChange={e => deployAction.troops = parseInt(e.target.value)}/>
             <button onClick={() => {
-                setDeployAction({regionId: null, troops: 0})
+                setDeployAction({regionId: null, playerId: "francesco", troops: 0})
             }}>Cancel
             </button>
             <button onClick={() => {
-                fetch('http://localhost:8080/deploy', {
+                deployAction.playerId = "francesco"
+                const body = JSON.stringify(deployAction)
+                console.log("Body: ", body)
+                fetch('http://localhost:8000/api/v1/game/1/move/deploy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
                     },
-                    body: JSON.stringify(deployAction),
+                    body: body,
                 })
-                setDeployAction({regionId: null, troops: 0})
+                setDeployAction({regionId: null, playerId: "francesco", troops: 0})
             }
             }>Deploy
             </button>
