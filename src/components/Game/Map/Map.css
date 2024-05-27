@@ -80,6 +80,6 @@
 }
 
 .risk-it-map-container svg path.risk-it-region-not-selectable {
-    filter: saturate(50%);
+    /*filter: saturate(50%);*/
     cursor: not-allowed;
 }

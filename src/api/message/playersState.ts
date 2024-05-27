@@ -1,5 +1,6 @@
 export interface PlayerState {
-    id: string;
+    userId: string;
+    name: string;
     index: number;
     troopsToDeploy: number;
 }

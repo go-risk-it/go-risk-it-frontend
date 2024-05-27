@@ -21,8 +21,8 @@ const StatusBar: React.FC<StatusBarProps> = ({gameState, playersState}) => {
             <div className="player-info">
                 <h3>Players:</h3>
                 {playersState.players.map((player) => (
-                    <div key={player.id} className="player">
-                        <p>Player ID: {player.id}, Turn: {player.index}, Troops to Deploy: {player.troopsToDeploy}</p>
+                    <div key={player.userId} className="player">
+                        <p>Player ID: {player.userId}, Name: {player.name}, Turn: {player.index}, Troops to Deploy: {player.troopsToDeploy}</p>
                     </div>
                 ))}
             </div>

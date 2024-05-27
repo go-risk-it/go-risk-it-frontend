@@ -19,7 +19,7 @@ interface MapProps {
 
 function isRegionSelectable(region: Region, playersState: PlayerState, gameState: GameState, deployAction: DeployAction) {
     if (gameState.currentPhase === Phase.DEPLOY) {
-        return gameState.currentTurn === playersState.index && region.ownerId === playersState.id && deployAction.regionId === null
+        return gameState.currentTurn === playersState.index && region.ownerId === playersState.userId && deployAction.regionId === null
     }
     return false
 }
@@ -29,10 +29,11 @@ const Map: React.FC<MapProps> = ({
                                          deployAction, setDeployAction
                                      }) => {
 
+    console.log("Coloring regions, board state: ", boardState)
     // for each region, assign it a color based on the owner
     boardState.regions.forEach(region => {
         // the player cannot be undefined, as the region is owned by a player
-        const player = playersState.players.find(player => player.id === region.ownerId)
+        const player = playersState.players.find(player => player.userId === region.ownerId)
         if (!player) {
             throw new Error(`Player with id ${region.ownerId} not found`)
         }
@@ -46,7 +47,7 @@ const Map: React.FC<MapProps> = ({
 
         // add classes to style the region based on the game state
         const playerClass = `risk-it-player${player.index}`
-        const activeClass = isRegionSelectable(region, playerState, gameState, deployAction) ? 'risk-it-region-selectable' : 'region-not-selectable'
+        const activeClass = isRegionSelectable(region, playerState, gameState, deployAction) ? 'risk-it-region-selectable' : 'risk-it-region-not-selectable'
         document.getElementById(region.id)?.classList.add(playerClass, activeClass)
     })
 
@@ -55,9 +56,9 @@ const Map: React.FC<MapProps> = ({
         if (!region) {
             throw new Error(`Region with id ${id} not found`)
         }
-        if (region.ownerId === playerState.id) {
+        if (region.ownerId === playerState.userId) {
             console.log(`Deploying troops to region ${id}`)
-            setDeployAction({regionId: id, playerId: playerState.id, troops: 0})
+            setDeployAction({regionId: id, userId: playerState.userId, currentTroops: region.troops, desiredTroops: 0})
         } else {
             console.log(`Cannot deploy troops to region ${id} as it is owned by player ${region.ownerId}`)
         }

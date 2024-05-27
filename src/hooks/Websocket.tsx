@@ -36,7 +36,6 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
         ws.current.onopen = () => {
             console.log('WS open')
             setLoading(false)
-            ws.current?.send(JSON.stringify({type: "subscribe", data: {gameId: 1}}))
         }
         ws.current.onclose = () => {
             console.log('WS close')
@@ -64,6 +63,7 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
             value={{
                 subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => {
                     topics.current.set(topic, callback)
+                    ws.current?.send(JSON.stringify({type: "subscribe", data: {gameId: gameId}}))
                 },
                 unsubscribe: (topic: string) => {
                     topics.current.delete(topic)

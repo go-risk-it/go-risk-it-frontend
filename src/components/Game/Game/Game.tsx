@@ -16,7 +16,7 @@ import {WebsocketContext, WebsocketMessage} from "../../../hooks/Websocket.tsx";
 
 
 function Game() {
-    const {session, signout} = useAuth()
+    const {session, user, signout} = useAuth()
     const {subscribe, unsubscribe} = useContext(WebsocketContext)
     // backend states
     const [boardState, setBoardState] = useState<BoardState>({regions: []})
@@ -24,23 +24,26 @@ function Game() {
     const [playersState, setPlayersState] = useState<PlayersState>({players: []})
 
     // UI states
-    const [deployAction, setDeployAction] = useState<DeployAction>({regionId: null, playerId: "francesco", troops: 0})
-
-
-    const playerIndex = 0
-    const playerState = playersState.players[playerIndex]
+    const [deployAction, setDeployAction] = useState<DeployAction>({
+        regionId: null,
+        userId: "",
+        currentTroops: 0,
+        desiredTroops: 0
+    })
 
     useEffect(() => {
         if (!session) {
             throw new Error("User is not authenticated")
         }
-
         subscribe("game", 1, (msg: WebsocketMessage) => {
             if (msg.type === "boardState") {
+                console.log("Received board state: ", msg.data)
                 setBoardState(msg.data)
             } else if (msg.type === "playerState") {
+                console.log("Received player state: ", msg.data)
                 setPlayersState(msg.data)
             } else if (msg.type === "gameState") {
+                console.log("Received game state: ", msg.data)
                 setGameState(msg.data)
             }
         })
@@ -49,6 +52,14 @@ function Game() {
             unsubscribe("game")
         }
     }, [session, subscribe, unsubscribe])
+
+    const playerIndex = playersState.players.find(player => player.userId === user?.id)?.index
+    if (playerIndex === undefined) {
+        console.log("Player not found")
+        return null
+    }
+    const playerState = playersState.players[playerIndex]
+
 
     return (
         <div>
@@ -59,7 +70,7 @@ function Game() {
             <Map boardState={boardState} gameState={gameState} playersState={playersState} playerState={playerState}
                  deployAction={deployAction} setDeployAction={setDeployAction}/>
             <DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}
-                         gameState={gameState} playerState={playerState}/>
+                         gameState={gameState} playerState={playerState} boardState={boardState}/>
         </div>
     )
 }
