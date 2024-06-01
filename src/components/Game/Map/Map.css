@@ -58,25 +58,27 @@
     fill: #ffff00;
 }
 
-@keyframes pulse {
+/* Define the keyframes for the highlight animation */
+@keyframes highlight {
     0% {
-        transform: scale(1);
-        opacity: 0.8;
+        stroke-width: 2; /* Normal stroke width */
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8)); /* Initial shadow */
     }
     50% {
-        transform: scale(1.02);
-        opacity: 1;
+        stroke-width: 4; /* Highlighted stroke width */
+        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.8)); /* Increased shadow */
     }
     100% {
-        transform: scale(1);
-        opacity: 0.8;
+        stroke-width: 2; /* Normal stroke width */
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8)); /* Return to initial shadow */
     }
 }
 
 /* Define a CSS class for selectable regions with pulsing animation */
 .risk-it-map-container svg path.risk-it-region-selectable {
+    stroke: #000000;
     cursor: pointer;
-    animation: pulse 1s infinite; /* Adjust the animation duration and iteration count as needed */
+    animation: highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
 }
 
 .risk-it-map-container svg path.risk-it-region-not-selectable {
