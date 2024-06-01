@@ -1,7 +1,7 @@
 import {supabaseClient} from '../config/supabase-client';
 
 import {useContext} from 'react';
-import {AuthContext} from './Auth';
+import {AuthContext} from '../providers/Auth.tsx';
 
 // export the useAuth hook
 export interface Credentials {
@@ -23,7 +23,6 @@ export const useAuth = () => {
             password: credentials.password,
         })
     }
-
 
     const signout = () => {
         return supabaseClient.auth.signOut()

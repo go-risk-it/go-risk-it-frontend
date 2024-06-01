@@ -1,6 +1,6 @@
 import {Session, User} from '@supabase/supabase-js'
 import {createContext, ReactElement, useEffect, useState} from 'react'
-import {supabaseClient} from '../config/supabase-client'
+import {supabaseClient} from '../config/supabase-client.ts'
 
 
 // create a context for authentication

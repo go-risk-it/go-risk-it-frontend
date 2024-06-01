@@ -1,35 +1,35 @@
 import {PlayerState} from "../../../api/message/playersState.ts"
-import React, {useState} from "react"
+import React, {useContext, useState} from "react"
 import {DeployAction} from "../../../api/message/deployAction.ts"
 import {GameState, Phase} from "../../../api/message/gameState.ts"
 
 import './DeployPopup.css'
 import {useAuth} from "../../../hooks/useAuth.tsx"
-import {BoardState} from "../../../api/message/boardState.ts";
+import {GameStateContext} from "../../../providers/GameState.tsx";
 
 interface DeployPopupProps {
     deployAction: DeployAction
     setDeployAction: (action: DeployAction) => void
-    gameState: GameState
-    playerState: PlayerState
-    boardState: BoardState
 }
 
-function shouldShow(gameState: GameState, playerState: PlayerState, deployAction: DeployAction) {
+function shouldShow(gameState: GameState, thisPlayerState: PlayerState, deployAction: DeployAction) {
     return gameState.currentPhase === Phase.DEPLOY &&
-        gameState.currentTurn === playerState.index &&
+        gameState.currentTurn === thisPlayerState.index &&
         deployAction.regionId !== null
 }
 
 const DeployPopup: React.FC<DeployPopupProps> = ({
                                                      deployAction,
                                                      setDeployAction,
-                                                     gameState,
-                                                     playerState,
-                                                     boardState
                                                  }) => {
     const {session} = useAuth()
-    const [troops, setTroops] = useState<number>(playerState?.troopsToDeploy)
+    const {gameState, thisPlayerState, boardState} = useContext(GameStateContext)
+
+    const [troops, setTroops] = useState<number>(thisPlayerState?.troopsToDeploy || 0)
+
+    if (!boardState || !thisPlayerState || !gameState) {
+        return null
+    }
 
     if (deployAction.regionId === null) {
         return null
@@ -45,20 +45,20 @@ const DeployPopup: React.FC<DeployPopupProps> = ({
     const currentTroops = region.troops
     return (
         <div
-            className={`risk-it-troop-deployment-popup ${shouldShow(gameState, playerState, deployAction) ? 'visible' : ''}`}>
+            className={`risk-it-troop-deployment-popup ${shouldShow(gameState, thisPlayerState, deployAction) ? 'visible' : ''}`}>
             <h3>Deploy Troops on region {deployAction.regionId}</h3>
-            <p>Player name: {playerState.name}, Turn: {playerState.index}, Troops to
-                Deploy: {playerState.troopsToDeploy}</p>
-            <input type="number" value={playerState.troopsToDeploy}
+            <p>Player name: {thisPlayerState.name}, Turn: {thisPlayerState.index}, Troops to
+                Deploy: {thisPlayerState.troopsToDeploy}</p>
+            <input type="number" value={thisPlayerState.troopsToDeploy}
                    onChange={e => setTroops(parseInt(e.target.value))}/>
             <button onClick={() => {
-                setDeployAction({regionId: null, userId: playerState.userId, currentTroops: 0, desiredTroops: 0})
+                setDeployAction({regionId: null, userId: thisPlayerState.userId, currentTroops: 0, desiredTroops: 0})
             }}>Cancel
             </button>
             <button onClick={() => {
                 const body = JSON.stringify({
                     regionId: deployAction.regionId,
-                    userId: playerState.userId,
+                    userId: thisPlayerState.userId,
                     currentTroops: currentTroops,
                     desiredTroops: currentTroops + troops
                 })
@@ -71,7 +71,7 @@ const DeployPopup: React.FC<DeployPopupProps> = ({
                     },
                     body: body,
                 })
-                setDeployAction({regionId: null, userId: playerState.userId, currentTroops: 0, desiredTroops: 0})
+                setDeployAction({regionId: null, userId: thisPlayerState.userId, currentTroops: 0, desiredTroops: 0})
             }
             }>Deploy
             </button>
