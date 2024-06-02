@@ -1,5 +1,6 @@
 import React from 'react';
 import {SVGMapRegion, SVGMapRegionProps} from "./SVGMapRegion.tsx";
+import './SVGMap.css'
 
 /** Adapted from
  * https://github.com/South-Paw/react-vector-maps/

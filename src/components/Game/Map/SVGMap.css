@@ -6,55 +6,55 @@
 }
 
 /* Style svg within the map-container */
-.risk-it-map-container svg {
+svg.risk-it-map-container {
     stroke: #fff;
 }
 
-.risk-it-map-container svg path {
+svg.risk-it-map-container path {
     fill: #8c8c8c;
     cursor: pointer;
     outline: none;
 }
 
 /* Define two classes for inactive and active paths. Set hover and focus for active paths */
-.risk-it-map-container svg path.active {
+svg.risk-it-map-container path.active {
     filter: saturate(150%);
 }
 
-.risk-it-map-container svg path.active:hover {
+svg.risk-it-map-container path.active:hover {
     filter: saturate(120%);
 }
 
-.risk-it-map-container svg path.active:focus {
+svg.risk-it-map-container path.active:focus {
     filter: drop-shadow(0 0 5px #fff);
 }
 
-.risk-it-map-container svg path.inactive {
+svg.risk-it-map-container path.inactive {
     filter: saturate(50%);
 }
 
 /* Define 6 classes for the 6 different colors */
-.risk-it-map-container svg path.risk-it-player0 {
+svg.risk-it-map-container path.risk-it-player0 {
     fill: #00ffff;
 }
 
-.risk-it-map-container svg path.risk-it-player1 {
+svg.risk-it-map-container path.risk-it-player1 {
     fill: #ff0000;
 }
 
-.risk-it-map-container svg path.risk-it-player2 {
+svg.risk-it-map-container path.risk-it-player2 {
     fill: #0000ff;
 }
 
-.risk-it-map-container svg path.risk-it-player3 {
+svg.risk-it-map-container path.risk-it-player3 {
     fill: #00ff00;
 }
 
-.risk-it-map-container svg path.risk-it-player4 {
+svg.risk-it-map-container path.risk-it-player4 {
     fill: #ff00ff;
 }
 
-.risk-it-map-container svg path.risk-it-player5 {
+svg.risk-it-map-container path.risk-it-player5 {
     fill: #ffff00;
 }
 
@@ -75,13 +75,13 @@
 }
 
 /* Define a CSS class for selectable regions with pulsing animation */
-.risk-it-map-container svg path.risk-it-region-selectable {
+svg.risk-it-map-container path.risk-it-region-selectable {
     stroke: #000000;
     cursor: pointer;
     animation: highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
 }
 
-.risk-it-map-container svg path.risk-it-region-not-selectable {
+svg.risk-it-map-container path.risk-it-region-not-selectable {
     /*filter: saturate(50%);*/
     cursor: not-allowed;
 }
