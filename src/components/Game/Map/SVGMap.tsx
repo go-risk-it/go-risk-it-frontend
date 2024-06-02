@@ -5,10 +5,7 @@ import "./SVGMap.css"
 /** Adapted from
  * https://github.com/South-Paw/react-vector-maps/
  */
-
-
 export interface SVGMapProps extends React.SVGProps<SVGSVGElement> {
-    children?: React.ReactNode;
     id: string;
     name: string;
     viewBox: string;
@@ -17,12 +14,10 @@ export interface SVGMapProps extends React.SVGProps<SVGSVGElement> {
 
 export const SVGMap: React.FC<SVGMapProps> = (
     {
-        children,
         id = "svg-map",
         name,
+        viewBox,
         layers,
-        //tabIndex = 0,
-        ...other
     },
 ) => {
     if (!layers || layers.length === 0) {
@@ -34,10 +29,11 @@ export const SVGMap: React.FC<SVGMapProps> = (
     }
 
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" key={id} aria-label={name} {...other}>
-            {children}
+        <svg xmlns="http://www.w3.org/2000/svg" key={id} aria-label={name} viewBox={viewBox} className="risk-it-map-container">
             {layers.map((layer) => (
-                <SVGMapRegion key={layer.id} id={layer.id} name={layer.name} d={layer.d}/>
+                <SVGMapRegion key={layer.id} id={layer.id} name={layer.name} d={layer.d}
+                              isSelectable={layer.isSelectable} troops={layer.troops}
+                              ownerIndex={layer.ownerIndex}/>
             ))}
         </svg>
     )

@@ -1,4 +1,4 @@
-export interface DeployAction {
+export interface DeployMove {
     regionId: string | null;
     userId: string;
     currentTroops: number;

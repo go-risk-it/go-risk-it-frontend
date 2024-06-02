@@ -1,23 +1,19 @@
-import React, {useCallback, useEffect, useState} from "react"
-import {Phase} from "../../../api/message/gameState.ts"
-import {BoardState} from "../../../api/message/boardState.ts"
-import {useGameState} from "../../../hooks/useGameState.tsx"
+import React, {useCallback, useState} from "react"
+import "./SVGMap.css"
 
 
 export interface SVGMapRegionProps {
     id: string;
     name: string;
     d: string;
+    isSelectable: boolean;
+    troops: number;
+    ownerIndex: number;
 }
 
-function getRegion(boardState: BoardState, id: string) {
-    return boardState.regions.find(region => region.id === id)
-}
 
-export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d}) => {
-    const {gameState, boardState, playersState, thisPlayerState} = useGameState()
+export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d, isSelectable, troops, ownerIndex}) => {
     const [center, setCenter] = useState({x: 0, y: 0})
-    const [selectable, setSelectable] = useState(false)
 
     // center the text in the region when the region is rendered
     const measuredRef = useCallback((node: SVGPathElement) => {
@@ -30,42 +26,12 @@ export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d}) => {
         }
     }, [])
 
-    useEffect(() => {
-        if (!boardState || !playersState || !gameState || !thisPlayerState) {
-            return
-        }
-
-        const region = getRegion(boardState, id)
-
-        if (gameState.currentPhase === Phase.DEPLOY) {
-            setSelectable(
-                gameState.currentTurn === thisPlayerState.index &&
-                thisPlayerState.userId === region?.ownerId,
-            )
-        }
-    }, [id, boardState, playersState, gameState, thisPlayerState])
-
-    if (!boardState || !playersState) {
-        return null
-    }
-
-    const region = getRegion(boardState, id)
-    if (!region) {
-        console.error(`Region with id ${id} not found`)
-        return null
-    }
-
-    const player = playersState.players.find(player => player.userId === region.ownerId)
-    if (!player) {
-        console.error(`Player with id ${region.ownerId} not found`)
-        return null
-    }
 
     // center the text in the region
     return (
         <g>
             <path id={id} ref={measuredRef} d={d} aria-label={name}
-                  className={`risk-it-player${player.index} ${selectable ? "risk-it-region-selectable" : "risk-it-region-not-selectable"}`}/>
+                  className={`risk-it-player${ownerIndex} ${isSelectable? "risk-it-region-selectable" : "risk-it-region-not-selectable"}`}/>
             <title>{name}</title>
             <text
                 x={center.x}
@@ -75,7 +41,7 @@ export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d}) => {
                 className="troop-count"
                 // style={{pointerEvents: 'none'}}
             >
-                {region.troops}
+                {troops}
             </text>
         </g>
     )

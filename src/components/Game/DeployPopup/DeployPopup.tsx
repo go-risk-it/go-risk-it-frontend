@@ -1,6 +1,6 @@
 import {PlayerState} from "../../../api/message/playersState.ts"
 import React, {useState} from "react"
-import {DeployAction} from "../../../api/message/deployAction.ts"
+import {DeployMove} from "../../../api/message/deployMove.ts"
 import {GameState, Phase} from "../../../api/message/gameState.ts"
 
 import "./DeployPopup.css"
@@ -8,11 +8,11 @@ import {useAuth} from "../../../hooks/useAuth.tsx"
 import {useGameState} from "../../../hooks/useGameState.tsx"
 
 interface DeployPopupProps {
-    deployAction: DeployAction
-    setDeployAction: (action: DeployAction) => void
+    deployAction: DeployMove
+    setDeployAction: (action: DeployMove) => void
 }
 
-function shouldShow(gameState: GameState, thisPlayerState: PlayerState, deployAction: DeployAction) {
+function shouldShow(gameState: GameState, thisPlayerState: PlayerState, deployAction: DeployMove) {
     return gameState.currentPhase === Phase.DEPLOY &&
         gameState.currentTurn === thisPlayerState.index &&
         deployAction.regionId !== null
