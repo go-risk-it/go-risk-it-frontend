@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import StatusBar from "../StatusBar/StatusBar.tsx";
 
 import './Game.css'
@@ -7,10 +7,34 @@ import {useAuth} from "../../../hooks/useAuth.tsx";
 import "./Game.css"
 import world from "../../../assets/risk.json";
 import {SVGMap} from "../Map/SVGMap.tsx";
+import {GameStateContext} from "../../../providers/GameState.tsx";
 
 
 const Game: React.FC = () => {
     const {signout} = useAuth()
+
+    const {boardState, thisPlayerState} = useContext(GameStateContext);
+    if (!boardState || !thisPlayerState) {
+        return null;
+    }
+
+    const thisPlayerRegions = new Set<string>(
+        boardState.regions
+            .filter(region => region.ownerId === thisPlayerState.userId)
+            .map(region => region.id)
+    )
+
+    // sort regions layers: put the ones owned by this player last,
+    // so they are rendered on top of other regions and animations are visible
+    world.layers.sort((a, b) => {
+        if (thisPlayerRegions.has(a.id)) {
+            return 1
+        }
+        if (thisPlayerRegions.has(b.id)) {
+            return -1
+        }
+        return 0
+    })
 
     return (
         <div>
