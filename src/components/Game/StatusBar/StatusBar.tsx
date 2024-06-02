@@ -1,11 +1,9 @@
-import {useContext} from 'react';
-
-import './StatusBar.css';
-import {GameStateContext} from "../../../providers/GameState.tsx";
+import "./StatusBar.css"
+import {useGameState} from "../../../hooks/useGameState.tsx"
 
 
 const StatusBar = () => {
-    const {gameState, playersState, thisPlayerState} = useContext(GameStateContext);
+    const {gameState, playersState, thisPlayerState} = useGameState()
     return (
         <div className="status-bar">
             {/* Display Game Status in the first line */}
@@ -39,8 +37,8 @@ const StatusBar = () => {
                 }
             </div>
         </div>
-    );
-};
+    )
+}
 
 
-export default StatusBar;
+export default StatusBar

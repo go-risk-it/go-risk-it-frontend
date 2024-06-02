@@ -1,9 +1,9 @@
-import {createContext, ReactElement, useContext, useEffect, useState} from "react";
-import {useAuth} from "../hooks/useAuth.tsx";
-import {BoardState} from "../api/message/boardState.ts";
-import {PlayersState, PlayerState} from "../api/message/playersState.ts";
-import {GameState} from "../api/message/gameState.ts";
-import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx";
+import {createContext, ReactElement, useContext, useEffect, useState} from "react"
+import {useAuth} from "../hooks/useAuth.tsx"
+import {BoardState} from "../api/message/boardState.ts"
+import {PlayersState, PlayerState} from "../api/message/playersState.ts"
+import {GameState} from "../api/message/gameState.ts"
+import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
 
 
 export const GameStateContext = createContext<{
@@ -16,7 +16,7 @@ export const GameStateContext = createContext<{
     playersState: null,
     thisPlayerState: null,
     gameState: null,
-});
+})
 
 // arguments of GameStateProvider are
 // gameId: int
@@ -40,7 +40,7 @@ export const GameStateProvider = ({gameId, children}: { gameId: number, children
                 setPlayersState(msg.data)
                 const ps: PlayersState = msg.data
                 setThisPlayerState(
-                    ps.players.find(player => player.userId === session?.user?.id) || null
+                    ps.players.find(player => player.userId === session?.user?.id) || null,
                 )
 
             } else if (msg.type === "gameState") {
@@ -60,8 +60,8 @@ export const GameStateProvider = ({gameId, children}: { gameId: number, children
                 boardState,
                 playersState,
                 thisPlayerState,
-                gameState
+                gameState,
             }}> {children}
         </GameStateContext.Provider>
-    );
-};
+    )
+}

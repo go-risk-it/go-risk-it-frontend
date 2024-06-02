@@ -1,5 +1,5 @@
-import {createContext, ReactElement, useEffect, useRef, useState} from "react";
-import {useAuth} from "../hooks/useAuth.tsx";
+import {createContext, ReactElement, useEffect, useRef, useState} from "react"
+import {useAuth} from "../hooks/useAuth.tsx"
 
 
 export interface WebsocketMessage {
@@ -7,7 +7,7 @@ export interface WebsocketMessage {
     data: never;
 }
 
-const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState"]);
+const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState"])
 
 export const WebsocketContext = createContext<{
     subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => void
@@ -16,14 +16,14 @@ export const WebsocketContext = createContext<{
     subscribe: () => {
     },
     unsubscribe: () => {
-    }
-});
+    },
+})
 
 export const WebsocketProvider = ({children}: { children: ReactElement }) => {
     const {session} = useAuth()
     const ws = useRef<WebSocket | null>(null)
     const topics = useRef<Map<string, (data: WebsocketMessage) => void>>(new Map<string, (data: WebsocketMessage) => void>())
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true)
 
 
     useEffect(() => {
@@ -34,11 +34,11 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
         ws.current = new WebSocket("ws://localhost:8000/ws", ["risk-it.websocket.auth.token", session.access_token])
 
         ws.current.onopen = () => {
-            console.log('WS open')
+            console.log("WS open")
             setLoading(false)
         }
         ws.current.onclose = () => {
-            console.log('WS close')
+            console.log("WS close")
         }
         ws.current.onmessage = (message: MessageEvent) => {
             try {
@@ -67,8 +67,8 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
                 },
                 unsubscribe: (topic: string) => {
                     topics.current.delete(topic)
-                }
+                },
             }}> {!loading && children}
         </WebsocketContext.Provider>
-    );
-};
+    )
+}

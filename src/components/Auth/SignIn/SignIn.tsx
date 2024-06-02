@@ -1,21 +1,21 @@
 /* Source: https://github.com/mui/material-ui/blob/v5.15.14/docs/data/material/getting-started/templates/sign-in/SignIn.tsx */
-import * as React from 'react'
-import Avatar from '@mui/material/Avatar'
-import Button from '@mui/material/Button'
-import CssBaseline from '@mui/material/CssBaseline'
-import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import Link from '@mui/material/Link'
-import Grid from '@mui/material/Grid'
-import Box from '@mui/material/Box'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
-import {ThemeProvider, useTheme} from '@mui/material/styles'
+import * as React from "react"
+import {useState} from "react"
+import Avatar from "@mui/material/Avatar"
+import Button from "@mui/material/Button"
+import CssBaseline from "@mui/material/CssBaseline"
+import TextField from "@mui/material/TextField"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import Link from "@mui/material/Link"
+import Grid from "@mui/material/Grid"
+import Box from "@mui/material/Box"
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import {ThemeProvider, useTheme} from "@mui/material/styles"
 import {useAuth} from "../../../hooks/useAuth.tsx"
-import {useState} from "react";
-import {Navigate} from "react-router-dom";
+import {Navigate} from "react-router-dom"
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -27,28 +27,28 @@ export default function SignIn() {
     const [error, setError] = useState("")
 
     if (user) {
-        return <Navigate to="/"/>;
+        return <Navigate to="/"/>
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
         console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+            email: data.get("email"),
+            password: data.get("password"),
         })
-        const email: string = data.get('email') as string
-        const password: string = data.get('password') as string
+        const email: string = data.get("email") as string
+        const password: string = data.get("password") as string
 
         signin({
             email: email,
-            password: password
+            password: password,
         }).then(({data, error}) => {
             if (error) {
                 setError(error.message)
             } else {
                 setError("")
-                console.log('Signed in' + data)
+                console.log("Signed in" + data)
             }
         }).catch((error) => {
             // Show the error in the form fields
@@ -63,12 +63,12 @@ export default function SignIn() {
                 <Box
                     sx={{
                         marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
                     }}
                 >
-                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                    <Avatar sx={{m: 1, bgcolor: "secondary.main"}}>
                         <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">

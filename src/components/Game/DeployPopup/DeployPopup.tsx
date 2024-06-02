@@ -1,11 +1,11 @@
 import {PlayerState} from "../../../api/message/playersState.ts"
-import React, {useContext, useState} from "react"
+import React, {useState} from "react"
 import {DeployAction} from "../../../api/message/deployAction.ts"
 import {GameState, Phase} from "../../../api/message/gameState.ts"
 
-import './DeployPopup.css'
+import "./DeployPopup.css"
 import {useAuth} from "../../../hooks/useAuth.tsx"
-import {GameStateContext} from "../../../providers/GameState.tsx";
+import {useGameState} from "../../../hooks/useGameState.tsx"
 
 interface DeployPopupProps {
     deployAction: DeployAction
@@ -23,7 +23,7 @@ const DeployPopup: React.FC<DeployPopupProps> = ({
                                                      setDeployAction,
                                                  }) => {
     const {session} = useAuth()
-    const {gameState, thisPlayerState, boardState} = useContext(GameStateContext)
+    const {gameState, thisPlayerState, boardState} = useGameState()
 
     const [troops, setTroops] = useState<number>(thisPlayerState?.troopsToDeploy || 0)
 
@@ -45,7 +45,7 @@ const DeployPopup: React.FC<DeployPopupProps> = ({
     const currentTroops = region.troops
     return (
         <div
-            className={`risk-it-troop-deployment-popup ${shouldShow(gameState, thisPlayerState, deployAction) ? 'visible' : ''}`}>
+            className={`risk-it-troop-deployment-popup ${shouldShow(gameState, thisPlayerState, deployAction) ? "visible" : ""}`}>
             <h3>Deploy Troops on region {deployAction.regionId}</h3>
             <p>Player name: {thisPlayerState.name}, Turn: {thisPlayerState.index}, Troops to
                 Deploy: {thisPlayerState.troopsToDeploy}</p>
@@ -60,14 +60,14 @@ const DeployPopup: React.FC<DeployPopupProps> = ({
                     regionId: deployAction.regionId,
                     userId: thisPlayerState.userId,
                     currentTroops: currentTroops,
-                    desiredTroops: currentTroops + troops
+                    desiredTroops: currentTroops + troops,
                 })
                 console.log("Body: ", body)
-                fetch('http://localhost:8000/api/v1/game/1/move/deploy', {
-                    method: 'POST',
+                fetch("http://localhost:8000/api/v1/game/1/move/deploy", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session.access_token}`
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session.access_token}`,
                     },
                     body: body,
                 })
