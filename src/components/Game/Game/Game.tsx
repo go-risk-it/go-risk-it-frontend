@@ -11,24 +11,11 @@ import {DeployMove} from "../../../api/message/deployMove.ts"
 import {GameState, Phase} from "../../../api/message/gameState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
+import {DeployAction, DeployActionType, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
+import {onRegionClickDeploy} from "./deploy.ts"
+import DeployPopup, {DeployPopupProps} from "../DeployPopup/DeployPopup.tsx"
+import {Session} from "@supabase/supabase-js"
 
-enum DeployActionType {
-    SET_REGION = "setRegion",
-    SET_TROOPS = "setTroops",
-}
-
-interface SetRegionAction {
-    type: DeployActionType.SET_REGION
-    regionId: string
-    currentTroops: number
-}
-
-interface SetTroopsAction {
-    type: DeployActionType.SET_TROOPS
-    desiredTroops: number
-}
-
-type DeployAction = SetRegionAction | SetTroopsAction
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
                        deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) => {
@@ -36,49 +23,63 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
         return null
     }
     switch (gameState.currentPhase) {
-        case Phase.DEPLOY: {
-            if (thisPlayerState.userId === region?.ownerId && deployMove.regionId === null) {
-                return () => {
-                    console.log("Setting region", region.id, region.troops)
-                    dispatchDeployMove({
-                        type: DeployActionType.SET_REGION,
-                        regionId: region.id,
-                        currentTroops: region.troops,
-                    })
-                }
-            }
-            break
-        }
+        case Phase.DEPLOY:
+            return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
     }
 
     return null
-
 }
 
-
-function deployMoveReducer(deployMove: DeployMove, action: DeployAction) {
-    switch (action.type) {
-        case DeployActionType.SET_REGION:
-            return {...deployMove, regionId: action.regionId, currentTroops: action.currentTroops}
-        case DeployActionType.SET_TROOPS:
-            return {...deployMove, desiredTroops: action.desiredTroops}
-        default:
-            throw Error("Unknown action: " + action)
+const getDeployPopupProps = (
+    session: Session,
+    gameState: GameState,
+    thisPlayerState: PlayerState,
+    deployMove: DeployMove,
+    dispatchDeployMove: (action: DeployAction) => void,
+): DeployPopupProps => {
+    return {
+        isVisible: gameState.currentPhase === Phase.DEPLOY && deployMove.regionId !== null,
+        region: deployMove.regionId || "",
+        currentTroops: deployMove.currentTroops,
+        troopsToDeploy: thisPlayerState.troopsToDeploy,
+        onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),
+        onCancel: () => dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0}),
+        onConfirm: () => {
+            console.log("Deploying", deployMove)
+            const body = JSON.stringify({
+                regionId: deployMove.regionId,
+                userId: thisPlayerState.userId,
+                currentTroops: deployMove.currentTroops,
+                desiredTroops: deployMove.desiredTroops,
+            })
+            console.log("Body: ", body)
+            fetch("http://localhost:8000/api/v1/game/1/move/deploy", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                },
+                body: body,
+            }).then(response => {
+                console.log("Deploy response: ", response)
+            }).catch(error => {
+                console.error("Error deploying: ", error)
+            })
+            dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0})
+        },
     }
 }
 
-const Game: React.FC = () => {
-    const {signout, user} = useAuth()
 
-    const [deployMove, dispatchDeployMove] = React.useReducer(deployMoveReducer, {
-        regionId: null,
-        userId: user?.id || "",
-        currentTroops: 0,
-        desiredTroops: 0,
-    })
+const Game: React.FC = () => {
+    const {session, signout, user} = useAuth()
+
+
+    const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
+
 
     const {boardState, gameState, playersState, thisPlayerState} = useGameState()
-    if (!boardState || !playersState || !thisPlayerState || !gameState || !user) {
+    if (!session || !boardState || !playersState || !thisPlayerState || !gameState || !user) {
         return null
     }
 
@@ -129,7 +130,7 @@ const Game: React.FC = () => {
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
-            {/*<DeployPopup isVisible={} onSetTroops={} onCancel={} onConfirm={} />*/}
+            <DeployPopup {...getDeployPopupProps(session, gameState, thisPlayerState, deployMove, dispatchDeployMove)}/>
 
             <StatusBar/>
         </div>
