@@ -6,13 +6,13 @@ export interface SVGMapRegionProps {
     id: string;
     name: string;
     d: string;
-    isSelectable: boolean;
+    onRegionClick: (() => void) | null;
     troops: number;
     ownerIndex: number;
 }
 
 
-export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d, isSelectable, troops, ownerIndex}) => {
+export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d, onRegionClick, troops, ownerIndex}) => {
     const [center, setCenter] = useState({x: 0, y: 0})
 
     // center the text in the region when the region is rendered
@@ -26,10 +26,12 @@ export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d, isSelect
         }
     }, [])
 
+    const isSelectable = onRegionClick !== null
+
 
     // center the text in the region
     return (
-        <g>
+        <g {...(isSelectable ? {onClick: onRegionClick} : {})}>
             <path id={id} ref={measuredRef} d={d} aria-label={name}
                   className={`risk-it-player${ownerIndex} ${isSelectable? "risk-it-region-selectable" : "risk-it-region-not-selectable"}`}/>
             <title>{name}</title>

@@ -12,20 +12,6 @@ import {GameState, Phase} from "../../../api/message/gameState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
 
-const isRegionSelectable = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState) => {
-    if (gameState.currentTurn % playersState.players.length !== thisPlayerState.index) {
-        return false
-    }
-    switch (gameState.currentPhase) {
-        case Phase.DEPLOY: {
-            return thisPlayerState.userId === region?.ownerId
-        }
-        default: {
-            return false
-        }
-    }
-}
-
 enum DeployActionType {
     SET_REGION = "setRegion",
     SET_TROOPS = "setTroops",
@@ -37,13 +23,40 @@ interface SetRegionAction {
     currentTroops: number
 }
 
-
 interface SetTroopsAction {
     type: DeployActionType.SET_TROOPS
     desiredTroops: number
 }
 
-function deployMoveReducer(deployMove: DeployMove, action: SetRegionAction | SetTroopsAction) {
+type DeployAction = SetRegionAction | SetTroopsAction
+
+const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
+                       deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) => {
+    if (gameState.currentTurn % playersState.players.length !== thisPlayerState.index) {
+        return null
+    }
+    switch (gameState.currentPhase) {
+        case Phase.DEPLOY: {
+            if (thisPlayerState.userId === region?.ownerId && deployMove.regionId === null) {
+                return () => {
+                    console.log("Setting region", region.id, region.troops)
+                    dispatchDeployMove({
+                        type: DeployActionType.SET_REGION,
+                        regionId: region.id,
+                        currentTroops: region.troops,
+                    })
+                }
+            }
+            break
+        }
+    }
+
+    return null
+
+}
+
+
+function deployMoveReducer(deployMove: DeployMove, action: DeployAction) {
     switch (action.type) {
         case DeployActionType.SET_REGION:
             return {...deployMove, regionId: action.regionId, currentTroops: action.currentTroops}
@@ -87,11 +100,10 @@ const Game: React.FC = () => {
             if (!owner) {
                 throw Error(`Owner with id ${region.ownerId} not found for region ${region.id} in ${playersState.players}`)
             }
-            console.log("owner", owner)
 
             return {
                 ...layer,
-                isSelectable: isRegionSelectable(region, gameState, thisPlayerState, playersState),
+                onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState, deployMove, dispatchDeployMove),
                 troops: region.troops,
                 ownerIndex: owner.index,
             }
@@ -117,8 +129,8 @@ const Game: React.FC = () => {
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
-            {/*<DeployPopup deployAction={deployAction} setDeployAction={setDeployAction}/>*/
-            }
+            {/*<DeployPopup isVisible={} onSetTroops={} onCancel={} onConfirm={} />*/}
+
             <StatusBar/>
         </div>
     )
