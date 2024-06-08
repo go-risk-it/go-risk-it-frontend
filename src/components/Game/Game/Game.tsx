@@ -53,7 +53,7 @@ const getDeployPopupProps = (
                 desiredTroops: deployMove.desiredTroops,
             })
             console.log("Body: ", body)
-            fetch("http://localhost:8000/api/v1/game/1/move/deploy", {
+            fetch("http://localhost:8000/api/v1/games/1/moves/deployments", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
