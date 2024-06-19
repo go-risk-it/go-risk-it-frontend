@@ -9,4 +9,5 @@ export interface GameState {
     gameId: number;
     currentTurn: number;
     currentPhase: Phase;
+    deployableTroops: number;
 }

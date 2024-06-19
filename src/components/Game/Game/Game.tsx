@@ -41,7 +41,7 @@ const getDeployPopupProps = (
         isVisible: gameState.currentPhase === Phase.DEPLOY && deployMove.regionId !== null,
         region: deployMove.regionId || "",
         currentTroops: deployMove.currentTroops,
-        troopsToDeploy: thisPlayerState.troopsToDeploy,
+        deployableTroops: gameState.deployableTroops,
         onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),
         onCancel: () => dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0}),
         onConfirm: () => {

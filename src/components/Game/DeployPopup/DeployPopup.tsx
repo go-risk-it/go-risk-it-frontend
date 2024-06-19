@@ -7,7 +7,7 @@ export interface DeployPopupProps {
     isVisible: boolean
     region: string
     currentTroops: number
-    troopsToDeploy: number
+    deployableTroops: number
     onSetTroops: (desiredTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
@@ -18,7 +18,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         isVisible,
         region,
         currentTroops,
-        troopsToDeploy,
+        deployableTroops,
         onSetTroops,
         onCancel,
         onConfirm,
@@ -29,7 +29,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         <div
             className={`risk-it-troop-deployment-popup ${isVisible ? "visible" : ""}`}>
             <h3>Deploy Troops on region {region}</h3>
-            <p>Troops to Deploy: {troopsToDeploy}</p>
+            <p>Troops to Deploy: {deployableTroops}</p>
             <Slider
                 aria-label="Desired Troops"
                 key={`slider-${currentTroops}`}
@@ -39,7 +39,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
                 step={1}
                 marks
                 min={currentTroops}
-                max={currentTroops + troopsToDeploy}
+                max={currentTroops + deployableTroops}
                 onChange={(_, value) => onSetTroops(value as number)}
             />
             <button onClick={onCancel}>Cancel</button>
