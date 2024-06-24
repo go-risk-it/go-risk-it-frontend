@@ -33,7 +33,6 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
 const getDeployPopupProps = (
     session: Session,
     gameState: GameState,
-    thisPlayerState: PlayerState,
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
 ): DeployPopupProps => {
@@ -48,7 +47,6 @@ const getDeployPopupProps = (
             console.log("Deploying", deployMove)
             const body = JSON.stringify({
                 regionId: deployMove.regionId,
-                userId: thisPlayerState.userId,
                 currentTroops: deployMove.currentTroops,
                 desiredTroops: deployMove.desiredTroops,
             })
@@ -130,7 +128,7 @@ const Game: React.FC = () => {
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
-            <DeployPopup {...getDeployPopupProps(session, gameState, thisPlayerState, deployMove, dispatchDeployMove)}/>
+            <DeployPopup {...getDeployPopupProps(session, gameState, deployMove, dispatchDeployMove)}/>
 
             <StatusBar/>
         </div>

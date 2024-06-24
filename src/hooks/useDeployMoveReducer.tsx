@@ -1,6 +1,5 @@
 import React from "react"
 import {DeployMove} from "../api/message/deployMove.ts"
-import {useAuth} from "./useAuth.tsx"
 
 export enum DeployActionType {
     SET_REGION = "setRegion",
@@ -34,11 +33,8 @@ function deployMoveReducer(deployMove: DeployMove, action: DeployAction) {
 }
 
 export const useDeployMoveReducer = () => {
-    const {user} = useAuth()
-
     const [deployMove, dispatchDeployMove] = React.useReducer(deployMoveReducer, {
         regionId: null,
-        userId: user?.id || "",
         currentTroops: 0,
         desiredTroops: 0,
     })
