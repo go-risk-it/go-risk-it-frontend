@@ -25,9 +25,13 @@ const DeployPopup: React.FC<DeployPopupProps> = (
     },
 ) => {
 
+    if (!isVisible) {
+        return null
+    }
+
     return (
         <div
-            className={`risk-it-troop-deployment-popup ${isVisible ? "visible" : ""}`}>
+            className="risk-it-troop-deployment-popup">
             <h3>Deploy Troops on region {region}</h3>
             <p>Troops to Deploy: {deployableTroops}</p>
             <Slider

@@ -15,16 +15,24 @@ import {DeployAction, DeployActionType, useDeployMoveReducer} from "../../../hoo
 import {onRegionClickDeploy} from "./deploy.ts"
 import DeployPopup, {DeployPopupProps} from "../DeployPopup/DeployPopup.tsx"
 import {Session} from "@supabase/supabase-js"
+import {AttackAction, AttackActionType, useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
+import {AttackMove} from "../../../api/message/attackMove.ts"
+import {onRegionClickAttack} from "./attack.ts"
+import AttackPopup from "../AttackPopup/AttackPopup.tsx"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
-                       deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) => {
+                       deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void,
+                       attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+) => {
     if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
         return null
     }
     switch (gameState.phaseType) {
         case PhaseType.DEPLOY:
             return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
+        case PhaseType.ATTACK:
+            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove)
     }
 
     return null
@@ -69,12 +77,68 @@ const getDeployPopupProps = (
     }
 }
 
+const getAttackPopupProps = (
+    session: Session,
+    gameState: GameState,
+    attackMove: AttackMove,
+    dispatchAttackMove: (action: AttackAction) => void,
+) => {
+    return {
+        isVisible: gameState.phaseType === PhaseType.ATTACK && attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
+        sourceRegion: attackMove.sourceRegionId || "",
+        targetRegion: attackMove.targetRegionId || "",
+        troopsInSource: attackMove.troopsInSource,
+        onSetTroops: (attackingTroops: number) => dispatchAttackMove({
+            type: AttackActionType.SET_TROOPS,
+            attackingTroops,
+        }),
+        onCancel: () => {
+            dispatchAttackMove({
+                type: AttackActionType.SET_SOURCE_REGION,
+                regionId: null,
+                currentTroops: 0,
+            })
+            dispatchAttackMove({
+                type: AttackActionType.SET_TARGET_REGION,
+                regionId: null,
+                currentTroops: 0,
+            })
+        },
+        onConfirm: () => {
+            console.log("Attacking", attackMove)
+            const body = JSON.stringify({
+                sourceRegionId: attackMove.sourceRegionId,
+                targetRegionId: attackMove.targetRegionId,
+                troopsInSource: attackMove.troopsInSource,
+                troopsInTarget: attackMove.troopsInTarget,
+                attackingTroops: attackMove.attackingTroops,
+            })
+            console.log("Body: ", body)
+            fetch("http://localhost:8000/api/v1/games/1/moves/attacks", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`,
+                },
+                body: body,
+            }).then(response => {
+                console.log("Attack response: ", response)
+            }).catch(error => {
+                console.error("Error attacking: ", error)
+            })
+            dispatchAttackMove({type: AttackActionType.SET_SOURCE_REGION, regionId: null, currentTroops: 0})
+            dispatchAttackMove({type: AttackActionType.SET_TARGET_REGION, regionId: null, currentTroops: 0})
+        },
+    }
+}
+
 
 const Game: React.FC = () => {
     const {session, signout, user} = useAuth()
 
 
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
+    const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
 
 
     const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
@@ -103,7 +167,10 @@ const Game: React.FC = () => {
 
             return {
                 ...layer,
-                onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState, deployMove, dispatchDeployMove),
+                onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState,
+                    deployMove, dispatchDeployMove,
+                    attackMove, dispatchAttackMove,
+                ),
                 troops: region.troops,
                 ownerIndex: owner.index,
             }
@@ -132,6 +199,12 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.DEPLOY &&
                 <DeployPopup {...getDeployPopupProps(
                     session, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove)}/>
+            }
+
+            {
+                gameState.phaseType === PhaseType.ATTACK &&
+                <AttackPopup {...getAttackPopupProps(
+                    session, gameState, attackMove, dispatchAttackMove)}/>
             }
 
             <StatusBar/>
