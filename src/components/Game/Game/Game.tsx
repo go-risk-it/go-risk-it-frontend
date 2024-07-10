@@ -8,7 +8,7 @@ import world from "../../../assets/risk.json"
 import {SVGMap} from "../Map/SVGMap.tsx"
 import {useGameState} from "../../../hooks/useGameState.tsx"
 import {DeployMove} from "../../../api/message/deployMove.ts"
-import {GameState, Phase} from "../../../api/message/gameState.ts"
+import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
 import {DeployAction, DeployActionType, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
@@ -19,11 +19,11 @@ import {Session} from "@supabase/supabase-js"
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
                        deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) => {
-    if (gameState.currentTurn % playersState.players.length !== thisPlayerState.index) {
+    if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
         return null
     }
-    switch (gameState.currentPhase) {
-        case Phase.DEPLOY:
+    switch (gameState.phaseType) {
+        case PhaseType.DEPLOY:
             return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
     }
 
@@ -33,14 +33,15 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
 const getDeployPopupProps = (
     session: Session,
     gameState: GameState,
+    phaseState: DeployPhaseState,
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
 ): DeployPopupProps => {
     return {
-        isVisible: gameState.currentPhase === Phase.DEPLOY && deployMove.regionId !== null,
+        isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
         region: deployMove.regionId || "",
         currentTroops: deployMove.currentTroops,
-        deployableTroops: gameState.deployableTroops,
+        deployableTroops: phaseState.deployableTroops,
         onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),
         onCancel: () => dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0}),
         onConfirm: () => {
@@ -76,8 +77,8 @@ const Game: React.FC = () => {
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
 
 
-    const {boardState, gameState, playersState, thisPlayerState} = useGameState()
-    if (!session || !boardState || !playersState || !thisPlayerState || !gameState || !user) {
+    const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
+    if (!session || !boardState || !playersState || !thisPlayerState || !gameState || !user || !phaseState) {
         return null
     }
 
@@ -109,7 +110,6 @@ const Game: React.FC = () => {
         }),
     }
 
-
     // sort regions layers: put the ones owned by this player last,
     // so they are rendered on top of other regions and animations are visible
     mapData.layers.sort((a, b) => {
@@ -128,7 +128,11 @@ const Game: React.FC = () => {
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
-            <DeployPopup {...getDeployPopupProps(session, gameState, deployMove, dispatchDeployMove)}/>
+            { /* show deploy popup only if phase is deploy*/
+                gameState.phaseType === PhaseType.DEPLOY &&
+                <DeployPopup {...getDeployPopupProps(
+                    session, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove)}/>
+            }
 
             <StatusBar/>
         </div>

@@ -1,13 +1,37 @@
-export enum Phase {
-    CARDS = "CARDS",
-    DEPLOY = "DEPLOY",
-    ATTACK = "ATTACK",
-    REINFORCE = "REINFORCE",
+export enum PhaseType {
+    CARDS = "cards",
+    DEPLOY = "deploy",
+    ATTACK = "attack",
+    CONQUER = "conquer",
+    REINFORCE = "reinforce",
 }
 
-export interface GameState {
-    gameId: number;
-    currentTurn: number;
-    currentPhase: Phase;
+export type EmptyState = Record<string, never>
+
+export interface DeployPhaseState {
     deployableTroops: number;
 }
+
+export interface ConquerPhaseState {
+    attackingRegionId: string;
+    defendingRegionId: string;
+    minTroopsToMove: number;
+}
+
+export type PhaseState = EmptyState | DeployPhaseState | ConquerPhaseState;
+
+export interface GameState {
+    id: number;
+    turn: number;
+    phaseType: PhaseType;
+}
+
+export interface GameStateAPI {
+    id: number;
+    turn: number;
+    phase: {
+        type: PhaseType;
+        state: PhaseState;
+    }
+}
+
