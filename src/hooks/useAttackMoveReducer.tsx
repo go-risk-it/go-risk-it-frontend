@@ -5,6 +5,7 @@ export enum AttackActionType {
     SET_SOURCE_REGION = "setSourceRegion",
     SET_TARGET_REGION = "setTargetRegion",
     SET_TROOPS = "setTroops",
+    RESET = "reset"
 }
 
 export interface SetAttackingRegionAction {
@@ -24,7 +25,11 @@ export interface SetTroopsAction {
     attackingTroops: number
 }
 
-export type AttackAction = SetAttackingRegionAction | SetDefendingRegionAction | SetTroopsAction
+export interface ResetAction {
+    type: AttackActionType.RESET
+}
+
+export type AttackAction = SetAttackingRegionAction | SetDefendingRegionAction | SetTroopsAction | ResetAction
 
 function attackMoveReducer(attackMove: AttackMove, action: AttackAction): AttackMove {
     switch (action.type) {
@@ -34,6 +39,14 @@ function attackMoveReducer(attackMove: AttackMove, action: AttackAction): Attack
             return {...attackMove, targetRegionId: action.regionId, troopsInTarget: action.currentTroops}
         case AttackActionType.SET_TROOPS:
             return {...attackMove, attackingTroops: action.attackingTroops}
+        case AttackActionType.RESET:
+            return {
+                sourceRegionId: null,
+                targetRegionId: null,
+                troopsInSource: 0,
+                troopsInTarget: 0,
+                attackingTroops: 0,
+            }
         default:
             throw Error("Unknown action: " + action)
     }

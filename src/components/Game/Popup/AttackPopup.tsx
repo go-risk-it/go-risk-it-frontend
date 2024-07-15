@@ -25,14 +25,16 @@ const AttackPopup: React.FC<AttackPopupProps> = (
     },
 ) => {
     if (!isVisible) {
+        console.log("AttackPopup not visible")
         return null
     }
+    console.log("AttackPopup visible")
 
     const maxAttackingTroops = Math.min(troopsInSource - 1, 3)
 
     return (
         <div
-            className={"risk-it-troop-attack-popup"}>
+            className="risk-it-move-popup">
             <h3>Attack from {sourceRegion} to {targetRegion}</h3>
             <p>Select number of attacking troops</p>
             <Slider

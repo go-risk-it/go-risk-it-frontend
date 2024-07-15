@@ -31,7 +31,7 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
             throw new Error("User is not authenticated")
         }
 
-        ws.current = new WebSocket("ws://localhost:8000/ws", ["risk-it.websocket.auth.token", session.access_token])
+        ws.current = new WebSocket(process.env.REACT_APP_WS_URL!, ["risk-it.websocket.auth.token", session.access_token])
 
         ws.current.onopen = () => {
             console.log("WS open")

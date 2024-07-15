@@ -4,6 +4,7 @@ import {DeployMove} from "../api/message/deployMove.ts"
 export enum DeployActionType {
     SET_REGION = "setRegion",
     SET_TROOPS = "setTroops",
+    RESET = "reset"
 }
 
 export interface SetRegionAction {
@@ -17,7 +18,11 @@ export interface SetTroopsAction {
     desiredTroops: number
 }
 
-export type DeployAction = SetRegionAction | SetTroopsAction
+export interface ResetAction {
+    type: DeployActionType.RESET
+}
+
+export type DeployAction = SetRegionAction | SetTroopsAction | ResetAction
 
 function deployMoveReducer(deployMove: DeployMove, action: DeployAction) {
     switch (action.type) {
@@ -27,6 +32,9 @@ function deployMoveReducer(deployMove: DeployMove, action: DeployAction) {
         case DeployActionType.SET_TROOPS:
             console.log("Reducer: Setting troops", action.desiredTroops)
             return {...deployMove, desiredTroops: action.desiredTroops}
+        case DeployActionType.RESET:
+            console.log("Reducer: Resetting")
+            return {regionId: null, currentTroops: 0, desiredTroops: 0}
         default:
             throw Error("Unknown action: " + action)
     }

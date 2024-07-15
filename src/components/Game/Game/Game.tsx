@@ -11,14 +11,14 @@ import {DeployMove} from "../../../api/message/deployMove.ts"
 import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
-import {DeployAction, DeployActionType, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
-import {onRegionClickDeploy} from "./deploy.ts"
-import DeployPopup, {DeployPopupProps} from "../Popup/DeployPopup.tsx"
-import {Session} from "@supabase/supabase-js"
-import {AttackAction, AttackActionType, useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
+import {DeployAction, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
+import {getDeployPopupProps, onRegionClickDeploy} from "./deploy.ts"
+import DeployPopup from "../Popup/DeployPopup.tsx"
+import {AttackAction, useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
 import {AttackMove} from "../../../api/message/attackMove.ts"
-import {onRegionClickAttack} from "./attack.ts"
+import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
 import AttackPopup from "../Popup/AttackPopup.tsx"
+import {useServerQuerier} from "../../../hooks/useServerQuerier.tsx"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
@@ -38,111 +38,18 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
     return null
 }
 
-const getDeployPopupProps = (
-    session: Session,
-    gameState: GameState,
-    phaseState: DeployPhaseState,
-    deployMove: DeployMove,
-    dispatchDeployMove: (action: DeployAction) => void,
-): DeployPopupProps => {
-    return {
-        isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
-        region: deployMove.regionId || "",
-        currentTroops: deployMove.currentTroops,
-        deployableTroops: phaseState.deployableTroops,
-        onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),
-        onCancel: () => dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0}),
-        onConfirm: () => {
-            console.log("Deploying", deployMove)
-            const body = JSON.stringify({
-                regionId: deployMove.regionId,
-                currentTroops: deployMove.currentTroops,
-                desiredTroops: deployMove.desiredTroops,
-            })
-            console.log("Body: ", body)
-            fetch("http://localhost:8000/api/v1/games/1/moves/deployments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${session.access_token}`,
-                },
-                body: body,
-            }).then(response => {
-                console.log("Deploy response: ", response)
-            }).catch(error => {
-                console.error("Error deploying: ", error)
-            })
-            dispatchDeployMove({type: DeployActionType.SET_REGION, regionId: null, currentTroops: 0})
-        },
-    }
-}
-
-const getAttackPopupProps = (
-    session: Session,
-    gameState: GameState,
-    attackMove: AttackMove,
-    dispatchAttackMove: (action: AttackAction) => void,
-) => {
-    return {
-        isVisible: gameState.phaseType === PhaseType.ATTACK && attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
-        sourceRegion: attackMove.sourceRegionId || "",
-        targetRegion: attackMove.targetRegionId || "",
-        troopsInSource: attackMove.troopsInSource,
-        onSetTroops: (attackingTroops: number) => dispatchAttackMove({
-            type: AttackActionType.SET_TROOPS,
-            attackingTroops,
-        }),
-        onCancel: () => {
-            dispatchAttackMove({
-                type: AttackActionType.SET_SOURCE_REGION,
-                regionId: null,
-                currentTroops: 0,
-            })
-            dispatchAttackMove({
-                type: AttackActionType.SET_TARGET_REGION,
-                regionId: null,
-                currentTroops: 0,
-            })
-        },
-        onConfirm: () => {
-            console.log("Attacking", attackMove)
-            const body = JSON.stringify({
-                sourceRegionId: attackMove.sourceRegionId,
-                targetRegionId: attackMove.targetRegionId,
-                troopsInSource: attackMove.troopsInSource,
-                troopsInTarget: attackMove.troopsInTarget,
-                attackingTroops: attackMove.attackingTroops,
-            })
-            console.log("Body: ", body)
-            fetch("http://localhost:8000/api/v1/games/1/moves/attacks", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${session.access_token}`,
-                },
-                body: body,
-            }).then(response => {
-                console.log("Attack response: ", response)
-            }).catch(error => {
-                console.error("Error attacking: ", error)
-            })
-            dispatchAttackMove({type: AttackActionType.SET_SOURCE_REGION, regionId: null, currentTroops: 0})
-            dispatchAttackMove({type: AttackActionType.SET_TARGET_REGION, regionId: null, currentTroops: 0})
-        },
-    }
-}
-
 
 const Game: React.FC = () => {
-    const {session, signout, user} = useAuth()
+    const {signout} = useAuth()
 
 
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
     const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
+    const {doDeploy, doAttack} = useServerQuerier()
 
 
     const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
-    if (!session || !boardState || !playersState || !thisPlayerState || !gameState || !user || !phaseState) {
+    if (!boardState || !playersState || !thisPlayerState || !gameState || !phaseState) {
         return null
     }
 
@@ -195,16 +102,16 @@ const Game: React.FC = () => {
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
-            { /* show deploy popup only if phase is deploy*/
+            {
                 gameState.phaseType === PhaseType.DEPLOY &&
                 <DeployPopup {...getDeployPopupProps(
-                    session, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove)}/>
+                    doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove)}/>
             }
 
             {
                 gameState.phaseType === PhaseType.ATTACK &&
                 <AttackPopup {...getAttackPopupProps(
-                    session, gameState, attackMove, dispatchAttackMove)}/>
+                    doAttack, gameState, attackMove, dispatchAttackMove)}/>
             }
 
             <StatusBar/>
