@@ -1,6 +1,6 @@
 import React from "react"
 
-import "./DeployPopup.css"
+import "./Popup.css"
 import {Slider} from "@mui/material"
 
 export interface DeployPopupProps {
@@ -31,7 +31,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
 
     return (
         <div
-            className="risk-it-troop-deployment-popup">
+            className="risk-it-move-popup">
             <h3>Deploy Troops on region {region}</h3>
             <p>Troops to Deploy: {deployableTroops}</p>
             <Slider

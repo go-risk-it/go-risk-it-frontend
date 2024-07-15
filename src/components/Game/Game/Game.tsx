@@ -13,12 +13,12 @@ import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
 import {DeployAction, DeployActionType, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
 import {onRegionClickDeploy} from "./deploy.ts"
-import DeployPopup, {DeployPopupProps} from "../DeployPopup/DeployPopup.tsx"
+import DeployPopup, {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 import {Session} from "@supabase/supabase-js"
 import {AttackAction, AttackActionType, useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
 import {AttackMove} from "../../../api/message/attackMove.ts"
 import {onRegionClickAttack} from "./attack.ts"
-import AttackPopup from "../AttackPopup/AttackPopup.tsx"
+import AttackPopup from "../Popup/AttackPopup.tsx"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,

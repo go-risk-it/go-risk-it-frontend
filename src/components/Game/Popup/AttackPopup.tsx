@@ -1,6 +1,6 @@
 import React from "react"
 
-import "./AttackPopup.css"
+import "./Popup.css"
 import {Slider} from "@mui/material"
 
 export interface AttackPopupProps {
