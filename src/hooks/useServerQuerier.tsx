@@ -1,17 +1,13 @@
 import {useAuth} from "./useAuth.tsx"
 import {DeployMove} from "../api/message/deployMove.ts"
 import {AttackMove} from "../api/message/attackMove.ts"
-import {useGameState} from "./useGameState.tsx"
+import {GameState} from "../api/message/gameState.ts"
 
 export const useServerQuerier = () => {
 
     const {session} = useAuth()
-    const {gameState} = useGameState()
     if (!session) {
         throw Error("Session not found")
-    }
-    if (!gameState) {
-        throw Error("Game state not found")
     }
 
     const doMove = async (move: unknown, url: string): Promise<Response> => {
@@ -26,11 +22,11 @@ export const useServerQuerier = () => {
         })
     }
 
-    const doDeploy = async (deployMove: DeployMove): Promise<Response> => {
+    const doDeploy = async (deployMove: DeployMove, gameState: GameState): Promise<Response> => {
         return doMove(deployMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/deployments`)
     }
 
-    const doAttack = async (attackMove: AttackMove): Promise<Response> => {
+    const doAttack = async (attackMove: AttackMove, gameState: GameState): Promise<Response> => {
         return doMove(attackMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/attacks`)
     }
 

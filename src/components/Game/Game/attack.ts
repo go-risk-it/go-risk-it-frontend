@@ -3,12 +3,8 @@ import {Region} from "../../../api/message/boardState.ts"
 import {AttackMove} from "../../../api/message/attackMove.ts"
 import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReducer.tsx"
 import {GameState, PhaseType} from "../../../api/message/gameState.ts"
+import Graph from "./Graph.ts"
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function isNeighbour(_: Region, __: string) {
-    // TODO: Implement this
-    return true
-}
 
 function setRegion(actionType: AttackActionType.SET_SOURCE_REGION | AttackActionType.SET_TARGET_REGION,
                    region: Region, dispatchAttackMove: (action: AttackAction) => void) {
@@ -23,7 +19,9 @@ function setRegion(actionType: AttackActionType.SET_SOURCE_REGION | AttackAction
 }
 
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
-                                    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void) {
+                                    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+                                    graph: Graph,
+) {
 
     if (attackMove.sourceRegionId === null) {
         if (region.ownerId === thisPlayerState.userId && region.troops > 1) {
@@ -32,7 +30,7 @@ export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region
     } else if (attackMove.targetRegionId === null) {
         if (region.ownerId === thisPlayerState.userId) {
             return setRegion(AttackActionType.SET_SOURCE_REGION, region, dispatchAttackMove)
-        } else if (isNeighbour(region, attackMove.sourceRegionId)) {
+        } else if (graph.areNeighbors(region.id, attackMove.sourceRegionId)) {
             return setRegion(AttackActionType.SET_TARGET_REGION, region, dispatchAttackMove)
         }
     }
@@ -41,7 +39,7 @@ export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region
 }
 
 export const getAttackPopupProps = (
-    doAttack: (attackMove: AttackMove) => Promise<Response>,
+    doAttack: (attackMove: AttackMove, gameState: GameState) => Promise<Response>,
     gameState: GameState,
     attackMove: AttackMove,
     dispatchAttackMove: (action: AttackAction) => void,
@@ -59,7 +57,7 @@ export const getAttackPopupProps = (
             dispatchAttackMove({type: AttackActionType.RESET})
         },
         onConfirm: () => {
-            doAttack(attackMove).then(response => {
+            doAttack(attackMove, gameState).then(response => {
                 console.log("Attack response: ", response)
             }).catch(error => {
                 console.error("Error attacking: ", error)

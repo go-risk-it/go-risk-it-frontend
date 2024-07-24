@@ -1,5 +1,4 @@
 import React from "react"
-import StatusBar from "../StatusBar/StatusBar.tsx"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
@@ -19,11 +18,13 @@ import {AttackMove} from "../../../api/message/attackMove.ts"
 import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
 import AttackPopup from "../Popup/AttackPopup.tsx"
 import {useServerQuerier} from "../../../hooks/useServerQuerier.tsx"
+import Graph from "./Graph.ts"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
                        deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void,
                        attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+                       graph: Graph,
 ) => {
     if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
         return null
@@ -32,7 +33,7 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
         case PhaseType.DEPLOY:
             return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
         case PhaseType.ATTACK:
-            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove)
+            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
     }
 
     return null
@@ -59,6 +60,8 @@ const Game: React.FC = () => {
             .map(region => region.id),
     )
 
+    const graph = new Graph(world.links, boardState)
+
     // add info to world.layers, i.e., the number of troops and the owner of each region
     const mapData = {
         ...world,
@@ -77,12 +80,14 @@ const Game: React.FC = () => {
                 onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState,
                     deployMove, dispatchDeployMove,
                     attackMove, dispatchAttackMove,
+                    graph,
                 ),
                 troops: region.troops,
                 ownerIndex: owner.index,
             }
         }),
     }
+
 
     // sort regions layers: put the ones owned by this player last,
     // so they are rendered on top of other regions and animations are visible
@@ -98,7 +103,7 @@ const Game: React.FC = () => {
 
     return (
         <div>
-            <h1>Go risk it!</h1>
+            {/*<h1>Go risk it!</h1>*/}
             <Button onClick={signout}>Sign out</Button>
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
@@ -114,7 +119,7 @@ const Game: React.FC = () => {
                     doAttack, gameState, attackMove, dispatchAttackMove)}/>
             }
 
-            <StatusBar/>
+            {/*<StatusBar/>*/}
         </div>
     )
 }

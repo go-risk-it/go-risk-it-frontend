@@ -21,7 +21,7 @@ export function onRegionClickDeploy(thisPlayerState: PlayerState, region: Region
 }
 
 export const getDeployPopupProps = (
-    doDeploy: (deployMove: DeployMove) => Promise<Response>,
+    doDeploy: (deployMove: DeployMove, gameState: GameState) => Promise<Response>,
     gameState: GameState,
     phaseState: DeployPhaseState,
     deployMove: DeployMove,
@@ -35,7 +35,7 @@ export const getDeployPopupProps = (
         onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),
         onCancel: () => dispatchDeployMove({type: DeployActionType.RESET}),
         onConfirm: () => {
-            doDeploy(deployMove).then(response => {
+            doDeploy(deployMove, gameState).then(response => {
                 console.log("Deploy response: ", response)
             }).catch(error => {
                 console.error("Error deploying: ", error)
