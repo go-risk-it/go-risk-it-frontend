@@ -41,7 +41,7 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
             <p>Select number of troops to move</p>
             <Slider
                 aria-label="Desired Troops"
-                key={`slider-attacking-${troopsInSource}`}
+                key={`slider-conquer-${troopsInSource}`}
                 defaultValue={1}
                 valueLabelDisplay="on"
                 shiftStep={5}

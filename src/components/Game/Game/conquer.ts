@@ -28,7 +28,7 @@ export const getConquerPopupProps = (
             doConquer(conquerMove, gameState).then(response => {
                 console.log("Conquer response: ", response)
             }).catch(error => {
-                console.error("Error attacking: ", error)
+                console.error("Error conquering: ", error)
             })
         },
     }
