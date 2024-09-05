@@ -7,7 +7,7 @@ import world from "../../../assets/risk.json"
 import {SVGMap} from "../Map/SVGMap.tsx"
 import {useGameState} from "../../../hooks/useGameState.tsx"
 import {DeployMove} from "../../../api/message/deployMove.ts"
-import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
+import {ConquerPhaseState, DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
 import {DeployAction, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
@@ -19,6 +19,9 @@ import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
 import AttackPopup from "../Popup/AttackPopup.tsx"
 import {useServerQuerier} from "../../../hooks/useServerQuerier.tsx"
 import Graph from "./Graph.ts"
+import ConquerPopup from "../Popup/ConquerPopup.tsx"
+import {getConquerPopupProps} from "./conquer.ts"
+import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.tsx"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
@@ -46,7 +49,8 @@ const Game: React.FC = () => {
 
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
     const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
-    const {doDeploy, doAttack} = useServerQuerier()
+    const {conquerMove, dispatchConquerMove} = useConquerMoveReducer()
+    const {doDeploy, doAttack, doConquer} = useServerQuerier()
 
 
     const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
@@ -117,6 +121,13 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.ATTACK &&
                 <AttackPopup {...getAttackPopupProps(
                     doAttack, gameState, attackMove, dispatchAttackMove)}/>
+            }
+
+            {
+                gameState.phaseType === PhaseType.CONQUER &&
+                <ConquerPopup {...getConquerPopupProps(
+                    doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove)
+                }/>
             }
 
             {/*<StatusBar/>*/}
