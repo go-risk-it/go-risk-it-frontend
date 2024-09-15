@@ -30,6 +30,7 @@ export const getConquerPopupProps = (
             }).catch(error => {
                 console.error("Error conquering: ", error)
             })
+            dispatchConquerMove({type: ConquerActionType.RESET})
         },
     }
 }

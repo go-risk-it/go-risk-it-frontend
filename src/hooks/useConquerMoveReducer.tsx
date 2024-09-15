@@ -11,21 +11,27 @@ export interface SetTroopsAction {
     troops: number
 }
 
-export type ConquerAction = SetTroopsAction
+export interface ResetAction {
+    type: ConquerActionType.RESET
+}
+
+export type ConquerAction = SetTroopsAction | ResetAction
+
+const initialState = {troops: 1};
 
 function conquerMoveReducer(conquerMove: ConquerMove, action: ConquerAction): ConquerMove {
     switch (action.type) {
         case ConquerActionType.SET_TROOPS:
             return {...conquerMove, troops: action.troops}
+        case ConquerActionType.RESET:
+            return initialState
         default:
             throw Error("Unknown action: " + action)
     }
 }
 
 export const useConquerMoveReducer = () => {
-    const [conquerMove, dispatchConquerMove] = React.useReducer(conquerMoveReducer, {
-        troops: 0,
-    })
+    const [conquerMove, dispatchConquerMove] = React.useReducer(conquerMoveReducer, initialState)
 
     return {conquerMove, dispatchConquerMove}
 }

@@ -31,6 +31,14 @@ export interface ResetAction {
 
 export type AttackAction = SetAttackingRegionAction | SetDefendingRegionAction | SetTroopsAction | ResetAction
 
+const initialState = {
+    sourceRegionId: null,
+    targetRegionId: null,
+    troopsInSource: 0,
+    troopsInTarget: 0,
+    attackingTroops: 1,
+};
+
 function attackMoveReducer(attackMove: AttackMove, action: AttackAction): AttackMove {
     switch (action.type) {
         case AttackActionType.SET_SOURCE_REGION:
@@ -40,26 +48,14 @@ function attackMoveReducer(attackMove: AttackMove, action: AttackAction): Attack
         case AttackActionType.SET_TROOPS:
             return {...attackMove, attackingTroops: action.attackingTroops}
         case AttackActionType.RESET:
-            return {
-                sourceRegionId: null,
-                targetRegionId: null,
-                troopsInSource: 0,
-                troopsInTarget: 0,
-                attackingTroops: 0,
-            }
+            return initialState
         default:
             throw Error("Unknown action: " + action)
     }
 }
 
 export const useAttackMoveReducer = () => {
-    const [attackMove, dispatchAttackMove] = React.useReducer(attackMoveReducer, {
-        sourceRegionId: null,
-        targetRegionId: null,
-        troopsInSource: 0,
-        troopsInTarget: 0,
-        attackingTroops: 0,
-    })
+    const [attackMove, dispatchAttackMove] = React.useReducer(attackMoveReducer, initialState)
 
     return {attackMove, dispatchAttackMove}
 }
