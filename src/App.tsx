@@ -19,8 +19,8 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={
                         <ProtectedRoute>
-                            <WebsocketProvider>
-                                <GameStateProvider gameId={1}>
+                            <WebsocketProvider gameId={1}>
+                                <GameStateProvider>
                                     <Game/>
                                 </GameStateProvider>
                             </WebsocketProvider>

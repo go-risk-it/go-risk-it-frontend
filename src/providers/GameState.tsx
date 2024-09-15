@@ -21,9 +21,8 @@ export const GameStateContext = createContext<{
 })
 
 // arguments of GameStateProvider are
-// gameId: int
 // children: ReactElement
-export const GameStateProvider = ({gameId, children}: { gameId: number, children: ReactElement }) => {
+export const GameStateProvider = ({children}: { children: ReactElement }) => {
     const {subscribe, unsubscribe} = useContext(WebsocketContext)
     const {session} = useAuth()
     // backend states
@@ -34,7 +33,7 @@ export const GameStateProvider = ({gameId, children}: { gameId: number, children
     const [phaseState, setPhaseState] = useState<PhaseState | null>(null)
 
     useEffect(() => {
-        subscribe("game", gameId, (msg: WebsocketMessage) => {
+        subscribe("game", (msg: WebsocketMessage) => {
             if (msg.type === "boardState") {
                 console.log("Received board state: ", msg.data)
                 setBoardState(msg.data)
@@ -64,7 +63,7 @@ export const GameStateProvider = ({gameId, children}: { gameId: number, children
         return () => {
             unsubscribe("game")
         }
-    }, [session, gameId, subscribe, unsubscribe])
+    }, [session, subscribe, unsubscribe])
 
 
     return (

@@ -10,7 +10,7 @@ export interface WebsocketMessage {
 const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState"])
 
 export const WebsocketContext = createContext<{
-    subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => void
+    subscribe: (topic: string, callback: (data: WebsocketMessage) => void) => void
     unsubscribe: (topic: string) => void
 }>({
     subscribe: () => {
@@ -19,7 +19,7 @@ export const WebsocketContext = createContext<{
     },
 })
 
-export const WebsocketProvider = ({children}: { children: ReactElement }) => {
+export const WebsocketProvider = ({gameId, children}: { gameId: number, children: ReactElement }) => {
     const {session} = useAuth()
     const ws = useRef<WebSocket | null>(null)
     const topics = useRef<Map<string, (data: WebsocketMessage) => void>>(new Map<string, (data: WebsocketMessage) => void>())
@@ -31,7 +31,7 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
             throw new Error("User is not authenticated")
         }
 
-        ws.current = new WebSocket(process.env.REACT_APP_WS_URL!, ["risk-it.websocket.auth.token", session.access_token])
+        ws.current = new WebSocket(process.env.REACT_APP_WS_URL! + "?gameID=" + gameId, ["risk-it.websocket.auth.token", session.access_token])
 
         ws.current.onopen = () => {
             console.log("WS open")
@@ -61,9 +61,8 @@ export const WebsocketProvider = ({children}: { children: ReactElement }) => {
     return (
         <WebsocketContext.Provider
             value={{
-                subscribe: (topic: string, gameId: number, callback: (data: WebsocketMessage) => void) => {
+                subscribe: (topic: string, callback: (data: WebsocketMessage) => void) => {
                     topics.current.set(topic, callback)
-                    ws.current?.send(JSON.stringify({type: "subscribe", data: {gameId: gameId}}))
                 },
                 unsubscribe: (topic: string) => {
                     topics.current.delete(topic)
