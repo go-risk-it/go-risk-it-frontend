@@ -116,7 +116,6 @@ const Game: React.FC = () => {
     const getSvgPathForRegion = (regionId: string) => {
         const layer = world.layers.find(l => l.id === regionId);
         if (layer) {
-            console.log(`SVG path for ${regionId}:`, layer.d); // Add this log
             return layer.d;
         }
         console.warn(`No SVG path found for region ${regionId}`); // Add this warning

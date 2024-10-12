@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 import RegionDisplay from '../RegionDisplay/RegionDisplay';
+import Box from '@mui/material/Box';
 
 import "./Popup.css"
 
@@ -60,9 +61,11 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         <Dialog open={isVisible} onClose={onConfirm}>
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
-                <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} />
-                <Typography>(Troops: {troopsInSource})</Typography>
-                <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} />
+                <Box display="flex" justifyContent="space-between" mb={2}>
+                    <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} troops={troopsInSource - troopsToMove} />
+                    <Typography variant="h6" alignSelf="center">→</Typography>
+                    <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} troops={troopsToMove} />
+                </Box>
                 <Slider
                     value={troopsToMove}
                     onChange={(_, newValue) => handleTroopsChange(newValue as number)}
@@ -75,12 +78,6 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 />
                 <Typography gutterBottom>
                     Troops to Move: {troopsToMove}
-                </Typography>
-                <Typography>
-                    New troops in <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} />: {troopsInSource - troopsToMove}
-                </Typography>
-                <Typography>
-                    New troops in <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} />: {troopsToMove}
                 </Typography>
             </DialogContent>
             <DialogActions>

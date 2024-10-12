@@ -5,19 +5,6 @@ import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReduce
 import {GameState, PhaseType} from "../../../api/message/gameState.ts"
 import Graph from "./Graph.ts"
 
-
-function setRegion(actionType: AttackActionType.SET_SOURCE_REGION | AttackActionType.SET_TARGET_REGION,
-                   region: Region, dispatchAttackMove: (action: AttackAction) => void) {
-    return () => {
-        console.log(actionType, region.id, region.troops)
-        dispatchAttackMove({
-            type: actionType,
-            regionId: region.id,
-            currentTroops: region.troops,
-        })
-    }
-}
-
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
                                     attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
                                     graph: Graph) {
@@ -61,6 +48,7 @@ export const getAttackPopupProps = (
         sourceSvgPath: attackMove.sourceRegionId ? getSvgPathForRegion(attackMove.sourceRegionId) : "",
         targetSvgPath: attackMove.targetRegionId ? getSvgPathForRegion(attackMove.targetRegionId) : "",
         troopsInSource: attackMove.troopsInSource,
+        troopsInTarget: attackMove.troopsInTarget,
         onSetTroops: (attackingTroops: number) => dispatchAttackMove({
             type: AttackActionType.SET_TROOPS,
             attackingTroops,

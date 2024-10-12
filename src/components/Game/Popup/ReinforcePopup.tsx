@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 import RegionDisplay from '../RegionDisplay/RegionDisplay';
+import Box from '@mui/material/Box';
 
 interface ReinforcePopupProps {
     isOpen: boolean;
@@ -47,10 +48,11 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
         <Dialog open={isOpen} onClose={onCancel}>
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
-                <RegionDisplay regionId={sourceRegionId} svgPath={sourceRegionSvgPath} />
-                <Typography>(Troops: {troopsInSource - movingTroops})</Typography>
-                <RegionDisplay regionId={targetRegionId} svgPath={targetRegionSvgPath} />
-                <Typography>(Troops: {troopsInTarget + movingTroops})</Typography>
+                <Box display="flex" justifyContent="space-between" mb={2}>
+                    <RegionDisplay regionId={sourceRegionId} svgPath={sourceRegionSvgPath} troops={troopsInSource - movingTroops} />
+                    <Typography variant="h6" alignSelf="center">→</Typography>
+                    <RegionDisplay regionId={targetRegionId} svgPath={targetRegionSvgPath} troops={troopsInTarget + movingTroops} />
+                </Box>
                 <Slider
                     value={movingTroops}
                     onChange={(_, newValue) => onMovingTroopsChange(Math.max(1, newValue as number))}

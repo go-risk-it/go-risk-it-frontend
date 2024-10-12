@@ -5,9 +5,10 @@ import Box from '@mui/material/Box';
 interface RegionDisplayProps {
   regionId: string;
   svgPath: string;
+  troops?: number;
 }
 
-const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath }) => {
+const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath, troops }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -24,8 +25,8 @@ const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath }) => {
   }, [svgPath]);
 
   return (
-    <Box display="flex" alignItems="center">
-      <svg ref={svgRef} width="50" height="50">
+    <Box display="flex" flexDirection="column" alignItems="center">
+      <svg ref={svgRef} width="80" height="80">
         <path
           d={svgPath}
           fill="#ccc"
@@ -33,7 +34,8 @@ const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath }) => {
           strokeWidth="1"
         />
       </svg>
-      <Typography style={{ marginLeft: '10px' }}>{regionId}</Typography>
+      <Typography variant="subtitle2">{regionId}</Typography>
+      {troops !== undefined && <Typography variant="body2">Troops: {troops}</Typography>}
     </Box>
   );
 };
