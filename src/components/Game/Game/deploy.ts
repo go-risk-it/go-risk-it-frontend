@@ -6,18 +6,13 @@ import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameS
 import {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 
 export function onRegionClickDeploy(thisPlayerState: PlayerState, region: Region, deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) {
-    if (thisPlayerState.userId === region?.ownerId && deployMove.regionId === null) {
-        return () => {
-            console.log("Setting region", region.id, region.troops)
-            dispatchDeployMove({
-                type: DeployActionType.SET_REGION,
-                regionId: region.id,
-                currentTroops: region.troops,
-            })
-        }
+    if (thisPlayerState.userId === region.ownerId && deployMove.regionId === null) {
+        dispatchDeployMove({
+            type: DeployActionType.SET_REGION,
+            regionId: region.id,
+            currentTroops: region.troops,
+        });
     }
-
-    return null
 }
 
 export const getDeployPopupProps = (

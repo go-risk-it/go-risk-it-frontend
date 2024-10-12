@@ -1,7 +1,13 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 
 import "./Popup.css"
-import {Slider} from "@mui/material"
 
 export interface ConquerPopupProps {
     isVisible: boolean
@@ -24,43 +30,57 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         onConfirm,
     },
 ) => {
-    const [newTroopsInSource, setNewTroopsInSource] = useState(troopsInSource - minTroopsToMove)
-    const [newTroopsInTarget, setNewTroopsInTarget] = useState(minTroopsToMove)
+    // Initialize troopsToMove with minTroopsToMove
+    const [troopsToMove, setTroopsToMove] = useState(minTroopsToMove);
+    const maxTroopsToMove = troopsInSource - 1;
+
+    // Use useEffect to update troopsToMove when minTroopsToMove changes
+    useEffect(() => {
+        setTroopsToMove(minTroopsToMove);
+    }, [minTroopsToMove]);
+
+    useEffect(() => {
+        onSetTroops(troopsToMove);
+    }, [troopsToMove, onSetTroops]);
+
+    const handleTroopsChange = (newValue: number) => {
+        setTroopsToMove(newValue);
+    };
+
     if (!isVisible) {
-        console.log("ConquerPopup not visible")
         return null
     }
-    console.log("ConquerPopup visible")
-
-    const maxTroopsToMove = troopsInSource - 1
 
     return (
-        <div
-            className="risk-it-move-popup">
-            <h3>Conquer from {sourceRegion} to {targetRegion}</h3>
-            <p>Select number of troops to move</p>
-            <Slider
-                aria-label="Desired Troops"
-                key={`slider-conquer-${troopsInSource}`}
-                defaultValue={1}
-                valueLabelDisplay="on"
-                shiftStep={5}
-                step={1}
-                marks
-                min={minTroopsToMove}
-                max={maxTroopsToMove}
-                onChange={(_, value) => {
-                    onSetTroops(value as number)
-                    setNewTroopsInSource(troopsInSource - (value as number))
-                    setNewTroopsInTarget(value as number)
-                }
-                }
-            />
-            <h4>New troops in source region: {newTroopsInSource}</h4>
-            <h4>New troops in target region: {newTroopsInTarget}</h4>
-            <button onClick={onConfirm}>Conquer</button>
-        </div>
-
+        <Dialog open={isVisible} onClose={onConfirm}>
+            <DialogTitle>Conquer</DialogTitle>
+            <DialogContent>
+                <Typography>From: {sourceRegion} (Troops: {troopsInSource})</Typography>
+                <Typography>To: {targetRegion}</Typography>
+                <Slider
+                    value={troopsToMove}
+                    onChange={(_, newValue) => handleTroopsChange(newValue as number)}
+                    min={minTroopsToMove}
+                    max={maxTroopsToMove}
+                    step={1}
+                    marks
+                    valueLabelDisplay="auto"
+                    disabled={minTroopsToMove === maxTroopsToMove}
+                />
+                <Typography gutterBottom>
+                    Troops to Move: {troopsToMove}
+                </Typography>
+                <Typography>
+                    New troops in {sourceRegion}: {troopsInSource - troopsToMove}
+                </Typography>
+                <Typography>
+                    New troops in {targetRegion}: {troopsToMove}
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onConfirm}>Conquer</Button>
+            </DialogActions>
+        </Dialog>
     )
 }
 

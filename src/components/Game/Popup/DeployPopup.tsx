@@ -1,7 +1,13 @@
 import React from "react"
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 
 import "./Popup.css"
-import {Slider} from "@mui/material"
 
 export interface DeployPopupProps {
     isVisible: boolean
@@ -24,32 +30,39 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         onConfirm,
     },
 ) => {
+    const [desiredTroops, setDesiredTroops] = React.useState(currentTroops);
 
-    if (!isVisible) {
-        return null
-    }
+    const handleTroopsChange = (newValue: number) => {
+        setDesiredTroops(newValue);
+        onSetTroops(newValue);
+    };
 
     return (
-        <div
-            className="risk-it-move-popup">
-            <h3>Deploy Troops on region {region}</h3>
-            <p>Troops to Deploy: {deployableTroops}</p>
-            <Slider
-                aria-label="Desired Troops"
-                key={`slider-${currentTroops}`}
-                defaultValue={currentTroops}
-                valueLabelDisplay="on"
-                shiftStep={5}
-                step={1}
-                marks
-                min={currentTroops}
-                max={currentTroops + deployableTroops}
-                onChange={(_, value) => onSetTroops(value as number)}
-            />
-            <button onClick={onCancel}>Cancel</button>
-            <button onClick={onConfirm}>Deploy</button>
-        </div>
-    )
-}
+        <Dialog open={isVisible} onClose={onCancel}>
+            <DialogTitle>Deploy Troops</DialogTitle>
+            <DialogContent>
+                <Typography>Region: {region}</Typography>
+                <Typography>Current Troops: {currentTroops}</Typography>
+                <Typography>Troops to Deploy: {deployableTroops}</Typography>
+                <Slider
+                    value={desiredTroops}
+                    onChange={(_, newValue) => handleTroopsChange(newValue as number)}
+                    min={currentTroops}
+                    max={currentTroops + deployableTroops}
+                    step={1}
+                    marks
+                    valueLabelDisplay="auto"
+                />
+                <Typography gutterBottom>
+                    Total Troops After Deployment: {desiredTroops}
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onCancel}>Cancel</Button>
+                <Button onClick={onConfirm}>Deploy</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
 
 export default DeployPopup

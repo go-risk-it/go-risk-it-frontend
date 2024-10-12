@@ -20,22 +20,31 @@ function setRegion(actionType: AttackActionType.SET_SOURCE_REGION | AttackAction
 
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
                                     attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
-                                    graph: Graph,
-) {
-
-    if (attackMove.sourceRegionId === null) {
+                                    graph: Graph) {
+    console.log("onRegionClickAttack", attackMove, region)
+    if (!attackMove.sourceRegionId) {
         if (region.ownerId === thisPlayerState.userId && region.troops > 1) {
-            return setRegion(AttackActionType.SET_SOURCE_REGION, region, dispatchAttackMove)
+            dispatchAttackMove({
+                type: AttackActionType.SET_SOURCE_REGION,
+                regionId: region.id,
+                currentTroops: region.troops,
+            });
         }
-    } else if (attackMove.targetRegionId === null) {
+    } else if (!attackMove.targetRegionId) {
         if (region.ownerId === thisPlayerState.userId) {
-            return setRegion(AttackActionType.SET_SOURCE_REGION, region, dispatchAttackMove)
+            dispatchAttackMove({
+                type: AttackActionType.SET_SOURCE_REGION,
+                regionId: region.id,
+                currentTroops: region.troops,
+            });
         } else if (graph.areNeighbors(region.id, attackMove.sourceRegionId)) {
-            return setRegion(AttackActionType.SET_TARGET_REGION, region, dispatchAttackMove)
+            dispatchAttackMove({
+                type: AttackActionType.SET_TARGET_REGION,
+                regionId: region.id,
+                currentTroops: region.troops,
+            });
         }
     }
-
-    return null
 }
 
 export const getAttackPopupProps = (

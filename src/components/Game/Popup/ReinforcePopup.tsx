@@ -32,9 +32,6 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
 }) => {
     const maxMovableTroops = Math.max(1, troopsInSource - 1);
     
-    const displaySourceTroops = troopsInSource - movingTroops;
-    const displayTargetTroops = troopsInTarget + movingTroops;
-
     React.useEffect(() => {
         if (movingTroops < 1) {
             onMovingTroopsChange(1);
@@ -45,8 +42,8 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
         <Dialog open={isOpen} onClose={onCancel}>
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
-                <p>From: {sourceRegionId} (Troops: {displaySourceTroops})</p>
-                <p>To: {targetRegionId} (Troops: {displayTargetTroops})</p>
+                <p>From: {sourceRegionId} (Troops: {troopsInSource - movingTroops})</p>
+                <p>To: {targetRegionId} (Troops: {troopsInTarget + movingTroops})</p>
                 <Slider
                     value={movingTroops}
                     onChange={(_, newValue) => onMovingTroopsChange(Math.max(1, newValue as number))}

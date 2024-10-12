@@ -20,12 +20,12 @@ import AttackPopup from "../Popup/AttackPopup.tsx"
 import {useServerQuerier} from "../../../hooks/useServerQuerier.tsx"
 import Graph from "./Graph.ts"
 import ConquerPopup from "../Popup/ConquerPopup.tsx"
-import {getConquerPopupProps} from "./conquer.ts"
 import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.tsx"
 import {ReinforceAction, useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.tsx"
 import {ReinforceMove} from "../../../api/message/reinforceMove.ts"
 import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
 import ReinforcePopup from "../Popup/ReinforcePopup.tsx"
+import { getConquerPopupProps } from "./conquer.ts"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
@@ -120,9 +120,11 @@ const Game: React.FC = () => {
             <SVGMap {...mapData} className="risk-it-map-container"/>
 
             {
-                gameState.phaseType === PhaseType.DEPLOY &&
-                <DeployPopup {...getDeployPopupProps(
-                    doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove)}/>
+                gameState.phaseType === PhaseType.DEPLOY && (
+                    <DeployPopup {...getDeployPopupProps(
+                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove
+                    )} />
+                )
             }
 
             {

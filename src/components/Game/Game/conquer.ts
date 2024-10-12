@@ -13,24 +13,34 @@ export const getConquerPopupProps = (
     conquerMove: ConquerMove,
     dispatchConquerMove: (action: ConquerAction) => void,
 ): ConquerPopupProps => {
-    const troopsInSource = boardState.regions.find(region => region.id === phaseState.attackingRegionId)?.troops
+    const troopsInSource = boardState.regions.find(region => region.id === phaseState.attackingRegionId)?.troops || 0;
+
+    const onSetTroops = (troopsToMove: number) => {
+        // Only dispatch if the troops have actually changed
+        if (troopsToMove !== conquerMove.troops) {
+            dispatchConquerMove({
+                type: ConquerActionType.SET_TROOPS,
+                troops: troopsToMove,
+            });
+        }
+    };
+
+    const onConfirm = () => {
+        doConquer(conquerMove, gameState).then(response => {
+            console.log("Conquer response: ", response)
+        }).catch(error => {
+            console.error("Error conquering: ", error)
+        });
+        dispatchConquerMove({type: ConquerActionType.RESET});
+    };
+
     return {
         isVisible: gameState.phaseType === PhaseType.CONQUER,
         sourceRegion: phaseState.attackingRegionId,
         targetRegion: phaseState.defendingRegionId,
-        troopsInSource: troopsInSource || 0,
+        troopsInSource,
         minTroopsToMove: phaseState.minTroopsToMove,
-        onSetTroops: (troopsToMove: number) => dispatchConquerMove({
-            type: ConquerActionType.SET_TROOPS,
-            troops: troopsToMove,
-        }),
-        onConfirm: () => {
-            doConquer(conquerMove, gameState).then(response => {
-                console.log("Conquer response: ", response)
-            }).catch(error => {
-                console.error("Error conquering: ", error)
-            })
-            dispatchConquerMove({type: ConquerActionType.RESET})
-        },
-    }
-}
+        onSetTroops,
+        onConfirm,
+    };
+};
