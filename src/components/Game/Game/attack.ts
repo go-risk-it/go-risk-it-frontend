@@ -52,11 +52,14 @@ export const getAttackPopupProps = (
     gameState: GameState,
     attackMove: AttackMove,
     dispatchAttackMove: (action: AttackAction) => void,
+    getSvgPathForRegion: (regionId: string) => string,
 ) => {
     return {
         isVisible: gameState.phaseType === PhaseType.ATTACK && attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
         sourceRegion: attackMove.sourceRegionId || "",
         targetRegion: attackMove.targetRegionId || "",
+        sourceSvgPath: attackMove.sourceRegionId ? getSvgPathForRegion(attackMove.sourceRegionId) : "",
+        targetSvgPath: attackMove.targetRegionId ? getSvgPathForRegion(attackMove.targetRegionId) : "",
         troopsInSource: attackMove.troopsInSource,
         onSetTroops: (attackingTroops: number) => dispatchAttackMove({
             type: AttackActionType.SET_TROOPS,

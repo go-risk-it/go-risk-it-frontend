@@ -27,12 +27,15 @@ export const getReinforcePopupProps = (
     doReinforce: (reinforceMove: ReinforceMove, gameState: GameState) => Promise<Response>,
     reinforceMove: ReinforceMove,
     gameState: GameState,
-    dispatchReinforceMove: (action: ReinforceAction) => void
+    dispatchReinforceMove: (action: ReinforceAction) => void,
+    getSvgPathForRegion: (regionId: string) => string
 ) => {
     return {
         isOpen: !!reinforceMove.sourceRegionId && !!reinforceMove.targetRegionId,
         sourceRegionId: reinforceMove.sourceRegionId,
         targetRegionId: reinforceMove.targetRegionId,
+        sourceRegionSvgPath: reinforceMove.sourceRegionId ? getSvgPathForRegion(reinforceMove.sourceRegionId) : "",
+        targetRegionSvgPath: reinforceMove.targetRegionId ? getSvgPathForRegion(reinforceMove.targetRegionId) : "",
         troopsInSource: reinforceMove.troopsInSource,
         troopsInTarget: reinforceMove.troopsInTarget,
         movingTroops: reinforceMove.movingTroops,

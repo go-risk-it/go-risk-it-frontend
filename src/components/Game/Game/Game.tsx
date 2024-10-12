@@ -113,6 +113,16 @@ const Game: React.FC = () => {
         return 0
     })
 
+    const getSvgPathForRegion = (regionId: string) => {
+        const layer = world.layers.find(l => l.id === regionId);
+        if (layer) {
+            console.log(`SVG path for ${regionId}:`, layer.d); // Add this log
+            return layer.d;
+        }
+        console.warn(`No SVG path found for region ${regionId}`); // Add this warning
+        return '';
+    };
+
     return (
         <div>
             {/*<h1>Go risk it!</h1>*/}
@@ -122,7 +132,7 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.DEPLOY && (
                     <DeployPopup {...getDeployPopupProps(
-                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove
+                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion
                     )} />
                 )
             }
@@ -130,20 +140,22 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.ATTACK &&
                 <AttackPopup {...getAttackPopupProps(
-                    doAttack, gameState, attackMove, dispatchAttackMove)}/>
+                    doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion)}
+                />
             }
 
             {
                 gameState.phaseType === PhaseType.CONQUER &&
                 <ConquerPopup {...getConquerPopupProps(
-                    doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove)
+                    doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion)
                 }/>
             }
 
             {
                 gameState.phaseType === PhaseType.REINFORCE &&
                 <ReinforcePopup {...getReinforcePopupProps(
-                    doReinforce, reinforceMove, gameState, dispatchReinforceMove)}/>
+                    doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion)}
+                />
             }
 
             {/*<StatusBar/>*/}

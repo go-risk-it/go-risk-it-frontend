@@ -21,10 +21,12 @@ export const getDeployPopupProps = (
     phaseState: DeployPhaseState,
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
+    getSvgPathForRegion: (regionId: string) => string,
 ): DeployPopupProps => {
     return {
         isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
         region: deployMove.regionId || "",
+        regionSvgPath: deployMove.regionId ? getSvgPathForRegion(deployMove.regionId) : "",
         currentTroops: deployMove.currentTroops,
         deployableTroops: phaseState.deployableTroops,
         onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),

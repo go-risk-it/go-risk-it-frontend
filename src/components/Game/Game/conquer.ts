@@ -12,6 +12,7 @@ export const getConquerPopupProps = (
     boardState: BoardState,
     conquerMove: ConquerMove,
     dispatchConquerMove: (action: ConquerAction) => void,
+    getSvgPathForRegion: (regionId: string) => string,
 ): ConquerPopupProps => {
     const troopsInSource = boardState.regions.find(region => region.id === phaseState.attackingRegionId)?.troops || 0;
 
@@ -38,6 +39,8 @@ export const getConquerPopupProps = (
         isVisible: gameState.phaseType === PhaseType.CONQUER,
         sourceRegion: phaseState.attackingRegionId,
         targetRegion: phaseState.defendingRegionId,
+        sourceSvgPath: getSvgPathForRegion(phaseState.attackingRegionId),
+        targetSvgPath: getSvgPathForRegion(phaseState.defendingRegionId),
         troopsInSource,
         minTroopsToMove: phaseState.minTroopsToMove,
         onSetTroops,

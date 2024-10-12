@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import RegionDisplay from '../RegionDisplay/RegionDisplay';
 
 interface ReinforcePopupProps {
     isOpen: boolean;
@@ -17,6 +18,8 @@ interface ReinforcePopupProps {
     onMovingTroopsChange: (troops: number) => void;
     onConfirm: () => void;
     onCancel: () => void;
+    sourceRegionSvgPath: string;
+    targetRegionSvgPath: string;
 }
 
 const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
@@ -29,6 +32,8 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
     onMovingTroopsChange,
     onConfirm,
     onCancel,
+    sourceRegionSvgPath,
+    targetRegionSvgPath,
 }) => {
     const maxMovableTroops = Math.max(1, troopsInSource - 1);
     
@@ -42,8 +47,10 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
         <Dialog open={isOpen} onClose={onCancel}>
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
-                <p>From: {sourceRegionId} (Troops: {troopsInSource - movingTroops})</p>
-                <p>To: {targetRegionId} (Troops: {troopsInTarget + movingTroops})</p>
+                <RegionDisplay regionId={sourceRegionId} svgPath={sourceRegionSvgPath} />
+                <Typography>(Troops: {troopsInSource - movingTroops})</Typography>
+                <RegionDisplay regionId={targetRegionId} svgPath={targetRegionSvgPath} />
+                <Typography>(Troops: {troopsInTarget + movingTroops})</Typography>
                 <Slider
                     value={movingTroops}
                     onChange={(_, newValue) => onMovingTroopsChange(Math.max(1, newValue as number))}

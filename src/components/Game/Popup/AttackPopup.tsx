@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import RegionDisplay from '../RegionDisplay/RegionDisplay';
 
 import "./Popup.css"
 
@@ -14,6 +15,8 @@ export interface AttackPopupProps {
     sourceRegion: string
     targetRegion: string
     troopsInSource: number
+    sourceSvgPath: string
+    targetSvgPath: string
     onSetTroops: (attackingTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
@@ -25,6 +28,8 @@ const AttackPopup: React.FC<AttackPopupProps> = (
         sourceRegion,
         targetRegion,
         troopsInSource,
+        sourceSvgPath,
+        targetSvgPath,
         onSetTroops,
         onCancel,
         onConfirm,
@@ -47,8 +52,9 @@ const AttackPopup: React.FC<AttackPopupProps> = (
         <Dialog open={isVisible} onClose={onCancel}>
             <DialogTitle>Attack</DialogTitle>
             <DialogContent>
-                <Typography>From: {sourceRegion} (Troops: {troopsInSource})</Typography>
-                <Typography>To: {targetRegion}</Typography>
+                <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} />
+                <Typography>(Troops: {troopsInSource})</Typography>
+                <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} />
                 <Slider
                     value={attackingTroops}
                     onChange={(_, newValue) => handleTroopsChange(newValue as number)}

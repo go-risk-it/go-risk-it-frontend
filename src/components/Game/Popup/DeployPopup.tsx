@@ -6,12 +6,14 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import RegionDisplay from '../RegionDisplay/RegionDisplay';
 
 import "./Popup.css"
 
 export interface DeployPopupProps {
     isVisible: boolean
     region: string
+    regionSvgPath: string
     currentTroops: number
     deployableTroops: number
     onSetTroops: (desiredTroops: number) => void
@@ -23,6 +25,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
     {
         isVisible,
         region,
+        regionSvgPath,
         currentTroops,
         deployableTroops,
         onSetTroops,
@@ -41,7 +44,7 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         <Dialog open={isVisible} onClose={onCancel}>
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
-                <Typography>Region: {region}</Typography>
+                <RegionDisplay regionId={region} svgPath={regionSvgPath} />
                 <Typography>Current Troops: {currentTroops}</Typography>
                 <Typography>Troops to Deploy: {deployableTroops}</Typography>
                 <Slider

@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
+import RegionDisplay from '../RegionDisplay/RegionDisplay';
 
 import "./Popup.css"
 
@@ -17,6 +18,8 @@ export interface ConquerPopupProps {
     minTroopsToMove: number
     onSetTroops: (troopsToMove: number) => void
     onConfirm: () => void
+    sourceSvgPath: string;
+    targetSvgPath: string;
 }
 
 const ConquerPopup: React.FC<ConquerPopupProps> = (
@@ -28,6 +31,8 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         minTroopsToMove,
         onSetTroops,
         onConfirm,
+        sourceSvgPath,
+        targetSvgPath,
     },
 ) => {
     // Initialize troopsToMove with minTroopsToMove
@@ -55,8 +60,9 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         <Dialog open={isVisible} onClose={onConfirm}>
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
-                <Typography>From: {sourceRegion} (Troops: {troopsInSource})</Typography>
-                <Typography>To: {targetRegion}</Typography>
+                <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} />
+                <Typography>(Troops: {troopsInSource})</Typography>
+                <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} />
                 <Slider
                     value={troopsToMove}
                     onChange={(_, newValue) => handleTroopsChange(newValue as number)}
@@ -71,10 +77,10 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                     Troops to Move: {troopsToMove}
                 </Typography>
                 <Typography>
-                    New troops in {sourceRegion}: {troopsInSource - troopsToMove}
+                    New troops in <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} />: {troopsInSource - troopsToMove}
                 </Typography>
                 <Typography>
-                    New troops in {targetRegion}: {troopsToMove}
+                    New troops in <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} />: {troopsToMove}
                 </Typography>
             </DialogContent>
             <DialogActions>
