@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
@@ -26,6 +26,7 @@ import {ReinforceMove} from "../../../api/message/reinforceMove.ts"
 import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
 import ReinforcePopup from "../Popup/ReinforcePopup.tsx"
 import { getConquerPopupProps } from "./conquer.ts"
+import { AdvanceMove } from "../../../api/message/advanceMove.ts"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
@@ -53,11 +54,13 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
 const Game: React.FC = () => {
     const {signout} = useAuth()
 
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
     const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
     const {conquerMove, dispatchConquerMove} = useConquerMoveReducer()
     const {reinforceMove, dispatchReinforceMove} = useReinforceMoveReducer()
-    const {doDeploy, doAttack, doConquer, doReinforce} = useServerQuerier()
+    const {doDeploy, doAttack, doConquer, doReinforce, doAdvance} = useServerQuerier()
 
 
     const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
@@ -122,6 +125,15 @@ const Game: React.FC = () => {
         return '';
     };
 
+    const handlePopupOpen = () => setIsPopupOpen(true);
+    const handlePopupClose = () => setIsPopupOpen(false);
+    const handleAdvance = () => {
+        const advanceMove: AdvanceMove = {
+            currentPhase: gameState.phaseType,
+        }
+        doAdvance(advanceMove, gameState);
+    };
+
     return (
         <div>
             {/*<h1>Go risk it!</h1>*/}
@@ -130,34 +142,55 @@ const Game: React.FC = () => {
 
             {
                 gameState.phaseType === PhaseType.DEPLOY && (
-                    <DeployPopup {...getDeployPopupProps(
-                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion
-                    )} />
+                    <DeployPopup
+                        {...getDeployPopupProps(
+                            doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion
+                        )}
+                        onOpen={handlePopupOpen}
+                        onClose={handlePopupClose}
+                    />
                 )
             }
 
             {
-                gameState.phaseType === PhaseType.ATTACK &&
-                <AttackPopup {...getAttackPopupProps(
-                    doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion)}
-                />
+                gameState.phaseType === PhaseType.ATTACK && (
+                    <AttackPopup
+                        {...getAttackPopupProps(
+                            doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion
+                        )}
+                        onOpen={handlePopupOpen}
+                        onClose={handlePopupClose}
+                    />
+                )
             }
 
             {
-                gameState.phaseType === PhaseType.CONQUER &&
-                <ConquerPopup {...getConquerPopupProps(
-                    doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion)
-                }/>
+                gameState.phaseType === PhaseType.CONQUER && (
+                    <ConquerPopup
+                        {...getConquerPopupProps(
+                            doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion
+                        )}
+                        onOpen={handlePopupOpen}
+                        onClose={handlePopupClose}
+                    />
+                )
             }
 
             {
-                gameState.phaseType === PhaseType.REINFORCE &&
-                <ReinforcePopup {...getReinforcePopupProps(
-                    doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion)}
-                />
+                gameState.phaseType === PhaseType.REINFORCE && (
+                    <ReinforcePopup
+                        {...getReinforcePopupProps(
+                            doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion
+                        )}
+                        onOpen={handlePopupOpen}
+                        onClose={handlePopupClose}
+                    />
+                )
             }
 
-            {/*<StatusBar/>*/}
+            {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE) && !isPopupOpen && (
+                <Button onClick={handleAdvance}>Advance</Button>
+            )}
         </div>
     )
 }

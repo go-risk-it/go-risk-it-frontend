@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,6 +21,8 @@ interface ReinforcePopupProps {
     onCancel: () => void;
     sourceRegionSvgPath: string;
     targetRegionSvgPath: string;
+    onOpen: () => void;
+    onClose: () => void;
 }
 
 const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
@@ -35,27 +37,44 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
     onCancel,
     sourceRegionSvgPath,
     targetRegionSvgPath,
+    onOpen,
+    onClose,
 }) => {
+    const [localMovingTroops, setLocalMovingTroops] = useState(movingTroops);
     const maxMovableTroops = Math.max(1, troopsInSource - 1);
     
-    React.useEffect(() => {
-        if (movingTroops < 1) {
-            onMovingTroopsChange(1);
+    useEffect(() => {
+        if (isOpen) {
+            onOpen();
+        } else {
+            onClose();
         }
-    }, [movingTroops, onMovingTroopsChange]);
+    }, [isOpen, onOpen, onClose]);
+
+    useEffect(() => {
+        setLocalMovingTroops(movingTroops);
+    }, [movingTroops]);
+
+    const handleTroopsChange = (newValue: number) => {
+        const validValue = Math.max(1, Math.min(newValue, maxMovableTroops));
+        setLocalMovingTroops(validValue);
+        onMovingTroopsChange(validValue);
+    };
+
+    if (!isOpen) return null;
 
     return (
         <Dialog open={isOpen} onClose={onCancel}>
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={sourceRegionId} svgPath={sourceRegionSvgPath} troops={troopsInSource - movingTroops} />
+                    <RegionDisplay regionId={sourceRegionId} svgPath={sourceRegionSvgPath} troops={troopsInSource - localMovingTroops} />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={targetRegionId} svgPath={targetRegionSvgPath} troops={troopsInTarget + movingTroops} />
+                    <RegionDisplay regionId={targetRegionId} svgPath={targetRegionSvgPath} troops={troopsInTarget + localMovingTroops} />
                 </Box>
                 <Slider
-                    value={movingTroops}
-                    onChange={(_, newValue) => onMovingTroopsChange(Math.max(1, newValue as number))}
+                    value={localMovingTroops}
+                    onChange={(_, newValue) => handleTroopsChange(newValue as number)}
                     min={1}
                     max={maxMovableTroops}
                     step={1}
@@ -63,12 +82,12 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = ({
                     valueLabelDisplay="auto"
                 />
                 <Typography gutterBottom>
-                    Moving Troops: {movingTroops}
+                    Moving Troops: {localMovingTroops}
                 </Typography>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={onConfirm} disabled={movingTroops > maxMovableTroops}>
+                <Button onClick={onConfirm} disabled={localMovingTroops > maxMovableTroops}>
                     Confirm
                 </Button>
             </DialogActions>

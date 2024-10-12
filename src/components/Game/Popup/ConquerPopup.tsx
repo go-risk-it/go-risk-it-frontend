@@ -21,6 +21,8 @@ export interface ConquerPopupProps {
     onConfirm: () => void
     sourceSvgPath: string;
     targetSvgPath: string;
+    onOpen: () => void;
+    onClose: () => void;
 }
 
 const ConquerPopup: React.FC<ConquerPopupProps> = (
@@ -34,6 +36,8 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         onConfirm,
         sourceSvgPath,
         targetSvgPath,
+        onOpen,
+        onClose,
     },
 ) => {
     // Initialize troopsToMove with minTroopsToMove
@@ -52,6 +56,14 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
     const handleTroopsChange = (newValue: number) => {
         setTroopsToMove(newValue);
     };
+
+    useEffect(() => {
+        if (isVisible) {
+            onOpen();
+        } else {
+            onClose();
+        }
+    }, [isVisible, onOpen, onClose]);
 
     if (!isVisible) {
         return null

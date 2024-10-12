@@ -4,6 +4,7 @@ import {AttackMove} from "../api/message/attackMove.ts"
 import {GameState} from "../api/message/gameState.ts"
 import {ConquerMove} from "../api/message/conquerMove.ts"
 import { ReinforceMove } from "../api/message/reinforceMove.ts"
+import { AdvanceMove } from "../api/message/advanceMove.ts"
 
 export const useServerQuerier = () => {
 
@@ -40,10 +41,15 @@ export const useServerQuerier = () => {
         return doMove(reinforceMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/reinforcements`)
     }
 
+    const doAdvance = async (advanceMove: AdvanceMove, gameState: GameState): Promise<Response> => {
+        return doMove(advanceMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/advancements`)
+    }
+
     return {
         doDeploy,
         doAttack,
         doConquer,
         doReinforce,
+        doAdvance
     }
 }

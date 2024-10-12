@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -22,6 +22,8 @@ export interface AttackPopupProps {
     onSetTroops: (attackingTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
+    onOpen: () => void
+    onClose: () => void
 }
 
 const AttackPopup: React.FC<AttackPopupProps> = (
@@ -36,20 +38,28 @@ const AttackPopup: React.FC<AttackPopupProps> = (
         onSetTroops,
         onCancel,
         onConfirm,
+        onOpen,
+        onClose,
     },
 ) => {
-    if (!isVisible) {
-        return null
-    }
+    const [attackingTroops, setAttackingTroops] = useState(1);
+
+    useEffect(() => {
+        if (isVisible) {
+            onOpen();
+        } else {
+            onClose();
+        }
+    }, [isVisible, onOpen, onClose]);
 
     const maxAttackingTroops = Math.min(troopsInSource - 1, 3)
-
-    const [attackingTroops, setAttackingTroops] = React.useState(1);
 
     const handleTroopsChange = (newValue: number) => {
         setAttackingTroops(newValue);
         onSetTroops(newValue);
     };
+
+    if (!isVisible) return null;
 
     return (
         <Dialog open={isVisible} onClose={onCancel}>

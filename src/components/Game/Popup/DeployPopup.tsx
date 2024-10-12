@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -19,6 +19,8 @@ export interface DeployPopupProps {
     onSetTroops: (desiredTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
+    onOpen: () => void
+    onClose: () => void
 }
 
 const DeployPopup: React.FC<DeployPopupProps> = (
@@ -31,14 +33,30 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         onSetTroops,
         onCancel,
         onConfirm,
+        onOpen,
+        onClose,
     },
 ) => {
-    const [desiredTroops, setDesiredTroops] = React.useState(currentTroops);
+    const [desiredTroops, setDesiredTroops] = useState(currentTroops);
+
+    useEffect(() => {
+        if (isVisible) {
+            onOpen();
+        } else {
+            onClose();
+        }
+    }, [isVisible, onOpen, onClose]);
+
+    useEffect(() => {
+        setDesiredTroops(currentTroops);
+    }, [currentTroops]);
 
     const handleTroopsChange = (newValue: number) => {
         setDesiredTroops(newValue);
         onSetTroops(newValue);
     };
+
+    if (!isVisible) return null;
 
     return (
         <Dialog open={isVisible} onClose={onCancel}>
