@@ -22,35 +22,42 @@ import Graph from "./Graph.ts"
 import ConquerPopup from "../Popup/ConquerPopup.tsx"
 import {getConquerPopupProps} from "./conquer.ts"
 import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.tsx"
+import {ReinforceAction, useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.tsx"
+import {ReinforceMove} from "../../../api/message/reinforceMove.ts"
+import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
+import ReinforcePopup from "../Popup/ReinforcePopup.tsx"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
                        deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void,
                        attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+                       reinforceMove: ReinforceMove, dispatchReinforceMove: (action: ReinforceAction) => void,
                        graph: Graph,
-) => {
+): (() => void) | null => {
     if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
-        return null
+        return null;
     }
     switch (gameState.phaseType) {
         case PhaseType.DEPLOY:
-            return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
+            return () => onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove);
         case PhaseType.ATTACK:
-            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
+            return () => onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph);
+        case PhaseType.REINFORCE:
+            return () => onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph);
+        default:
+            return null;
     }
-
-    return null
 }
 
 
 const Game: React.FC = () => {
     const {signout} = useAuth()
 
-
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
     const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
     const {conquerMove, dispatchConquerMove} = useConquerMoveReducer()
-    const {doDeploy, doAttack, doConquer} = useServerQuerier()
+    const {reinforceMove, dispatchReinforceMove} = useReinforceMoveReducer()
+    const {doDeploy, doAttack, doConquer, doReinforce} = useServerQuerier()
 
 
     const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
@@ -84,6 +91,7 @@ const Game: React.FC = () => {
                 onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState,
                     deployMove, dispatchDeployMove,
                     attackMove, dispatchAttackMove,
+                    reinforceMove, dispatchReinforceMove,
                     graph,
                 ),
                 troops: region.troops,
@@ -128,6 +136,12 @@ const Game: React.FC = () => {
                 <ConquerPopup {...getConquerPopupProps(
                     doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove)
                 }/>
+            }
+
+            {
+                gameState.phaseType === PhaseType.REINFORCE &&
+                <ReinforcePopup {...getReinforcePopupProps(
+                    doReinforce, reinforceMove, gameState, dispatchReinforceMove)}/>
             }
 
             {/*<StatusBar/>*/}
