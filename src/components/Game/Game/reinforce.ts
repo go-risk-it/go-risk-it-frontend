@@ -33,7 +33,8 @@ export const getReinforcePopupProps = (
     reinforceMove: ReinforceMove,
     gameState: GameState,
     dispatchReinforceMove: (action: ReinforceAction) => void,
-    getSvgPathForRegion: (regionId: string) => string
+    getSvgPathForRegion: (regionId: string) => string,
+    ownerIndex: number
 ) => {
     return {
         isOpen: !!reinforceMove.sourceRegionId && !!reinforceMove.targetRegionId,
@@ -50,5 +51,6 @@ export const getReinforcePopupProps = (
             dispatchReinforceMove({ type: ReinforceActionType.RESET });
         },
         onCancel: () => dispatchReinforceMove({ type: ReinforceActionType.RESET }),
+        ownerIndex,
     };
 };

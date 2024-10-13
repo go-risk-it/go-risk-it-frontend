@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import '../Map/SVGMap.css'; // Import the CSS file with player color classes
 
 interface RegionDisplayProps {
   regionId: string;
   svgPath: string;
   troops?: number;
+  ownerIndex: number; // Add this prop
 }
 
-const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath, troops }) => {
+const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath, troops, ownerIndex }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -26,10 +28,10 @@ const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath, troops
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
-      <svg ref={svgRef} width="80" height="80">
+      <svg ref={svgRef} width="80" height="80" className="risk-it-map-container">
         <path
           d={svgPath}
-          fill="#ccc"
+          className={`risk-it-player${ownerIndex}`}
           stroke="#000"
           strokeWidth="1"
         />

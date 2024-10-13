@@ -23,6 +23,8 @@ export interface AttackPopupProps {
     onSetTroops: (attackingTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
+    sourceOwnerIndex: number
+    targetOwnerIndex: number
 }
 
 const AttackPopup: React.FC<PopupProps<AttackPopupProps>> = (
@@ -56,9 +58,19 @@ const AttackPopup: React.FC<PopupProps<AttackPopupProps>> = (
             <DialogTitle>Attack</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={props.sourceRegion} svgPath={props.sourceSvgPath} troops={props.troopsInSource} />
+                    <RegionDisplay 
+                        regionId={props.sourceRegion} 
+                        svgPath={props.sourceSvgPath} 
+                        troops={props.troopsInSource} 
+                        ownerIndex={props.sourceOwnerIndex}
+                    />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={props.targetRegion} svgPath={props.targetSvgPath} troops={props.troopsInTarget} />
+                    <RegionDisplay 
+                        regionId={props.targetRegion} 
+                        svgPath={props.targetSvgPath} 
+                        troops={props.troopsInTarget} 
+                        ownerIndex={props.targetOwnerIndex}
+                    />
                 </Box>
                 <Slider
                     value={attackingTroops}

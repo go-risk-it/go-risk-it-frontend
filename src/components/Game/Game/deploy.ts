@@ -23,6 +23,7 @@ export const getDeployPopupProps = (
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
     getSvgPathForRegion: (regionId: string) => string,
+    ownerIndex: number
 ): DeployPopupProps => {
     return {
         isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
@@ -40,5 +41,6 @@ export const getDeployPopupProps = (
             })
             dispatchDeployMove({type: DeployActionType.RESET})
         },
+        ownerIndex,
     }
 }

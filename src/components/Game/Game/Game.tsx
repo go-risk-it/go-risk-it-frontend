@@ -143,7 +143,7 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.DEPLOY && (
                     <DeployPopup
                         props={getDeployPopupProps(
-                            doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion
+                            doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion, thisPlayerState.index
                         )}
                         onOpen={handlePopupOpen}
                         onClose={handlePopupClose}
@@ -155,7 +155,7 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.ATTACK && (
                     <AttackPopup
                         props={getAttackPopupProps(
-                            doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion
+                            doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion, boardState, playersState
                         )}
                         onOpen={handlePopupOpen}
                         onClose={handlePopupClose}
@@ -167,7 +167,7 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.CONQUER && (
                     <ConquerPopup
                         props={getConquerPopupProps(
-                            doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion
+                            doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion, playersState
                         )}
                         onOpen={handlePopupOpen}
                         onClose={handlePopupClose}
@@ -179,7 +179,7 @@ const Game: React.FC = () => {
                 gameState.phaseType === PhaseType.REINFORCE && (
                     <ReinforcePopup
                         props={getReinforcePopupProps(
-                            doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion
+                            doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion, thisPlayerState.index
                         )}
                         onOpen={handlePopupOpen}
                         onClose={handlePopupClose}

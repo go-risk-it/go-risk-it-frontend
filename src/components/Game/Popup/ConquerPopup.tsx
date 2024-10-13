@@ -22,6 +22,8 @@ export interface ConquerPopupProps {
     onConfirm: () => void
     sourceSvgPath: string
     targetSvgPath: string
+    sourceOwnerIndex: number // Add this line
+    targetOwnerIndex: number // Add this line
 }
 
 const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
@@ -63,9 +65,19 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={props.sourceRegion} svgPath={props.sourceSvgPath} troops={props.troopsInSource - troopsToMove} />
+                    <RegionDisplay 
+                        regionId={props.sourceRegion} 
+                        svgPath={props.sourceSvgPath} 
+                        troops={props.troopsInSource - troopsToMove} 
+                        ownerIndex={props.sourceOwnerIndex} // Add this line
+                    />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={props.targetRegion} svgPath={props.targetSvgPath} troops={troopsToMove} />
+                    <RegionDisplay 
+                        regionId={props.targetRegion} 
+                        svgPath={props.targetSvgPath} 
+                        troops={troopsToMove} 
+                        ownerIndex={props.sourceOwnerIndex} // Use sourceOwnerIndex as the new owner
+                    />
                 </Box>
                 <Slider
                     value={troopsToMove}

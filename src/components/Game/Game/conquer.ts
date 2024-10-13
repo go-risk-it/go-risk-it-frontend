@@ -3,6 +3,7 @@ import {ConquerMove} from "../../../api/message/conquerMove.ts"
 import {ConquerPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
 import {ConquerAction, ConquerActionType} from "../../../hooks/useConquerMoveReducer.tsx"
 import {ConquerPopupProps} from "../Popup/ConquerPopup.tsx"
+import {PlayersState} from "../../../api/message/playersState.ts"
 
 
 export const getConquerPopupProps = (
@@ -13,11 +14,16 @@ export const getConquerPopupProps = (
     conquerMove: ConquerMove,
     dispatchConquerMove: (action: ConquerAction) => void,
     getSvgPathForRegion: (regionId: string) => string,
+    playersState: PlayersState
 ): ConquerPopupProps => {
-    const troopsInSource = boardState.regions.find(region => region.id === phaseState.attackingRegionId)?.troops || 0;
+    const sourceRegion = boardState.regions.find(r => r.id === phaseState.attackingRegionId);
+    const targetRegion = boardState.regions.find(r => r.id === phaseState.defendingRegionId);
+    const sourceOwner = playersState.players.find(p => p.userId === sourceRegion?.ownerId);
+    const targetOwner = playersState.players.find(p => p.userId === targetRegion?.ownerId);
+
+    const troopsInSource = sourceRegion?.troops || 0;
 
     const onSetTroops = (troopsToMove: number) => {
-        // Only dispatch if the troops have actually changed
         if (troopsToMove !== conquerMove.troops) {
             dispatchConquerMove({
                 type: ConquerActionType.SET_TROOPS,
@@ -45,5 +51,7 @@ export const getConquerPopupProps = (
         minTroopsToMove: phaseState.minTroopsToMove,
         onSetTroops,
         onConfirm,
+        sourceOwnerIndex: sourceOwner?.index ?? 0,
+        targetOwnerIndex: targetOwner?.index ?? 0,
     };
 };

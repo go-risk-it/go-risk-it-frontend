@@ -22,6 +22,7 @@ interface ReinforcePopupProps {
     onCancel: () => void;
     sourceRegionSvgPath: string;
     targetRegionSvgPath: string;
+    ownerIndex: number;
 }
 
 const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
@@ -49,7 +50,7 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
     const handleTroopsChange = (newValue: number) => {
         const validValue = Math.max(1, Math.min(newValue, maxMovableTroops));
         setLocalMovingTroops(validValue);
-        props.  onMovingTroopsChange(validValue);
+        props.onMovingTroopsChange(validValue);
     };
 
     if (!props.isOpen) return null;
@@ -59,9 +60,19 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={props.sourceRegionId} svgPath={props.sourceRegionSvgPath} troops={props.troopsInSource - localMovingTroops} />
+                    <RegionDisplay 
+                        regionId={props.sourceRegionId} 
+                        svgPath={props.sourceRegionSvgPath} 
+                        troops={props.troopsInSource - localMovingTroops} 
+                        ownerIndex={props.ownerIndex} // Add this line
+                    />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={props.targetRegionId} svgPath={props.targetRegionSvgPath} troops={props.troopsInTarget + localMovingTroops} />
+                    <RegionDisplay 
+                        regionId={props.targetRegionId} 
+                        svgPath={props.targetRegionSvgPath} 
+                        troops={props.troopsInTarget + localMovingTroops} 
+                        ownerIndex={props.ownerIndex} // Add this line
+                    />
                 </Box>
                 <Slider
                     value={localMovingTroops}

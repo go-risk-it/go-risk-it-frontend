@@ -4,6 +4,8 @@ import {AttackMove} from "../../../api/message/attackMove.ts"
 import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReducer.tsx"
 import {GameState, PhaseType} from "../../../api/message/gameState.ts"
 import Graph from "./Graph.ts"
+import { BoardState } from "../../../api/message/boardState.ts";
+import { PlayersState } from "../../../api/message/playersState.ts";
 
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
                                     attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
@@ -41,7 +43,17 @@ export const getAttackPopupProps = (
     attackMove: AttackMove,
     dispatchAttackMove: (action: AttackAction) => void,
     getSvgPathForRegion: (regionId: string) => string,
+    boardState: BoardState,
+    playersState: PlayersState
 ) => {
+    const sourceRegion = boardState.regions.find(r => r.id === attackMove.sourceRegionId);
+    const targetRegion = boardState.regions.find(r => r.id === attackMove.targetRegionId);
+    const sourceOwner = playersState.players.find(p => p.userId === sourceRegion?.ownerId);
+    const targetOwner = playersState.players.find(p => p.userId === targetRegion?.ownerId);
+
+    console.log("sourceOwner", sourceOwner)
+    console.log("targetOwner", targetOwner)
+
     return {
         isVisible: gameState.phaseType === PhaseType.ATTACK && attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
         sourceRegion: attackMove.sourceRegionId || "",
@@ -65,5 +77,7 @@ export const getAttackPopupProps = (
             })
             dispatchAttackMove({type: AttackActionType.RESET})
         },
+        sourceOwnerIndex: sourceOwner?.index ?? 0,
+        targetOwnerIndex: targetOwner?.index ?? 0,
     }
 }

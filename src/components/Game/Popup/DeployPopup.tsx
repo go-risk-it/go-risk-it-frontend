@@ -20,6 +20,7 @@ export interface DeployPopupProps {
     onSetTroops: (desiredTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
+    ownerIndex: number
 }
 
 const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
@@ -54,7 +55,12 @@ const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
         <Dialog open={props.isVisible} onClose={props.onCancel}>
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
-                <RegionDisplay regionId={props.region} svgPath={props.regionSvgPath} />
+                <RegionDisplay 
+                    regionId={props.region} 
+                    svgPath={props.regionSvgPath} 
+                    troops={props.currentTroops}
+                    ownerIndex={props.ownerIndex}
+                />
                 <Typography>Current Troops: {props.currentTroops}</Typography>
                 <Typography>Troops to Deploy: {props.deployableTroops}</Typography>
                 <Slider
