@@ -13,14 +13,19 @@ export const onRegionClickReinforce = (
     graph: Graph
 ) => {
     if (region.ownerId !== thisPlayerState.userId) {
-        return;
+        return null;
     }
 
     if (!reinforceMove.sourceRegionId) {
-        dispatchReinforceMove({ type: ReinforceActionType.SET_SOURCE, regionId: region.id, troops: region.troops });
+        return () => {
+            dispatchReinforceMove({ type: ReinforceActionType.SET_SOURCE, regionId: region.id, troops: region.troops });
+        };
     } else if (reinforceMove.sourceRegionId !== region.id && graph.canReach(reinforceMove.sourceRegionId, region.id)) {
-        dispatchReinforceMove({ type: ReinforceActionType.SET_TARGET, regionId: region.id, troops: region.troops });
+        return () => {
+            dispatchReinforceMove({ type: ReinforceActionType.SET_TARGET, regionId: region.id, troops: region.troops });
+        };
     }
+    return null;
 };
 
 export const getReinforcePopupProps = (

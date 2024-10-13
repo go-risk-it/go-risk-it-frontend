@@ -40,11 +40,11 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
     }
     switch (gameState.phaseType) {
         case PhaseType.DEPLOY:
-            return () => onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove);
+            return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove);
         case PhaseType.ATTACK:
-            return () => onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph);
+            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph);
         case PhaseType.REINFORCE:
-            return () => onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph);
+            return onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph);
         default:
             return null;
     }
@@ -188,7 +188,7 @@ const Game: React.FC = () => {
                 )
             }
 
-            {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE) && !isPopupOpen && (
+            {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE || gameState.phaseType === PhaseType.CARDS) && !isPopupOpen && (
                 <Button onClick={handleAdvance}>Advance</Button>
             )}
         </div>

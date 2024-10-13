@@ -3,16 +3,16 @@ import {Region} from "../../../api/message/boardState.ts"
 import {DeployMove} from "../../../api/message/deployMove.ts"
 import {DeployAction, DeployActionType} from "../../../hooks/useDeployMoveReducer.tsx"
 import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
-import {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 
 export function onRegionClickDeploy(thisPlayerState: PlayerState, region: Region, deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) {
     if (thisPlayerState.userId === region.ownerId && deployMove.regionId === null) {
-        dispatchDeployMove({
+        return () => dispatchDeployMove({
             type: DeployActionType.SET_REGION,
             regionId: region.id,
             currentTroops: region.troops,
         });
     }
+    return null;
 }
 
 export const getDeployPopupProps = (
@@ -22,7 +22,7 @@ export const getDeployPopupProps = (
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
     getSvgPathForRegion: (regionId: string) => string,
-): DeployPopupProps => {
+) => {
     return {
         isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
         region: deployMove.regionId || "",

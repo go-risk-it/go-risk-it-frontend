@@ -11,7 +11,7 @@ export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region
     console.log("onRegionClickAttack", attackMove, region)
     if (!attackMove.sourceRegionId) {
         if (region.ownerId === thisPlayerState.userId && region.troops > 1) {
-            dispatchAttackMove({
+            return () => dispatchAttackMove({
                 type: AttackActionType.SET_SOURCE_REGION,
                 regionId: region.id,
                 currentTroops: region.troops,
@@ -19,19 +19,20 @@ export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region
         }
     } else if (!attackMove.targetRegionId) {
         if (region.ownerId === thisPlayerState.userId) {
-            dispatchAttackMove({
+            return () => dispatchAttackMove({
                 type: AttackActionType.SET_SOURCE_REGION,
                 regionId: region.id,
                 currentTroops: region.troops,
             });
         } else if (graph.areNeighbors(region.id, attackMove.sourceRegionId)) {
-            dispatchAttackMove({
+            return () => dispatchAttackMove({
                 type: AttackActionType.SET_TARGET_REGION,
                 regionId: region.id,
                 currentTroops: region.troops,
             });
         }
     }
+    return null;
 }
 
 export const getAttackPopupProps = (

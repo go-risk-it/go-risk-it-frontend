@@ -7,7 +7,6 @@ import { ReinforceMove } from "../api/message/reinforceMove.ts"
 import { AdvanceMove } from "../api/message/advanceMove.ts"
 
 export const useServerQuerier = () => {
-
     const {session} = useAuth()
     if (!session) {
         throw Error("Session not found")
