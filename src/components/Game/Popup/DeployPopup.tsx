@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import RegionDisplay from '../RegionDisplay/RegionDisplay';
 
 import "./Popup.css"
+import { PopupProps } from "./PopupProps";
 
 export interface DeployPopupProps {
     isVisible: boolean
@@ -19,57 +20,48 @@ export interface DeployPopupProps {
     onSetTroops: (desiredTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
-    onOpen: () => void
-    onClose: () => void
 }
 
-const DeployPopup: React.FC<DeployPopupProps> = (
+const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
     {
-        isVisible,
-        region,
-        regionSvgPath,
-        currentTroops,
-        deployableTroops,
-        onSetTroops,
-        onCancel,
-        onConfirm,
+        props,
         onOpen,
         onClose,
     },
 ) => {
-    const [desiredTroops, setDesiredTroops] = useState(currentTroops);
+    const [desiredTroops, setDesiredTroops] = useState(props.currentTroops);
 
     useEffect(() => {
-        if (isVisible) {
+        if (props.isVisible) {
             onOpen();
         } else {
             onClose();
         }
-    }, [isVisible, onOpen, onClose]);
+    }, [props.isVisible, onOpen, onClose]);
 
     useEffect(() => {
-        setDesiredTroops(currentTroops);
-    }, [currentTroops]);
+        setDesiredTroops(props.currentTroops);
+    }, [props.currentTroops]);
 
     const handleTroopsChange = (newValue: number) => {
         setDesiredTroops(newValue);
-        onSetTroops(newValue);
+        props.onSetTroops(newValue);
     };
 
-    if (!isVisible) return null;
+    if (!props.isVisible) return null;
 
     return (
-        <Dialog open={isVisible} onClose={onCancel}>
+        <Dialog open={props.isVisible} onClose={props.onCancel}>
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
-                <RegionDisplay regionId={region} svgPath={regionSvgPath} />
-                <Typography>Current Troops: {currentTroops}</Typography>
-                <Typography>Troops to Deploy: {deployableTroops}</Typography>
+                <RegionDisplay regionId={props.region} svgPath={props.regionSvgPath} />
+                <Typography>Current Troops: {props.currentTroops}</Typography>
+                <Typography>Troops to Deploy: {props.deployableTroops}</Typography>
                 <Slider
                     value={desiredTroops}
                     onChange={(_, newValue) => handleTroopsChange(newValue as number)}
-                    min={currentTroops}
-                    max={currentTroops + deployableTroops}
+                    min={props.currentTroops}
+                    max={props.currentTroops + props.deployableTroops}
                     step={1}
                     marks
                     valueLabelDisplay="auto"
@@ -79,8 +71,8 @@ const DeployPopup: React.FC<DeployPopupProps> = (
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={onConfirm}>Deploy</Button>
+                <Button onClick={props.onCancel}>Cancel</Button>
+                <Button onClick={props.onConfirm}>Deploy</Button>
             </DialogActions>
         </Dialog>
     );

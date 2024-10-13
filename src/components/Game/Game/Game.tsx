@@ -50,7 +50,6 @@ const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: Pl
     }
 }
 
-
 const Game: React.FC = () => {
     const {signout} = useAuth()
 
@@ -143,7 +142,7 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.DEPLOY && (
                     <DeployPopup
-                        {...getDeployPopupProps(
+                        props={getDeployPopupProps(
                             doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion
                         )}
                         onOpen={handlePopupOpen}
@@ -155,7 +154,7 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.ATTACK && (
                     <AttackPopup
-                        {...getAttackPopupProps(
+                        props={getAttackPopupProps(
                             doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion
                         )}
                         onOpen={handlePopupOpen}
@@ -167,7 +166,7 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.CONQUER && (
                     <ConquerPopup
-                        {...getConquerPopupProps(
+                        props={getConquerPopupProps(
                             doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion
                         )}
                         onOpen={handlePopupOpen}
@@ -179,7 +178,7 @@ const Game: React.FC = () => {
             {
                 gameState.phaseType === PhaseType.REINFORCE && (
                     <ReinforcePopup
-                        {...getReinforcePopupProps(
+                        props={getReinforcePopupProps(
                             doReinforce, reinforceMove, gameState, dispatchReinforceMove, getSvgPathForRegion
                         )}
                         onOpen={handlePopupOpen}

@@ -10,6 +10,7 @@ import RegionDisplay from '../RegionDisplay/RegionDisplay';
 import Box from '@mui/material/Box';
 
 import "./Popup.css"
+import { PopupProps } from "./PopupProps";
 
 export interface AttackPopupProps {
     isVisible: boolean
@@ -22,22 +23,11 @@ export interface AttackPopupProps {
     onSetTroops: (attackingTroops: number) => void
     onCancel: () => void
     onConfirm: () => void
-    onOpen: () => void
-    onClose: () => void
 }
 
-const AttackPopup: React.FC<AttackPopupProps> = (
+const AttackPopup: React.FC<PopupProps<AttackPopupProps>> = (
     {
-        isVisible,
-        sourceRegion,
-        targetRegion,
-        troopsInSource,
-        troopsInTarget,
-        sourceSvgPath,
-        targetSvgPath,
-        onSetTroops,
-        onCancel,
-        onConfirm,
+        props,
         onOpen,
         onClose,
     },
@@ -45,30 +35,30 @@ const AttackPopup: React.FC<AttackPopupProps> = (
     const [attackingTroops, setAttackingTroops] = useState(1);
 
     useEffect(() => {
-        if (isVisible) {
+        if (props.isVisible) {
             onOpen();
         } else {
             onClose();
         }
-    }, [isVisible, onOpen, onClose]);
+    }, [props.isVisible, onOpen, onClose]);
 
-    const maxAttackingTroops = Math.min(troopsInSource - 1, 3)
+    const maxAttackingTroops = Math.min(props.troopsInSource - 1, 3)
 
     const handleTroopsChange = (newValue: number) => {
         setAttackingTroops(newValue);
-        onSetTroops(newValue);
+        props.onSetTroops(newValue);
     };
 
-    if (!isVisible) return null;
+    if (!props.isVisible) return null;
 
     return (
-        <Dialog open={isVisible} onClose={onCancel}>
+        <Dialog open={props.isVisible} onClose={props.onCancel}>
             <DialogTitle>Attack</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} troops={troopsInSource} />
+                    <RegionDisplay regionId={props.sourceRegion} svgPath={props.sourceSvgPath} troops={props.troopsInSource} />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} troops={troopsInTarget} />
+                    <RegionDisplay regionId={props.targetRegion} svgPath={props.targetSvgPath} troops={props.troopsInTarget} />
                 </Box>
                 <Slider
                     value={attackingTroops}
@@ -85,8 +75,8 @@ const AttackPopup: React.FC<AttackPopupProps> = (
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={onConfirm}>Attack</Button>
+                <Button onClick={props.onCancel}>Cancel</Button>
+                <Button onClick={props.onConfirm}>Attack</Button>
             </DialogActions>
         </Dialog>
     )

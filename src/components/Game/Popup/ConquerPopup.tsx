@@ -10,6 +10,7 @@ import RegionDisplay from '../RegionDisplay/RegionDisplay';
 import Box from '@mui/material/Box';
 
 import "./Popup.css"
+import { PopupProps } from "./PopupProps";
 
 export interface ConquerPopupProps {
     isVisible: boolean
@@ -19,84 +20,72 @@ export interface ConquerPopupProps {
     minTroopsToMove: number
     onSetTroops: (troopsToMove: number) => void
     onConfirm: () => void
-    sourceSvgPath: string;
-    targetSvgPath: string;
-    onOpen: () => void;
-    onClose: () => void;
+    sourceSvgPath: string
+    targetSvgPath: string
 }
 
-const ConquerPopup: React.FC<ConquerPopupProps> = (
+const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
     {
-        isVisible,
-        sourceRegion,
-        targetRegion,
-        troopsInSource,
-        minTroopsToMove,
-        onSetTroops,
-        onConfirm,
-        sourceSvgPath,
-        targetSvgPath,
+        props,
         onOpen,
         onClose,
     },
 ) => {
-    // Initialize troopsToMove with minTroopsToMove
-    const [troopsToMove, setTroopsToMove] = useState(minTroopsToMove);
-    const maxTroopsToMove = troopsInSource - 1;
-
-    // Use useEffect to update troopsToMove when minTroopsToMove changes
-    useEffect(() => {
-        setTroopsToMove(minTroopsToMove);
-    }, [minTroopsToMove]);
+    const [troopsToMove, setTroopsToMove] = useState(props.minTroopsToMove);
+    const maxTroopsToMove = props.troopsInSource - 1;
 
     useEffect(() => {
-        onSetTroops(troopsToMove);
-    }, [troopsToMove, onSetTroops]);
+        setTroopsToMove(props.minTroopsToMove);
+    }, [props.minTroopsToMove]);
+
+    useEffect(() => {
+        props.onSetTroops(troopsToMove);
+    }, [troopsToMove, props.onSetTroops]);
 
     const handleTroopsChange = (newValue: number) => {
         setTroopsToMove(newValue);
     };
 
     useEffect(() => {
-        if (isVisible) {
+        if (props.isVisible) {
             onOpen();
         } else {
             onClose();
         }
-    }, [isVisible, onOpen, onClose]);
+    }, [props.isVisible, onOpen, onClose]);
 
-    if (!isVisible) {
-        return null
+    if (!props.isVisible) {
+        return null;
     }
 
     return (
-        <Dialog open={isVisible} onClose={onConfirm}>
+        <Dialog open={props.isVisible} onClose={props.onConfirm}>
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay regionId={sourceRegion} svgPath={sourceSvgPath} troops={troopsInSource - troopsToMove} />
+                    <RegionDisplay regionId={props.sourceRegion} svgPath={props.sourceSvgPath} troops={props.troopsInSource - troopsToMove} />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay regionId={targetRegion} svgPath={targetSvgPath} troops={troopsToMove} />
+                    <RegionDisplay regionId={props.targetRegion} svgPath={props.targetSvgPath} troops={troopsToMove} />
                 </Box>
                 <Slider
                     value={troopsToMove}
                     onChange={(_, newValue) => handleTroopsChange(newValue as number)}
-                    min={minTroopsToMove}
+                    min={props.minTroopsToMove}
                     max={maxTroopsToMove}
                     step={1}
                     marks
                     valueLabelDisplay="auto"
-                    disabled={minTroopsToMove === maxTroopsToMove}
+                    disabled={props.minTroopsToMove === maxTroopsToMove}
                 />
                 <Typography gutterBottom>
                     Troops to Move: {troopsToMove}
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onConfirm}>Conquer</Button>
+                <Button onClick={props.onConfirm}>Conquer</Button>
             </DialogActions>
         </Dialog>
-    )
+    );
 }
 
 export default ConquerPopup
