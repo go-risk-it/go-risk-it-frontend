@@ -7,11 +7,9 @@ export interface WebsocketMessage {
     data: never;
 }
 
-const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState", "cardState"])
-
 export const WebsocketContext = createContext<{
-    subscribe: (topic: string, callback: (data: WebsocketMessage) => void) => void
-    unsubscribe: (topic: string) => void
+    subscribe: (callback: (message: WebsocketMessage) => void) => void
+    unsubscribe: () => void
 }>({
     subscribe: () => {
     },
@@ -23,49 +21,51 @@ export const WebsocketProvider = ({gameId, children}: { gameId: number, children
     const socketUrl = process.env.REACT_APP_WS_URL! + "?gameID=" + gameId;
     const {session} = useAuth()
     const ws = useRef<WebSocket | null>(null)
-    const topics = useRef<Map<string, (data: WebsocketMessage) => void>>(new Map<string, (data: WebsocketMessage) => void>())
+    const messageConsumer = useRef<(message: WebsocketMessage) => void>(() => {
+    })
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (!session) {
             throw new Error("User is not authenticated")
         }
+        if (!ws.current) {
+            console.log("Connecting to: ", socketUrl, ", session: ", session)
+            ws.current = new WebSocket(socketUrl, ["risk-it.websocket.auth.token", session.access_token])
 
-        ws.current = new WebSocket(socketUrl, ["risk-it.websocket.auth.token", session.access_token])
-
-        ws.current.onopen = () => {
-            console.log("WS open")
-            setLoading(false)
-        }
-        ws.current.onclose = () => {
-            console.log("WS close")
-        }
-        ws.current.onmessage = (message: MessageEvent) => {
-            try {
-                const msg = JSON.parse(message.data) as WebsocketMessage
-                console.log("Parsed message: ", msg)
-
-                // if this is a game message, call the "game" callback
-                if (gameTopics.has(msg.type)) {
-                    topics.current.get("game")?.(msg)
+            ws.current.onopen = () => {
+                console.log("WS open")
+                setLoading(false)
+            }
+            ws.current.onclose = () => {
+                console.log("WS close")
+            }
+            ws.current.onmessage = (message: MessageEvent) => {
+                try {
+                    const msg = JSON.parse(message.data) as WebsocketMessage
+                    console.log("Parsed message: ", msg)
+                    messageConsumer.current(msg)
+                } catch (e) {
+                    console.log("Invalid JSON: ", message.data)
                 }
-            } catch (e) {
-                console.log("Invalid JSON: ", message.data)
             }
         }
         return () => {
-            ws.current?.close()
+            if (!session) {
+                ws.current?.close()
+            }
         }
-    }, [session])
+    }, [session, socketUrl])
 
     return (
         <WebsocketContext.Provider
             value={{
-                subscribe: (topic: string, callback: (data: WebsocketMessage) => void) => {
-                    topics.current.set(topic, callback)
+                subscribe: (callback: (message: WebsocketMessage) => void) => {
+                    messageConsumer.current = callback
                 },
-                unsubscribe: (topic: string) => {
-                    topics.current.delete(topic)
+                unsubscribe: () => {
+                    messageConsumer.current = () => {
+                    }
                 },
             }}> {!loading && children}
         </WebsocketContext.Provider>

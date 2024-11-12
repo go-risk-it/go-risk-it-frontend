@@ -4,7 +4,7 @@ import {BoardState} from "../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../api/message/playersState.ts"
 import {GameState, GameStateAPI, PhaseState} from "../api/message/gameState.ts"
 import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
-import { CardState } from "../api/message/cardState.ts"
+import {CardState} from "../api/message/cardState.ts"
 
 
 export const GameStateContext = createContext<{
@@ -16,7 +16,7 @@ export const GameStateContext = createContext<{
     thisPlayerState: PlayerState | null,
 }>({
     boardState: null,
-    cardState: { cards: [] },
+    cardState: {cards: []},
     gameState: null,
     phaseState: null,
     playersState: null,
@@ -30,14 +30,14 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
     const {session} = useAuth()
     // backend states
     const [boardState, setBoardState] = useState<BoardState | null>(null)
-    const [cardState, setCardState] = useState<CardState>({ cards: [] })
+    const [cardState, setCardState] = useState<CardState>({cards: []})
     const [playersState, setPlayersState] = useState<PlayersState | null>(null)
     const [thisPlayerState, setThisPlayerState] = useState<PlayerState | null>(null)
     const [gameState, setGameState] = useState<GameState | null>(null)
     const [phaseState, setPhaseState] = useState<PhaseState | null>(null)
 
     useEffect(() => {
-        subscribe("game", (msg: WebsocketMessage) => {
+        subscribe((msg: WebsocketMessage) => {
             if (msg.type === "boardState") {
                 console.log("Received board state: ", msg.data)
                 setBoardState(msg.data)
@@ -65,10 +65,12 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                     phaseType: data.phase.type,
                 })
                 setPhaseState(data.phase.state)
+            } else {
+                console.warn("Unhandled message: ", msg)
             }
         })
         return () => {
-            unsubscribe("game")
+            unsubscribe()
         }
     }, [session, subscribe, unsubscribe])
 
