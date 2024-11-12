@@ -7,7 +7,7 @@ export interface WebsocketMessage {
     data: never;
 }
 
-const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState"])
+const gameTopics: Set<string> = new Set<string>(["boardState", "playerState", "gameState", "cardState"])
 
 export const WebsocketContext = createContext<{
     subscribe: (topic: string, callback: (data: WebsocketMessage) => void) => void
@@ -20,18 +20,18 @@ export const WebsocketContext = createContext<{
 })
 
 export const WebsocketProvider = ({gameId, children}: { gameId: number, children: ReactElement }) => {
+    const socketUrl = process.env.REACT_APP_WS_URL! + "?gameID=" + gameId;
     const {session} = useAuth()
     const ws = useRef<WebSocket | null>(null)
     const topics = useRef<Map<string, (data: WebsocketMessage) => void>>(new Map<string, (data: WebsocketMessage) => void>())
     const [loading, setLoading] = useState(true)
-
 
     useEffect(() => {
         if (!session) {
             throw new Error("User is not authenticated")
         }
 
-        ws.current = new WebSocket(process.env.REACT_APP_WS_URL! + "?gameID=" + gameId, ["risk-it.websocket.auth.token", session.access_token])
+        ws.current = new WebSocket(socketUrl, ["risk-it.websocket.auth.token", session.access_token])
 
         ws.current.onopen = () => {
             console.log("WS open")

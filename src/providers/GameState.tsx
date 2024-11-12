@@ -4,16 +4,19 @@ import {BoardState} from "../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../api/message/playersState.ts"
 import {GameState, GameStateAPI, PhaseState} from "../api/message/gameState.ts"
 import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
+import { CardState } from "../api/message/cardState.ts"
 
 
 export const GameStateContext = createContext<{
     boardState: BoardState | null,
+    cardState: CardState,
     gameState: GameState | null,
     phaseState: PhaseState | null,
     playersState: PlayersState | null,
     thisPlayerState: PlayerState | null,
 }>({
     boardState: null,
+    cardState: { cards: [] },
     gameState: null,
     phaseState: null,
     playersState: null,
@@ -27,6 +30,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
     const {session} = useAuth()
     // backend states
     const [boardState, setBoardState] = useState<BoardState | null>(null)
+    const [cardState, setCardState] = useState<CardState>({ cards: [] })
     const [playersState, setPlayersState] = useState<PlayersState | null>(null)
     const [thisPlayerState, setThisPlayerState] = useState<PlayerState | null>(null)
     const [gameState, setGameState] = useState<GameState | null>(null)
@@ -37,6 +41,9 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
             if (msg.type === "boardState") {
                 console.log("Received board state: ", msg.data)
                 setBoardState(msg.data)
+            } else if (msg.type === "cardState") {
+                console.log("Received card state: ", msg.data)
+                setCardState(msg.data)
             } else if (msg.type === "playerState") {
                 console.log("Received player state: ", msg.data)
                 setPlayersState(msg.data)
@@ -70,6 +77,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
         <GameStateContext.Provider
             value={{
                 boardState,
+                cardState,
                 gameState,
                 phaseState,
                 playersState,

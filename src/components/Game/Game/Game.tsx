@@ -27,6 +27,8 @@ import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
 import ReinforcePopup from "../Popup/ReinforcePopup.tsx"
 import { getConquerPopupProps } from "./conquer.ts"
 import { AdvanceMove } from "../../../api/message/advanceMove.ts"
+import CardDisplay from "../Cards/CardDisplay.tsx"
+import { Box, Typography } from "@mui/material"
 
 
 const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
@@ -62,8 +64,8 @@ const Game: React.FC = () => {
     const {doDeploy, doAttack, doConquer, doReinforce, doAdvance} = useServerQuerier()
 
 
-    const {boardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
-    if (!boardState || !playersState || !thisPlayerState || !gameState || !phaseState) {
+    const {boardState, cardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
+    if (!boardState || !playersState || !thisPlayerState || !gameState || !phaseState || !cardState) {
         return null
     }
 
@@ -133,6 +135,7 @@ const Game: React.FC = () => {
         doAdvance(advanceMove, gameState);
     };
 
+    console.log("cardState", cardState)
     return (
         <div>
             {/*<h1>Go risk it!</h1>*/}
@@ -189,6 +192,19 @@ const Game: React.FC = () => {
 
             {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE || gameState.phaseType === PhaseType.CARDS) && !isPopupOpen && (
                 <Button onClick={handleAdvance}>Advance</Button>
+            )}
+
+            {cardState.cards.length > 0 && (
+                <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
+                    <Typography variant="h6">Your Cards:</Typography>
+                    {cardState.cards.map(card => (
+                        <CardDisplay
+                            key={card.id}
+                            card={card}
+                            getSvgPathForRegion={getSvgPathForRegion}
+                        />
+                    ))}
+                </Box>
             )}
         </div>
     )
