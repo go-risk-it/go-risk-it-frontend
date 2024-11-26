@@ -1,6 +1,5 @@
-import {createContext, ReactElement, useEffect, useRef, useState} from "react"
+import {createContext, ReactElement, useCallback, useEffect, useRef} from "react"
 import {useAuth} from "../hooks/useAuth.tsx"
-
 
 export interface WebsocketMessage {
     type: string;
@@ -8,8 +7,8 @@ export interface WebsocketMessage {
 }
 
 export const WebsocketContext = createContext<{
-    subscribe: (callback: (message: WebsocketMessage) => void) => void
-    unsubscribe: () => void
+    subscribe: (callback: (message: WebsocketMessage) => void) => void;
+    unsubscribe: () => void;
 }>({
     subscribe: () => {
     },
@@ -18,56 +17,77 @@ export const WebsocketContext = createContext<{
 })
 
 export const WebsocketProvider = ({gameId, children}: { gameId: number, children: ReactElement }) => {
-    const socketUrl = process.env.REACT_APP_WS_URL! + "?gameID=" + gameId;
+    const socketUrl = process.env.REACT_APP_WS_URL! + "?gameID=" + gameId
     const {session} = useAuth()
     const ws = useRef<WebSocket | null>(null)
     const messageConsumer = useRef<(message: WebsocketMessage) => void>(() => {
     })
-    const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        if (!session) {
-            throw new Error("User is not authenticated")
+    const setupWebSocket = useCallback(() => {
+        if (ws.current) return
+        if (!session) throw new Error("User is not authenticated")
+
+        console.log("Connecting to:", socketUrl)
+
+        ws.current = new WebSocket(socketUrl, ["risk-it.websocket.auth.token", session.access_token])
+
+        ws.current.onopen = () => {
+            console.log("WebSocket connection opened")
         }
-        if (!ws.current) {
-            console.log("Connecting to: ", socketUrl, ", session: ", session)
-            ws.current = new WebSocket(socketUrl, ["risk-it.websocket.auth.token", session.access_token])
 
-            ws.current.onopen = () => {
-                console.log("WS open")
-                setLoading(false)
-            }
-            ws.current.onclose = () => {
-                console.log("WS close")
-            }
-            ws.current.onmessage = (message: MessageEvent) => {
-                try {
-                    const msg = JSON.parse(message.data) as WebsocketMessage
-                    console.log("Parsed message: ", msg)
+        ws.current.onclose = () => {
+            console.log("WebSocket connection closed")
+            ws.current = null
+        }
+
+        ws.current.onmessage = (message: MessageEvent) => {
+            try {
+                const msg = JSON.parse(message.data) as WebsocketMessage
+                console.log("Received message:", msg)
+
+                if (messageConsumer.current) {
                     messageConsumer.current(msg)
-                } catch (e) {
-                    console.log("Invalid JSON: ", message.data)
                 }
-            }
-        }
-        return () => {
-            if (!session) {
-                ws.current?.close()
+            } catch (error) {
+                console.error("Error parsing WebSocket message:", message.data)
             }
         }
     }, [session, socketUrl])
 
+    const teardownWebSocket = useCallback(() => {
+        if (ws.current) {
+            console.log("Closing WebSocket...")
+            ws.current.close()
+            ws.current = null
+        }
+    }, [])
+
+    const subscribe = useCallback((callback: (message: WebsocketMessage) => void) => {
+        messageConsumer.current = callback
+        console.log("Subscribed to WebSocket messages")
+        setupWebSocket()
+    }, [setupWebSocket])
+
+    const unsubscribe = useCallback(() => {
+        messageConsumer.current = () => {
+        }
+        console.log("Unsubscribed from WebSocket messages")
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            teardownWebSocket() // Clean up WebSocket on unmount
+        }
+    }, [teardownWebSocket])
+
     return (
         <WebsocketContext.Provider
             value={{
-                subscribe: (callback: (message: WebsocketMessage) => void) => {
-                    messageConsumer.current = callback
-                },
-                unsubscribe: () => {
-                    messageConsumer.current = () => {
-                    }
-                },
-            }}> {!loading && children}
+                subscribe,
+                unsubscribe,
+            }}
+        >
+            {children}
         </WebsocketContext.Provider>
     )
 }
