@@ -11,3 +11,11 @@
     opacity: 1;
     transition: visibility 0s, opacity 0.3s ease-in-out; /* Add transition for smooth visibility changes */
 }
+
+.cards-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+

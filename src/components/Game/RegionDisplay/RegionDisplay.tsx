@@ -3,11 +3,12 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import '../Map/SVGMap.css'; // Import the CSS file with player color classes
 
+
 interface RegionDisplayProps {
   regionId: string;
   svgPath: string;
   troops?: number;
-  ownerIndex: number; // Add this prop
+  ownerIndex: number;
 }
 
 const RegionDisplay: React.FC<RegionDisplayProps> = ({ regionId, svgPath, troops, ownerIndex }) => {

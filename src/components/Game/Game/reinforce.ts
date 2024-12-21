@@ -30,14 +30,14 @@ export const onRegionClickReinforce = (
 
 export const getReinforcePopupProps = (
     doReinforce: (reinforceMove: ReinforceMove, gameState: GameState) => Promise<Response>,
-    reinforceMove: ReinforceMove,
     gameState: GameState,
+    reinforceMove: ReinforceMove,
     dispatchReinforceMove: (action: ReinforceAction) => void,
     getSvgPathForRegion: (regionId: string) => string,
-    ownerIndex: number
+    ownerIndex: number,
 ) => {
     return {
-        isOpen: !!reinforceMove.sourceRegionId && !!reinforceMove.targetRegionId,
+        isVisible: !!reinforceMove.sourceRegionId && !!reinforceMove.targetRegionId,
         sourceRegionId: reinforceMove.sourceRegionId,
         targetRegionId: reinforceMove.targetRegionId,
         sourceRegionSvgPath: reinforceMove.sourceRegionId ? getSvgPathForRegion(reinforceMove.sourceRegionId) : "",

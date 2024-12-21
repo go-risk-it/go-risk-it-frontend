@@ -61,7 +61,7 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
     }
 
     return (
-        <Dialog open={props.isVisible} onClose={props.onConfirm}>
+        <Dialog open={props.isVisible} onClose={onClose}>
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
@@ -69,14 +69,14 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
                         regionId={props.sourceRegion} 
                         svgPath={props.sourceSvgPath} 
                         troops={props.troopsInSource - troopsToMove} 
-                        ownerIndex={props.sourceOwnerIndex} // Add this line
+                        ownerIndex={props.sourceOwnerIndex}
                     />
                     <Typography variant="h6" alignSelf="center">→</Typography>
                     <RegionDisplay 
                         regionId={props.targetRegion} 
                         svgPath={props.targetSvgPath} 
                         troops={troopsToMove} 
-                        ownerIndex={props.sourceOwnerIndex} // Use sourceOwnerIndex as the new owner
+                        ownerIndex={props.sourceOwnerIndex}
                     />
                 </Box>
                 <Slider

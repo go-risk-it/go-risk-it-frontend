@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import RegionDisplay from '../RegionDisplay/RegionDisplay';
-import Box from '@mui/material/Box';
-import { PopupProps } from "./PopupProps";
+import React, {useEffect, useState} from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
+import Button from "@mui/material/Button"
+import Slider from "@mui/material/Slider"
+import Typography from "@mui/material/Typography"
+import RegionDisplay from "../RegionDisplay/RegionDisplay"
+import Box from "@mui/material/Box"
+import {PopupProps} from "./PopupProps"
 
 interface ReinforcePopupProps {
-    isOpen: boolean;
+    isVisible: boolean;
     sourceRegionId: string;
     targetRegionId: string;
     troopsInSource: number;
@@ -32,46 +32,46 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
         onClose,
     },
 ) => {
-    const [localMovingTroops, setLocalMovingTroops] = useState(props.movingTroops);
-    const maxMovableTroops = Math.max(1, props.troopsInSource - 1);
-    
-    useEffect(() => {
-        if (props.isOpen) {
-            onOpen();
-        } else {
-            onClose();
-        }
-    }, [props.isOpen, onOpen, onClose]);
+    const [localMovingTroops, setLocalMovingTroops] = useState(props.movingTroops)
+    const maxMovableTroops = Math.max(1, props.troopsInSource - 1)
 
     useEffect(() => {
-        setLocalMovingTroops(props.movingTroops);
-    }, [props.movingTroops]);
+        if (props.isVisible) {
+            onOpen()
+        } else {
+            onClose()
+        }
+    }, [props.isVisible, onOpen, onClose])
+
+    useEffect(() => {
+        setLocalMovingTroops(props.movingTroops)
+    }, [props.movingTroops])
 
     const handleTroopsChange = (newValue: number) => {
-        const validValue = Math.max(1, Math.min(newValue, maxMovableTroops));
-        setLocalMovingTroops(validValue);
-        props.onMovingTroopsChange(validValue);
-    };
+        const validValue = Math.max(1, Math.min(newValue, maxMovableTroops))
+        setLocalMovingTroops(validValue)
+        props.onMovingTroopsChange(validValue)
+    }
 
-    if (!props.isOpen) return null;
+    if (!props.isVisible) return null
 
     return (
-        <Dialog open={props.isOpen} onClose={props.onCancel}>
+        <Dialog open={props.isVisible} onClose={props.onCancel}>
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay 
-                        regionId={props.sourceRegionId} 
-                        svgPath={props.sourceRegionSvgPath} 
-                        troops={props.troopsInSource - localMovingTroops} 
-                        ownerIndex={props.ownerIndex} // Add this line
+                    <RegionDisplay
+                        regionId={props.sourceRegionId}
+                        svgPath={props.sourceRegionSvgPath}
+                        troops={props.troopsInSource - localMovingTroops}
+                        ownerIndex={props.ownerIndex}
                     />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay 
-                        regionId={props.targetRegionId} 
-                        svgPath={props.targetRegionSvgPath} 
-                        troops={props.troopsInTarget + localMovingTroops} 
-                        ownerIndex={props.ownerIndex} // Add this line
+                    <RegionDisplay
+                        regionId={props.targetRegionId}
+                        svgPath={props.targetRegionSvgPath}
+                        troops={props.troopsInTarget + localMovingTroops}
+                        ownerIndex={props.ownerIndex}
                     />
                 </Box>
                 <Slider
@@ -94,7 +94,7 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
                 </Button>
             </DialogActions>
         </Dialog>
-    );
-};
+    )
+}
 
-export default ReinforcePopup;
+export default ReinforcePopup

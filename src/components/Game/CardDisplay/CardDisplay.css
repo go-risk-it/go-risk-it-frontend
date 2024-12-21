@@ -1,0 +1,27 @@
+@keyframes highlight {
+    0% {
+        border-color: transparent;
+    }
+    50% {
+        border-color: red;
+    }
+    100% {
+        border-color: transparent;
+    }
+}
+
+.risk-it-card-selectable {
+    stroke: #000000;
+    cursor: pointer;
+    animation: highlight 1s infinite;
+}
+
+.risk-it-card-not-selectable {
+    cursor: not-allowed;
+}
+
+.risk-it-card-selected {
+    stroke: #00ff00;
+    stroke-width: 2;
+    animation: none;
+}

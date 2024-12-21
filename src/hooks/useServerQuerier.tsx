@@ -3,8 +3,9 @@ import {DeployMove} from "../api/message/deployMove.ts"
 import {AttackMove} from "../api/message/attackMove.ts"
 import {GameState} from "../api/message/gameState.ts"
 import {ConquerMove} from "../api/message/conquerMove.ts"
-import { ReinforceMove } from "../api/message/reinforceMove.ts"
-import { AdvanceMove } from "../api/message/advanceMove.ts"
+import {ReinforceMove} from "../api/message/reinforceMove.ts"
+import {AdvanceMove} from "../api/message/advanceMove.ts"
+import {CardMove} from "../api/message/cardMove.ts"
 
 export const useServerQuerier = () => {
     const {session} = useAuth()
@@ -44,11 +45,16 @@ export const useServerQuerier = () => {
         return doMove(advanceMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/advancements`)
     }
 
+    const doPlayCards = async (cardMove: CardMove, gameState: GameState): Promise<Response> => {
+        return doMove(cardMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/cards`)
+    }
+
     return {
         doDeploy,
         doAttack,
         doConquer,
         doReinforce,
-        doAdvance
+        doAdvance,
+        doPlayCards,
     }
 }
