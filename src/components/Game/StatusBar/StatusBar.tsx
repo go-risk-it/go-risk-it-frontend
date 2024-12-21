@@ -1,7 +1,7 @@
 import "./StatusBar.css"
-import {useGameState} from "../../../hooks/useGameState.tsx"
+import {useGameState} from "../../../hooks/useGameState.ts"
 import {DeployPhaseState, PhaseType} from "../../../api/message/gameState.ts"
-import {useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
+import {useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.ts"
 
 
 const StatusBar = () => {

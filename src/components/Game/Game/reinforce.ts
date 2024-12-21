@@ -1,9 +1,10 @@
 import { PlayerState } from '../../../api/message/playersState';
 import { Region } from '../../../api/message/boardState';
 import { ReinforceMove } from '../../../api/message/reinforceMove';
-import { ReinforceAction, ReinforceActionType } from '../../../hooks/useReinforceMoveReducer';
+import { ReinforceAction, ReinforceActionType } from '../../../hooks/useReinforceMoveReducer.ts';
 import Graph from './Graph';
 import { GameState } from '../../../api/message/gameState';
+import {ReinforcePopupProps} from "../Popup/ReinforcePopup.tsx"
 
 export const onRegionClickReinforce = (
     thisPlayerState: PlayerState,
@@ -33,15 +34,12 @@ export const getReinforcePopupProps = (
     gameState: GameState,
     reinforceMove: ReinforceMove,
     dispatchReinforceMove: (action: ReinforceAction) => void,
-    getSvgPathForRegion: (regionId: string) => string,
     ownerIndex: number,
-) => {
+): ReinforcePopupProps => {
     return {
         isVisible: !!reinforceMove.sourceRegionId && !!reinforceMove.targetRegionId,
         sourceRegionId: reinforceMove.sourceRegionId,
         targetRegionId: reinforceMove.targetRegionId,
-        sourceRegionSvgPath: reinforceMove.sourceRegionId ? getSvgPathForRegion(reinforceMove.sourceRegionId) : "",
-        targetRegionSvgPath: reinforceMove.targetRegionId ? getSvgPathForRegion(reinforceMove.targetRegionId) : "",
         troopsInSource: reinforceMove.troopsInSource,
         troopsInTarget: reinforceMove.troopsInTarget,
         movingTroops: reinforceMove.movingTroops,

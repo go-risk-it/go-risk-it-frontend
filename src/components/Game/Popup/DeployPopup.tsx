@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react"
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import RegionDisplay from '../RegionDisplay/RegionDisplay';
+import React, {useEffect, useState} from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
+import Button from "@mui/material/Button"
+import Slider from "@mui/material/Slider"
+import Typography from "@mui/material/Typography"
+import RegionDisplay from "../RegionDisplay/RegionDisplay"
 
 import "./Popup.css"
-import { PopupProps } from "./PopupProps";
+import {PopupProps} from "./PopupProps"
 
 export interface DeployPopupProps {
     isVisible: boolean
     region: string
-    regionSvgPath: string
     currentTroops: number
     deployableTroops: number
     onSetTroops: (desiredTroops: number) => void
@@ -56,8 +55,7 @@ const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
                 <RegionDisplay 
-                    regionId={props.region} 
-                    svgPath={props.regionSvgPath} 
+                    regionId={props.region}
                     troops={props.currentTroops}
                     ownerIndex={props.ownerIndex}
                 />

@@ -9,14 +9,16 @@ import CloseIcon from "@mui/icons-material/Close"
 
 import "./Popup.css"
 import {PopupProps} from "./PopupProps"
-import {Card, CardState} from "../../../api/message/cardState.ts"
-import CardDisplay from "../CardDisplay/CardDisplay.tsx"
-import {CardActionType, useCardMoveReducer} from "../../../hooks/useCardMoveReducer.tsx"
+import {Card} from "../../../api/message/cardState.ts"
+import CardDisplay from "../Cards/CardDisplay.tsx"
+import {CardCombination} from "../../../api/message/cardMove.ts"
 
 export interface CardsPopupProps {
     isVisible: boolean
-    cardState: CardState
-    getSvgPathForRegion: (regionId: string) => string
+    playerCards: Card[]
+    onCombinationAdd: (combination: number[]) => void
+    onCombinationRemove: (index: number) => void
+    selectedCombinations: CardCombination[]
     onCancel: () => void
     onConfirm: () => void
 }
@@ -28,7 +30,6 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
         onClose,
     },
 ) => {
-    const {cardMove, dispatchCardMove} = useCardMoveReducer()
     const [selectedCards, setSelectedCards] = useState<number[]>([])
 
     useEffect(() => {
@@ -46,19 +47,19 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
         } else {
             newSelectedCards = [...selectedCards, card.id]
             if (newSelectedCards.length === 3) {
-                console.log("Forming combination")
-                dispatchCardMove({type: CardActionType.SELECT_COMBINATION, combination: newSelectedCards})
+                console.log("Forming combination: ", newSelectedCards)
+                props.onCombinationAdd(newSelectedCards)
                 newSelectedCards = []
             }
         }
         setSelectedCards(newSelectedCards)
     }
 
-    const handleDeselectCombination = (index: number) => {
-        dispatchCardMove({type: CardActionType.UNSELECT_COMBINATION, combinationIndex: index})
+    const handleCombinationRemove = (index: number) => {
+        props.onCombinationRemove(index)
     }
 
-    const availableCards = props.cardState.cards.filter(card => !cardMove.combinations.some(combination => combination.cardIDs.includes(card.id)))
+    const availableCards = props.playerCards.filter(card => !props.selectedCombinations.some(combination => combination.cardIDs.includes(card.id)))
 
     return (
         <Dialog open={props.isVisible} onClose={props.onCancel}>
@@ -69,28 +70,26 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
                         <CardDisplay
                             key={card.id}
                             card={card}
-                            getSvgPathForRegion={props.getSvgPathForRegion}
                             onCardClick={handleCardClick}
                             isSelected={selectedCards.includes(card.id)}
                         />
                     ))}
                 </Box>
                 <Box display="flex" flexDirection="column" mt={2}>
-                    {cardMove.combinations.map((combination, index) => (
+                    {props.selectedCombinations.map((combination, index) => (
                         <Box key={index} display="flex" alignItems="center">
                             {combination.cardIDs.map(cardId => {
-                                const card = props.cardState.cards.find(c => c.id === cardId)
+                                const card = props.playerCards.find(c => c.id === cardId)
                                 return card ? (
                                     <CardDisplay
                                         key={card.id}
                                         card={card}
-                                        getSvgPathForRegion={props.getSvgPathForRegion}
                                         onCardClick={null}
                                         isSelected={false}
                                     />
                                 ) : null
                             })}
-                            <IconButton onClick={() => handleDeselectCombination(index)}>
+                            <IconButton onClick={() => handleCombinationRemove(index)}>
                                 <CloseIcon/>
                             </IconButton>
                         </Box>
@@ -98,7 +97,7 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onConfirm} disabled={cardMove.combinations.length === 0}>Play cards</Button>
+                <Button onClick={props.onConfirm} disabled={props.selectedCombinations.length === 0}>Play cards</Button>
             </DialogActions>
         </Dialog>
     )

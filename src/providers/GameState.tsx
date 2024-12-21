@@ -1,5 +1,5 @@
 import {createContext, ReactElement, useContext, useEffect, useState} from "react"
-import {useAuth} from "../hooks/useAuth.tsx"
+import {useAuth} from "../hooks/useAuth.ts"
 import {BoardState} from "../api/message/boardState.ts"
 import {PlayersState, PlayerState} from "../api/message/playersState.ts"
 import {GameState, GameStateAPI, PhaseState} from "../api/message/gameState.ts"

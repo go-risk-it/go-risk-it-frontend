@@ -1,64 +1,31 @@
-import React, {useState} from "react"
+import React from "react"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
-import {useAuth} from "../../../hooks/useAuth.tsx"
-import world from "../../../assets/risk.json"
-import {SVGMap} from "../Map/SVGMap.tsx"
-import {useGameState} from "../../../hooks/useGameState.tsx"
-import {DeployMove} from "../../../api/message/deployMove.ts"
-import {ConquerPhaseState, DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
-import {Region} from "../../../api/message/boardState.ts"
-import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
-import {DeployAction, useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.tsx"
+import {useAuth} from "../../../hooks/useAuth.ts"
+import {useGameState} from "../../../hooks/useGameState.ts"
+import {ConquerPhaseState, DeployPhaseState, PhaseType} from "../../../api/message/gameState.ts"
+import {useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.ts"
 import {getDeployPopupProps, onRegionClickDeploy} from "./deploy.ts"
-import DeployPopup from "../Popup/DeployPopup.tsx"
-import {AttackAction, useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.tsx"
-import {AttackMove} from "../../../api/message/attackMove.ts"
+import {useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.ts"
 import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
-import AttackPopup from "../Popup/AttackPopup.tsx"
-import {useServerQuerier} from "../../../hooks/useServerQuerier.tsx"
-import Graph from "./Graph.ts"
-import ConquerPopup from "../Popup/ConquerPopup.tsx"
-import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.tsx"
-import {ReinforceAction, useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.tsx"
-import {ReinforceMove} from "../../../api/message/reinforceMove.ts"
-import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
-import ReinforcePopup from "../Popup/ReinforcePopup.tsx"
+import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.ts"
 import {getConquerPopupProps} from "./conquer.ts"
-import {AdvanceMove} from "../../../api/message/advanceMove.ts"
-import CardDisplay from "../CardDisplay/CardDisplay.tsx"
-import {Box, Typography} from "@mui/material"
-import CardsPopup from "../Popup/CardsPopup.tsx"
+import {useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.ts"
+import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
+import {useCardMoveReducer} from "../../../hooks/useCardMoveReducer.ts"
 import {getCardsPopupProps} from "./cards.ts"
-import {useCardMoveReducer} from "../../../hooks/useCardMoveReducer.tsx"
+import {AdvanceMove} from "../../../api/message/advanceMove.ts"
+import MapContainer from "../Map/MapContainer.tsx"
+import PopupManager from "../Popup/PopupManager.tsx"
+import {MapProvider} from "../../../providers/Map.tsx"
+import {useServerQuerier} from "../../../hooks/useServerQuerier.ts"
+import CardsStatus from "../Cards/CardsStatus.tsx"
 
-
-const onRegionClick = (region: Region, gameState: GameState, thisPlayerState: PlayerState, playersState: PlayersState,
-                       deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void,
-                       attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
-                       reinforceMove: ReinforceMove, dispatchReinforceMove: (action: ReinforceAction) => void,
-                       graph: Graph,
-): (() => void) | null => {
-    if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
-        return null
-    }
-    switch (gameState.phaseType) {
-        case PhaseType.DEPLOY:
-            return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
-        case PhaseType.ATTACK:
-            return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
-        case PhaseType.REINFORCE:
-            return onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph)
-        default:
-            return null
-    }
-}
 
 const Game: React.FC = () => {
     const {signout} = useAuth()
 
-    const [isPopupOpen, setIsPopupOpen] = useState(false)
 
     const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
     const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
@@ -73,65 +40,6 @@ const Game: React.FC = () => {
         return null
     }
 
-    const thisPlayerRegions = new Set<string>(
-        boardState.regions
-            .filter(region => region.ownerId === thisPlayerState.userId)
-            .map(region => region.id),
-    )
-
-    const graph = new Graph(world.links, boardState)
-
-    // add info to world.layers, i.e., the number of troops and the owner of each region
-    const mapData = {
-        ...world,
-        layers: world.layers.map(layer => {
-            const region = boardState.regions.find(boardRegion => boardRegion.id === layer.id)
-            if (!region) {
-                throw Error(`Region with id ${layer.id} not found`)
-            }
-            const owner = playersState.players.find(player => player.userId === region.ownerId)
-            if (!owner) {
-                throw Error(`Owner with id ${region.ownerId} not found for region ${region.id} in ${playersState.players}`)
-            }
-
-            return {
-                ...layer,
-                onRegionClick: onRegionClick(region, gameState, thisPlayerState, playersState,
-                    deployMove, dispatchDeployMove,
-                    attackMove, dispatchAttackMove,
-                    reinforceMove, dispatchReinforceMove,
-                    graph,
-                ),
-                troops: region.troops,
-                ownerIndex: owner.index,
-            }
-        }),
-    }
-
-
-    // sort regions layers: put the ones owned by this player last,
-    // so they are rendered on top of other regions and animations are visible
-    mapData.layers.sort((a, b) => {
-        if (thisPlayerRegions.has(a.id)) {
-            return 1
-        }
-        if (thisPlayerRegions.has(b.id)) {
-            return -1
-        }
-        return 0
-    })
-
-    const getSvgPathForRegion = (regionId: string) => {
-        const layer = world.layers.find(l => l.id === regionId)
-        if (layer) {
-            return layer.d
-        }
-        console.warn(`No SVG path found for region ${regionId}`)
-        return ""
-    }
-
-    const handlePopupOpen = () => setIsPopupOpen(true)
-    const handlePopupClose = () => setIsPopupOpen(false)
     const handleAdvance = () => {
         const advanceMove: AdvanceMove = {
             currentPhase: gameState.phaseType,
@@ -139,88 +47,47 @@ const Game: React.FC = () => {
         doAdvance(advanceMove, gameState)
     }
 
-    console.log("cardState", cardState)
     return (
-        <div>
-            {/*<h1>Go risk it!</h1>*/}
-            <Button onClick={signout}>Sign out</Button>
-            <SVGMap {...mapData} className="risk-it-map-container"/>
+        <MapProvider boardState={boardState} thisPlayerState={thisPlayerState}>
+            <div>
+                <Button onClick={signout}>Sign out</Button>
+                <MapContainer
+                    onRegionClick={(graph, region) => {
+                        if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
+                            return null
+                        }
+                        switch (gameState.phaseType) {
+                            case PhaseType.DEPLOY:
+                                return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
+                            case PhaseType.ATTACK:
+                                return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
+                            case PhaseType.REINFORCE:
+                                return onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph)
+                            default:
+                                return null
+                        }
+                    }
+                    }
+                />
 
-            {
-                gameState.phaseType === PhaseType.DEPLOY && (
-                    <DeployPopup
-                        props={getDeployPopupProps(
-                            doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, getSvgPathForRegion, thisPlayerState.index,
-                        )}
-                        onOpen={handlePopupOpen}
-                        onClose={handlePopupClose}
-                    />
-                )
-            }
+                <PopupManager
+                    deployPopupProps={getDeployPopupProps(
+                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, thisPlayerState.index,
+                    )}
+                    attackPopupProps={getAttackPopupProps(
+                        doAttack, gameState, attackMove, dispatchAttackMove, boardState, playersState,
+                    )}
+                    conquerPopupProps={getConquerPopupProps(
+                        doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, playersState,
+                    )}
+                    reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
+                    cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove)}
+                    handleAdvance={handleAdvance}
+                />
+                <CardsStatus/>
+            </div>
+        </MapProvider>
 
-            {
-                gameState.phaseType === PhaseType.ATTACK && (
-                    <AttackPopup
-                        props={getAttackPopupProps(
-                            doAttack, gameState, attackMove, dispatchAttackMove, getSvgPathForRegion, boardState, playersState,
-                        )}
-                        onOpen={handlePopupOpen}
-                        onClose={handlePopupClose}
-                    />
-                )
-            }
-
-            {
-                gameState.phaseType === PhaseType.CONQUER && (
-                    <ConquerPopup
-                        props={getConquerPopupProps(
-                            doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, getSvgPathForRegion, playersState,
-                        )}
-                        onOpen={handlePopupOpen}
-                        onClose={handlePopupClose}
-                    />
-                )
-            }
-
-            {
-                gameState.phaseType === PhaseType.REINFORCE && (
-                    <ReinforcePopup
-                        props={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, getSvgPathForRegion, thisPlayerState.index)}
-                        onOpen={handlePopupOpen}
-                        onClose={handlePopupClose}
-                    />
-                )
-            }
-
-            {
-                gameState.phaseType === PhaseType.CARDS && (
-                    <CardsPopup
-                        props={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove, getSvgPathForRegion)}
-                        onOpen={handlePopupOpen}
-                        onClose={handlePopupClose}
-                    />
-                )
-            }
-
-            {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE || gameState.phaseType === PhaseType.CARDS) && !isPopupOpen && (
-                <Button onClick={handleAdvance}>Advance</Button>
-            )}
-
-            {cardState.cards.length > 0 && (
-                <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
-                    <Typography variant="h6">Your Cards:</Typography>
-                    {cardState.cards.map(card => (
-                        <CardDisplay
-                            key={card.id}
-                            card={card}
-                            getSvgPathForRegion={getSvgPathForRegion}
-                            onCardClick={null}
-                            isSelected={false}
-                        />
-                    ))}
-                </Box>
-            )}
-        </div>
     )
 }
 

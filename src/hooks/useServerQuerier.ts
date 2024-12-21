@@ -1,4 +1,4 @@
-import {useAuth} from "./useAuth.tsx"
+import {useAuth} from "./useAuth.ts"
 import {DeployMove} from "../api/message/deployMove.ts"
 import {AttackMove} from "../api/message/attackMove.ts"
 import {GameState} from "../api/message/gameState.ts"
@@ -46,6 +46,7 @@ export const useServerQuerier = () => {
     }
 
     const doPlayCards = async (cardMove: CardMove, gameState: GameState): Promise<Response> => {
+        console.log("Playing cards: ", cardMove)
         return doMove(cardMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/cards`)
     }
 

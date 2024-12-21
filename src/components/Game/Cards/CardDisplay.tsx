@@ -7,12 +7,11 @@ import "./CardDisplay.css"
 
 interface CardDisplayProps {
     card: Card;
-    getSvgPathForRegion: (regionId: string) => string;
     onCardClick: ((card: Card) => void) | null; // if not null or undefined, the card is selectable
     isSelected: boolean;
 }
 
-const CardDisplay: React.FC<CardDisplayProps> = ({card, getSvgPathForRegion, onCardClick, isSelected}) => {
+const CardDisplay: React.FC<CardDisplayProps> = ({card, onCardClick, isSelected}) => {
     const isSelectable = onCardClick !== null
     return (
         <Box display="flex" flexDirection="column" alignItems="center" border={1} borderRadius={2} p={1} m={1}
@@ -23,7 +22,6 @@ const CardDisplay: React.FC<CardDisplayProps> = ({card, getSvgPathForRegion, onC
             {card.type !== "jolly" && (
                 <RegionDisplay
                     regionId={card.region}
-                    svgPath={getSvgPathForRegion(card.region)}
                     ownerIndex={-1} // We don't need to show ownership for cards
                 />
             )}

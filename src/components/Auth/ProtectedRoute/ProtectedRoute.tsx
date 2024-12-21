@@ -1,5 +1,5 @@
 import {Navigate} from "react-router-dom"
-import {useAuth} from "../../../hooks/useAuth.tsx"
+import {useAuth} from "../../../hooks/useAuth.ts"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ProtectedRoute = ({children}: any) => {

@@ -20,8 +20,6 @@ export interface ConquerPopupProps {
     minTroopsToMove: number
     onSetTroops: (troopsToMove: number) => void
     onConfirm: () => void
-    sourceSvgPath: string
-    targetSvgPath: string
     sourceOwnerIndex: number // Add this line
     targetOwnerIndex: number // Add this line
 }
@@ -38,11 +36,11 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
 
     useEffect(() => {
         setTroopsToMove(props.minTroopsToMove);
-    }, [props.minTroopsToMove]);
+    }, [props]);
 
     useEffect(() => {
         props.onSetTroops(troopsToMove);
-    }, [troopsToMove, props.onSetTroops]);
+    }, [troopsToMove, props]);
 
     const handleTroopsChange = (newValue: number) => {
         setTroopsToMove(newValue);
@@ -67,15 +65,13 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
                 <Box display="flex" justifyContent="space-between" mb={2}>
                     <RegionDisplay 
                         regionId={props.sourceRegion} 
-                        svgPath={props.sourceSvgPath} 
-                        troops={props.troopsInSource - troopsToMove} 
+                        troops={props.troopsInSource - troopsToMove}
                         ownerIndex={props.sourceOwnerIndex}
                     />
                     <Typography variant="h6" alignSelf="center">→</Typography>
                     <RegionDisplay 
                         regionId={props.targetRegion} 
-                        svgPath={props.targetSvgPath} 
-                        troops={troopsToMove} 
+                        troops={troopsToMove}
                         ownerIndex={props.sourceOwnerIndex}
                     />
                 </Box>

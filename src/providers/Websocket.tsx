@@ -1,5 +1,5 @@
 import {createContext, ReactElement, useCallback, useEffect, useRef} from "react"
-import {useAuth} from "../hooks/useAuth.tsx"
+import {useAuth} from "../hooks/useAuth.ts"
 
 export interface WebsocketMessage {
     type: string;

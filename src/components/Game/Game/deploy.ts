@@ -1,7 +1,7 @@
 import {PlayerState} from "../../../api/message/playersState.ts"
 import {Region} from "../../../api/message/boardState.ts"
 import {DeployMove} from "../../../api/message/deployMove.ts"
-import {DeployAction, DeployActionType} from "../../../hooks/useDeployMoveReducer.tsx"
+import {DeployAction, DeployActionType} from "../../../hooks/useDeployMoveReducer.ts"
 import {DeployPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
 import { DeployPopupProps } from "../Popup/DeployPopup.tsx"
 
@@ -22,13 +22,11 @@ export const getDeployPopupProps = (
     phaseState: DeployPhaseState,
     deployMove: DeployMove,
     dispatchDeployMove: (action: DeployAction) => void,
-    getSvgPathForRegion: (regionId: string) => string,
     ownerIndex: number
 ): DeployPopupProps => {
     return {
         isVisible: gameState.phaseType === PhaseType.DEPLOY && deployMove.regionId !== null,
         region: deployMove.regionId || "",
-        regionSvgPath: deployMove.regionId ? getSvgPathForRegion(deployMove.regionId) : "",
         currentTroops: deployMove.currentTroops,
         deployableTroops: phaseState.deployableTroops,
         onSetTroops: (desiredTroops: number) => dispatchDeployMove({type: DeployActionType.SET_TROOPS, desiredTroops}),

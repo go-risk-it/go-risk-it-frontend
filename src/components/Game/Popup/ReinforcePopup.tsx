@@ -10,7 +10,7 @@ import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Box from "@mui/material/Box"
 import {PopupProps} from "./PopupProps"
 
-interface ReinforcePopupProps {
+export interface ReinforcePopupProps {
     isVisible: boolean;
     sourceRegionId: string;
     targetRegionId: string;
@@ -20,8 +20,6 @@ interface ReinforcePopupProps {
     onMovingTroopsChange: (troops: number) => void;
     onConfirm: () => void;
     onCancel: () => void;
-    sourceRegionSvgPath: string;
-    targetRegionSvgPath: string;
     ownerIndex: number;
 }
 
@@ -62,14 +60,12 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
                 <Box display="flex" justifyContent="space-between" mb={2}>
                     <RegionDisplay
                         regionId={props.sourceRegionId}
-                        svgPath={props.sourceRegionSvgPath}
                         troops={props.troopsInSource - localMovingTroops}
                         ownerIndex={props.ownerIndex}
                     />
                     <Typography variant="h6" alignSelf="center">→</Typography>
                     <RegionDisplay
                         regionId={props.targetRegionId}
-                        svgPath={props.targetRegionSvgPath}
                         troops={props.troopsInTarget + localMovingTroops}
                         ownerIndex={props.ownerIndex}
                     />
