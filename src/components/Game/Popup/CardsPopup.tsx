@@ -19,6 +19,7 @@ export interface CardsPopupProps {
     playerCards: Card[]
     onCombinationAdd: (combination: number[]) => void
     onCombinationRemove: (index: number) => void
+    isCardSelectable: (selectedCards: number[], card: Card) => boolean
     selectedCombinations: CardCombination[]
     onCancel: () => void
     onConfirm: () => void
@@ -77,7 +78,7 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
                                 <CardDisplay
                                     key={card.id}
                                     card={card}
-                                    onCardClick={handleCardClick}
+                                    onCardClick={props.isCardSelectable(selectedCards, card) ? handleCardClick : null}
                                     isSelected={selectedCards.includes(card.id)}
                                 />
                             ))
@@ -105,7 +106,7 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
                                                     key={card.id}
                                                     card={card}
                                                     onCardClick={null}
-                                                    isSelected={false}
+                                                    isSelected={true}
                                                 />
                                             ) : null
                                         })}
