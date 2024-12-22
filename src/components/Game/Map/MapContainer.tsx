@@ -39,7 +39,7 @@ const MapContainer: React.FC<{
             }),
     }
 
-    return <SVGMap {...svgMapProps} className="risk-it-map-container"/>
+    return <SVGMap {...svgMapProps}/>
 }
 
 export default MapContainer

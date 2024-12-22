@@ -16,12 +16,28 @@
     animation: card-highlight 1s infinite;
 }
 
+/* Region size */
+.risk-it-card-selectable svg.risk-it-region-display {
+    width: 5em;
+    height: 5em;
+}
+
 .risk-it-card-not-selectable {
     cursor: not-allowed;
+}
+
+.risk-it-card-not-selectable svg.risk-it-region-display {
+    width: 3em;
+    height: 3em;
 }
 
 .risk-it-card-selected {
     stroke: #00ff00;
     stroke-width: 2;
     animation: none;
+}
+
+.risk-it-card-selected svg.risk-it-region-display {
+    width: 5em;
+    height: 5em;
 }

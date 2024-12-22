@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from "react"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import "../Map/SVGMap.css"
+import "./RegionDisplay.css"
 import {useMapData} from "../../../hooks/useMapData.ts"
 
 
@@ -31,7 +32,7 @@ const RegionDisplay: React.FC<RegionDisplayProps> = ({regionId, troops, ownerInd
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center">
-            <svg ref={svgRef} width="80" height="80" className="risk-it-map-container">
+            <svg ref={svgRef} className="risk-it-map-container risk-it-region-display">
                 <path
                     d={svgPath}
                     className={`risk-it-player${ownerIndex}`}

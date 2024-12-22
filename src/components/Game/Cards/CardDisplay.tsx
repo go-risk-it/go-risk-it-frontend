@@ -13,10 +13,11 @@ interface CardDisplayProps {
 
 const CardDisplay: React.FC<CardDisplayProps> = ({card, onCardClick, isSelected}) => {
     const isSelectable = onCardClick !== null
+    const className = isSelected ? "risk-it-card-selected" : isSelectable ? "risk-it-card-selectable" : "risk-it-card-not-selectable"
     return (
         <Box display="flex" flexDirection="column" alignItems="center" border={1} borderRadius={2} p={1} m={1}
              onClick={isSelectable ? () => onCardClick(card) : undefined}
-             className={`${isSelected ? "risk-it-card-selected" : isSelectable ? "risk-it-card-selectable" : "risk-it-card-not-selectable"}`}>
+             className={`${className}`}>
 
             <Typography variant="h6">{card.type}</Typography>
             {card.type !== "jolly" && (
