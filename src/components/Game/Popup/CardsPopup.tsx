@@ -12,6 +12,7 @@ import {PopupProps} from "./PopupProps"
 import {Card} from "../../../api/message/cardState.ts"
 import CardDisplay from "../Cards/CardDisplay.tsx"
 import {CardCombination} from "../../../api/message/cardMove.ts"
+import Typography from "@mui/material/Typography"
 
 export interface CardsPopupProps {
     isVisible: boolean
@@ -63,39 +64,67 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
 
     return (
         <Dialog open={props.isVisible} onClose={props.onCancel}>
-            <DialogTitle>Cards</DialogTitle>
+            <DialogTitle>Play your cards</DialogTitle>
             <DialogContent className="cards-container">
-                <Box display="flex" flexWrap="wrap" justifyContent="center">
-                    {availableCards.map(card => (
-                        <CardDisplay
-                            key={card.id}
-                            card={card}
-                            onCardClick={handleCardClick}
-                            isSelected={selectedCards.includes(card.id)}
-                        />
-                    ))}
-                </Box>
-                <Box display="flex" flexDirection="column" mt={2}>
-                    {props.selectedCombinations.map((combination, index) => (
-                        <Box key={index} display="flex" alignItems="center">
-                            {combination.cardIDs.map(cardId => {
-                                const card = props.playerCards.find(c => c.id === cardId)
-                                return card ? (
-                                    <CardDisplay
-                                        key={card.id}
-                                        card={card}
-                                        onCardClick={null}
-                                        isSelected={false}
-                                    />
-                                ) : null
-                            })}
-                            <IconButton onClick={() => handleCombinationRemove(index)}>
-                                <CloseIcon/>
-                            </IconButton>
-                        </Box>
-                    ))}
+                <Box display="flex" flexDirection="column">
+                    <Typography variant="h6" align="center" gutterBottom>
+                        Your Cards
+                    </Typography>
+
+                    <Box display="flex" flexWrap="wrap" justifyContent="center">
+                        {availableCards.length > 0 ? (
+                            availableCards.map(card => (
+                                <CardDisplay
+                                    key={card.id}
+                                    card={card}
+                                    onCardClick={handleCardClick}
+                                    isSelected={selectedCards.includes(card.id)}
+                                />
+                            ))
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" align="center">
+                                No more cards to play.
+                            </Typography>
+                        )}
+                    </Box>
+
+                    <Typography variant="h6" align="center" gutterBottom mt={4}>
+                        Combinations to Play
+                    </Typography>
+
+                    <Box display="flex" flexDirection="column" gap={2} alignItems="center">
+                        {props.selectedCombinations.length > 0 ? (
+                            props.selectedCombinations.map((combination, index) => (
+                                <Box key={index} display="flex" alignItems="center">
+                                    {/* Row: Cards in the Combination */}
+                                    <Box display="flex" flexWrap="wrap" gap={1}>
+                                        {combination.cardIDs.map(cardId => {
+                                            const card = props.playerCards.find(c => c.id === cardId)
+                                            return card ? (
+                                                <CardDisplay
+                                                    key={card.id}
+                                                    card={card}
+                                                    onCardClick={null}
+                                                    isSelected={false}
+                                                />
+                                            ) : null
+                                        })}
+                                    </Box>
+                                    {/* Remove Combination Button */}
+                                    <IconButton onClick={() => handleCombinationRemove(index)}>
+                                        <CloseIcon/>
+                                    </IconButton>
+                                </Box>
+                            ))
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" align="center">
+                                Choose a combination to play your cards.
+                            </Typography>
+                        )}
+                    </Box>
                 </Box>
             </DialogContent>
+
             <DialogActions>
                 <Button onClick={props.onConfirm} disabled={props.selectedCombinations.length === 0}>Play cards</Button>
             </DialogActions>
