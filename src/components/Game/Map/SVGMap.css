@@ -59,7 +59,7 @@ svg.risk-it-map-container path.risk-it-player5 {
 }
 
 /* Define the keyframes for the highlight animation */
-@keyframes highlight {
+@keyframes region-highlight {
     0% {
         stroke-width: 2; /* Normal stroke width */
         filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8)); /* Initial shadow */
@@ -78,7 +78,7 @@ svg.risk-it-map-container path.risk-it-player5 {
 svg.risk-it-map-container path.risk-it-region-selectable {
     stroke: #000000;
     cursor: pointer;
-    animation: highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
+    animation: region-highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
 }
 
 svg.risk-it-map-container path.risk-it-region-not-selectable {

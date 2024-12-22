@@ -1,4 +1,4 @@
-@keyframes highlight {
+@keyframes card-highlight {
     0% {
         border-color: transparent;
     }
@@ -13,7 +13,7 @@
 .risk-it-card-selectable {
     stroke: #000000;
     cursor: pointer;
-    animation: highlight 1s infinite;
+    animation: card-highlight 1s infinite;
 }
 
 .risk-it-card-not-selectable {
