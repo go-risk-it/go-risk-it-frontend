@@ -21,10 +21,10 @@ const VALID_COMBINATIONS = [
     CardValue.JOLLY + 2 * CardValue.CAVALRY,
 ]
 
-const getCard = (cardState: CardState, cardId: number): Card => {
-    const card = cardState.cards.find(card => card.id === cardId)
+const getCard = (cardState: CardState, cardID: number): Card => {
+    const card = cardState.cards.find(card => card.id === cardID)
     if (!card) {
-        throw Error(`Card with id ${cardId} not found`)
+        throw Error(`Card with id ${cardID} not found`)
     }
     return card
 }
@@ -42,6 +42,28 @@ const getCardValue = (card: Card): number => {
         default:
             throw Error(`Invalid card type: ${card.type}`)
     }
+}
+
+/*
+ * Check if with the remaining cards it is possible to form a combination of numCardsToPlay cards with the given value
+ */
+const canFormCardCombination = (
+    combinationValue: number,
+    remainingCardsValues: number[],
+    numCardsToPlay: number,
+    nextCardIndex: number = 0,
+): boolean => {
+    if (numCardsToPlay === 0) {
+        return combinationValue === 0
+    }
+
+    for (let i = nextCardIndex; i < remainingCardsValues.length; i++) {
+        if (canFormCardCombination(combinationValue - remainingCardsValues[i], remainingCardsValues, numCardsToPlay - 1, i + 1)) {
+            return true
+        }
+    }
+
+    return false
 }
 
 export const getCardsPopupProps = (
@@ -67,7 +89,11 @@ export const getCardsPopupProps = (
             })
         },
         isCardSelectable: (selectedCards: number[], card: Card) => {
-            // get the remaining cards: the ones that are not in the selected cards and not in the selected combinations
+            // either the card is in the selected cards or it can form a combination with the selected cards
+            if (selectedCards.includes(card.id)) {
+                return true
+            }
+
             const remainingCardsValues = cardState.cards
                 .filter(c =>
                     c.id !== card.id &&
@@ -75,39 +101,12 @@ export const getCardsPopupProps = (
                     !cardMove.combinations.some(combination => combination.cardIDs.includes(c.id)))
                 .map(getCardValue)
 
-            const thisCardValue = getCardValue(card)
+            const currentValue = getCardValue(card) +
+                selectedCards.reduce((acc, cardID) => acc + getCardValue(getCard(cardState, cardID)), 0)
 
-            if (selectedCards.length === 0) {
-                for (const validCombination of VALID_COMBINATIONS) {
-                    for (let i = 0; i < remainingCardsValues.length; i++) {
-                        for (let j = i + 1; j < remainingCardsValues.length; j++) {
-                            if (validCombination === thisCardValue + remainingCardsValues[i] + remainingCardsValues[j]) {
-                                return true
-                            }
-                        }
-                    }
-                }
-            } else {
-                const firstCardValue = getCardValue(getCard(cardState, selectedCards[0]))
-
-                if (selectedCards.length === 1) {
-                    for (const validCombination of VALID_COMBINATIONS) {
-                        if (remainingCardsValues.includes(validCombination - thisCardValue - firstCardValue)) {
-                            return true
-                        }
-                    }
-                } else if (selectedCards.length === 2) {
-                    const secondCardValue = getCardValue(getCard(cardState, selectedCards[1]))
-                    for (const validCombination of VALID_COMBINATIONS) {
-                        if (validCombination === firstCardValue + secondCardValue + thisCardValue) {
-                            return true
-                        }
-                    }
-                } else {
-                    throw Error("Invalid number of selected cards")
-                }
-            }
-            return false
+            return VALID_COMBINATIONS.some(
+                validCombination => canFormCardCombination(validCombination - currentValue, remainingCardsValues, 2 - selectedCards.length),
+            )
         },
         selectedCombinations: cardMove.combinations,
         onCancel: () => {
