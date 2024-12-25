@@ -35,10 +35,6 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
     const maxTroopsToMove = props.troopsInSource - 1;
 
     useEffect(() => {
-        setTroopsToMove(props.minTroopsToMove);
-    }, [props]);
-
-    useEffect(() => {
         props.onSetTroops(troopsToMove);
     }, [troopsToMove, props]);
 

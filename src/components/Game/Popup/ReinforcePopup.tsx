@@ -78,6 +78,7 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
                     step={1}
                     marks
                     valueLabelDisplay="auto"
+                    disabled={maxMovableTroops === 1}
                 />
                 <Typography gutterBottom>
                     Moving Troops: {localMovingTroops}

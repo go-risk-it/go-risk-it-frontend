@@ -1,15 +1,14 @@
-import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
-import {BoardState, Region} from "../../../api/message/boardState.ts"
-import {AttackMove} from "../../../api/message/attackMove.ts"
-import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReducer.ts"
-import {GameState, PhaseType} from "../../../api/message/gameState.ts"
+import { PlayersState, PlayerState } from "../../../api/message/playersState.ts"
+import { BoardState, Region } from "../../../api/message/boardState.ts"
+import { AttackMove } from "../../../api/message/attackMove.ts"
+import { AttackAction, AttackActionType } from "../../../hooks/useAttackMoveReducer.ts"
+import { GameState, PhaseType } from "../../../api/message/gameState.ts"
 import Graph from "./Graph.ts"
-import {AttackPopupProps} from "../Popup/AttackPopup.tsx"
+import { AttackPopupProps } from "../Popup/AttackPopup.tsx"
 
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
-                                    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
-                                    graph: Graph) {
-    console.log("onRegionClickAttack", attackMove, region)
+    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+    graph: Graph) {
     if (!attackMove.sourceRegionId) {
         if (region.ownerId === thisPlayerState.userId && region.troops > 1) {
             return () => dispatchAttackMove({
@@ -60,7 +59,7 @@ export const getAttackPopupProps = (
             attackingTroops,
         }),
         onCancel: () => {
-            dispatchAttackMove({type: AttackActionType.RESET})
+            dispatchAttackMove({ type: AttackActionType.RESET })
         },
         onConfirm: () => {
             doAttack(attackMove, gameState).then(response => {
@@ -68,7 +67,7 @@ export const getAttackPopupProps = (
             }).catch(error => {
                 console.error("Error attacking: ", error)
             })
-            dispatchAttackMove({type: AttackActionType.RESET})
+            dispatchAttackMove({ type: AttackActionType.RESET })
         },
         sourceOwnerIndex: sourceOwner?.index ?? 0,
         targetOwnerIndex: targetOwner?.index ?? 0,
