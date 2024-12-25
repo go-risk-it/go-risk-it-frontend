@@ -48,3 +48,15 @@
     width: 5em;
     height: 5em;
 }
+.combination-cards {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.combination-cards .risk-it-card-selected {
+    transform: scale(0.7);
+    transform-origin: center;
+}.combination-cards svg.risk-it-region-display {
+    width: 3.5em;
+    height: 3.5em;
+}

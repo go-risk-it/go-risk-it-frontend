@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import DialogActions from "@mui/material/DialogActions"
 import Button from "@mui/material/Button"
-import {Box, IconButton} from "@mui/material"
+import { Box, IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 
 import "./Popup.css"
-import {PopupProps} from "./PopupProps"
-import {Card} from "../../../api/message/cardState.ts"
+import { PopupProps } from "./PopupProps"
+import { Card } from "../../../api/message/cardState.ts"
 import CardDisplay from "../Cards/CardDisplay.tsx"
-import {CardCombination} from "../../../api/message/cardMove.ts"
+import { CardCombination } from "../../../api/message/cardMove.ts"
 import Typography from "@mui/material/Typography"
 
 export interface CardsPopupProps {
@@ -64,41 +64,38 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
     const availableCards = props.playerCards.filter(card => !props.selectedCombinations.some(combination => combination.cardIDs.includes(card.id)))
 
     return (
-        <Dialog open={props.isVisible} onClose={props.onCancel}>
-            <DialogTitle>Play your cards</DialogTitle>
+        <Dialog
+            open={props.isVisible}
+            onClose={props.onCancel}
+            maxWidth={false}
+            fullWidth
+        >
             <DialogContent className="cards-container">
                 <Box display="flex" flexDirection="column">
-                    <Typography variant="h6" align="center" gutterBottom>
-                        Your Cards
-                    </Typography>
-
-                    <Box display="flex" flexWrap="wrap" justifyContent="center">
-                        {availableCards.length > 0 ? (
-                            availableCards.map(card => (
+                    <div className="cards-selection-area">
+                        <Typography className="section-title" variant="h6" align="center">
+                            Your Cards
+                        </Typography>
+                        <div className="cards-grid">
+                            {availableCards.map(card => (
                                 <CardDisplay
                                     key={card.id}
                                     card={card}
                                     onCardClick={props.isCardSelectable(selectedCards, card) ? handleCardClick : null}
                                     isSelected={selectedCards.includes(card.id)}
                                 />
-                            ))
-                        ) : (
-                            <Typography variant="body1" color="textSecondary" align="center">
-                                No more cards to play.
-                            </Typography>
-                        )}
-                    </Box>
+                            ))}
+                        </div>
+                    </div>
 
-                    <Typography variant="h6" align="center" gutterBottom mt={4}>
-                        Combinations to Play
-                    </Typography>
-
-                    <Box display="flex" flexDirection="column" gap={2} alignItems="center">
-                        {props.selectedCombinations.length > 0 ? (
-                            props.selectedCombinations.map((combination, index) => (
-                                <Box key={index} display="flex" alignItems="center">
-                                    {/* Row: Cards in the Combination */}
-                                    <Box display="flex" flexWrap="wrap" gap={1}>
+                    <div className="combinations-area">
+                        <Typography className="section-title" variant="h6">
+                            Selected Combinations
+                        </Typography>
+                        <div className="combinations-content">
+                            {props.selectedCombinations.map((combination, index) => (
+                                <div key={index} className="combination-row">
+                                    <div className="combination-cards">
                                         {combination.cardIDs.map(cardId => {
                                             const card = props.playerCards.find(c => c.id === cardId)
                                             return card ? (
@@ -110,27 +107,25 @@ const CardsPopup: React.FC<PopupProps<CardsPopupProps>> = (
                                                 />
                                             ) : null
                                         })}
-                                    </Box>
-                                    {/* Remove Combination Button */}
+                                    </div>
                                     <IconButton onClick={() => handleCombinationRemove(index)}>
-                                        <CloseIcon/>
+                                        <CloseIcon />
                                     </IconButton>
-                                </Box>
-                            ))
-                        ) : (
-                            <Typography variant="body1" color="textSecondary" align="center">
-                                Choose a combination to play your cards.
-                            </Typography>
-                        )}
-                    </Box>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </Box>
             </DialogContent>
-
             <DialogActions>
-                <Button onClick={props.onConfirm} disabled={props.selectedCombinations.length === 0}>Play cards</Button>
+                <Button
+                    onClick={props.onConfirm}
+                    disabled={props.selectedCombinations.length === 0}
+                >
+                    Play cards
+                </Button>
             </DialogActions>
-        </Dialog>
-    )
+        </Dialog>)
 }
 
 export default CardsPopup
