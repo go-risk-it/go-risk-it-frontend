@@ -33,7 +33,7 @@ export const SVGMapRegion: React.FC<SVGMapRegionProps> = ({id, name, d, onRegion
     return (
         <g {...(isSelectable ? {onClick: onRegionClick} : {})}>
             <path id={id} ref={measuredRef} d={d} aria-label={name}
-                  className={`risk-it-player${ownerIndex} ${isSelectable? "risk-it-region-selectable" : "risk-it-region-not-selectable"}`}/>
+                  className={`risk-it-region risk-it-player${ownerIndex} ${isSelectable ? "risk-it-region-selectable" : "risk-it-region-not-selectable"}`}/>
             <title>{name}</title>
             <text
                 x={center.x}

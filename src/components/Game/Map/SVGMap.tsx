@@ -1,6 +1,6 @@
 import React from "react"
-import {SVGMapRegion, SVGMapRegionProps} from "./SVGMapRegion.tsx"
 import "./SVGMap.css"
+import {SVGMapContinent, SVGMapContinentProps} from "./SVGMapContinent.tsx"
 
 /** Adapted from
  * https://github.com/South-Paw/react-vector-maps/
@@ -9,7 +9,7 @@ export interface SVGMapProps extends React.SVGProps<SVGSVGElement> {
     id: string;
     name: string;
     viewBox: string;
-    layers: SVGMapRegionProps[];
+    continents: SVGMapContinentProps[];
 }
 
 export const SVGMap: React.FC<SVGMapProps> = (
@@ -17,11 +17,10 @@ export const SVGMap: React.FC<SVGMapProps> = (
         id = "svg-map",
         name,
         viewBox,
-        layers,
+        continents,
     },
 ) => {
-    if (!layers || layers.length === 0) {
-        // eslint-disable-next-line no-console
+    if (!continents || continents.length === 0) {
         console.error(
             `No 'layers' prop provided. Did you spread a map object onto the component?`,
         )
@@ -29,11 +28,10 @@ export const SVGMap: React.FC<SVGMapProps> = (
     }
 
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" key={id} aria-label={name} viewBox={viewBox} className="risk-it-map-container">
-            {layers.map((layer) => (
-                <SVGMapRegion key={layer.id} id={layer.id} name={layer.name} d={layer.d}
-                              onRegionClick={layer.onRegionClick} troops={layer.troops}
-                              ownerIndex={layer.ownerIndex}/>
+        <svg xmlns="http://www.w3.org/2000/svg" key={id} aria-label={name} viewBox={viewBox}
+             className="risk-it-map-container">
+            {continents.map(continent => (
+                <SVGMapContinent key={continent.id} {...continent}/>
             ))}
         </svg>
     )

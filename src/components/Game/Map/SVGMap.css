@@ -13,44 +13,44 @@ svg.risk-it-map-container path {
 }
 
 /* Define two classes for inactive and active paths. Set hover and focus for active paths */
-svg.risk-it-map-container path.active {
+svg.risk-it-map-container path.risk-it-region.active {
     filter: saturate(150%);
 }
 
-svg.risk-it-map-container path.active:hover {
+svg.risk-it-map-container path.risk-it-region.active:hover {
     filter: saturate(120%);
 }
 
-svg.risk-it-map-container path.active:focus {
+svg.risk-it-map-container path.risk-it-region.active:focus {
     filter: drop-shadow(0 0 5px #fff);
 }
 
-svg.risk-it-map-container path.inactive {
+svg.risk-it-map-container path.risk-it-region.inactive {
     filter: saturate(50%);
 }
 
 /* Define 6 classes for the 6 different colors */
-svg.risk-it-map-container path.risk-it-player0 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player0 {
     fill: #00ffff;
 }
 
-svg.risk-it-map-container path.risk-it-player1 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player1 {
     fill: #ff0000;
 }
 
-svg.risk-it-map-container path.risk-it-player2 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player2 {
     fill: #0000ff;
 }
 
-svg.risk-it-map-container path.risk-it-player3 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player3 {
     fill: #00ff00;
 }
 
-svg.risk-it-map-container path.risk-it-player4 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player4 {
     fill: #ff00ff;
 }
 
-svg.risk-it-map-container path.risk-it-player5 {
+svg.risk-it-map-container path.risk-it-region.risk-it-player5 {
     fill: #ffff00;
 }
 
@@ -71,13 +71,39 @@ svg.risk-it-map-container path.risk-it-player5 {
 }
 
 /* Define a CSS class for selectable regions with pulsing animation */
-svg.risk-it-map-container path.risk-it-region-selectable {
+svg.risk-it-map-container path.risk-it-region.risk-it-region-selectable {
     stroke: #000000;
     cursor: pointer;
     animation: region-highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
 }
 
-svg.risk-it-map-container path.risk-it-region-not-selectable {
+svg.risk-it-map-container path.risk-it-region.risk-it-region-not-selectable {
     /*filter: saturate(50%);*/
     cursor: not-allowed;
+}
+
+/* Continent colors */
+/* Set properties for filter.feFlood.floodColor and result */
+svg.risk-it-map-container filter feFlood.risk-it-player0 {
+    flood-color: #00ffff;
+}
+
+svg.risk-it-map-container filter feFlood.risk-it-player1 {
+    flood-color: #ff0000;
+}
+
+svg.risk-it-map-container filter feFlood.risk-it-player2 {
+    flood-color: #0000ff;
+}
+
+svg.risk-it-map-container filter feFlood.risk-it-player3 {
+    flood-color: #00ff00;
+}
+
+svg.risk-it-map-container filter feFlood.risk-it-player4 {
+    flood-color: #ff00ff;
+}
+
+svg.risk-it-map-container filter feFlood.risk-it-player5 {
+    flood-color: #ffff00;
 }
