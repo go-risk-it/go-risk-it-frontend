@@ -1,3 +1,12 @@
+:root {
+    --player0-color: #00ffff;
+    --player1-color: #ff0000;
+    --player2-color: #0000ff;
+    --player3-color: #00ff00;
+    --player4-color: #ff00ff;
+    --player5-color: #ffff00;
+}
+
 .risk-it-map-container {
     position: relative;
     margin: 1rem auto;
@@ -31,27 +40,27 @@ svg.risk-it-map-container path.risk-it-region.inactive {
 
 /* Define 6 classes for the 6 different colors */
 svg.risk-it-map-container path.risk-it-region.risk-it-player0 {
-    fill: #00ffff;
+    fill: var(--player0-color);
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player1 {
-    fill: #ff0000;
+    fill: var(--player1-color);
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player2 {
-    fill: #0000ff;
+    fill: var(--player2-color);
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player3 {
-    fill: #00ff00;
+    fill: var(--player3-color);
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player4 {
-    fill: #ff00ff;
+    fill: var(--player4-color);
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player5 {
-    fill: #ffff00;
+    fill: var(--player5-color);
 }
 
 /* Define the keyframes for the highlight animation */
@@ -85,25 +94,25 @@ svg.risk-it-map-container path.risk-it-region.risk-it-region-not-selectable {
 /* Continent colors */
 /* Set properties for filter.feFlood.floodColor and result */
 svg.risk-it-map-container filter feFlood.risk-it-player0 {
-    flood-color: #00ffff;
+    flood-color: var(--player0-color);
 }
 
 svg.risk-it-map-container filter feFlood.risk-it-player1 {
-    flood-color: #ff0000;
+    flood-color: var(--player1-color);
 }
 
 svg.risk-it-map-container filter feFlood.risk-it-player2 {
-    flood-color: #0000ff;
+    flood-color: var(--player2-color);
 }
 
 svg.risk-it-map-container filter feFlood.risk-it-player3 {
-    flood-color: #00ff00;
+    flood-color: var(--player3-color);
 }
 
 svg.risk-it-map-container filter feFlood.risk-it-player4 {
-    flood-color: #ff00ff;
+    flood-color: var(--player4-color);
 }
 
 svg.risk-it-map-container filter feFlood.risk-it-player5 {
-    flood-color: #ffff00;
+    flood-color: var(--player5-color);
 }
