@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 import {PhaseType} from "../../../api/message/gameState.ts"
 import DeployPopup, {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 import AttackPopup, {AttackPopupProps} from "../Popup/AttackPopup.tsx"
@@ -24,61 +24,46 @@ const PopupManager: React.FC<{
           cardsPopupProps,
           handleAdvance,
       }) => {
-    const {gameState} = useGameState()
-    const [isPopupOpen, setIsPopupOpen] = useState(false)
+    const {gameState, playersState, thisPlayerState} = useGameState()
 
-    const handlePopupOpen = () => setIsPopupOpen(true)
-    const handlePopupClose = () => setIsPopupOpen(false)
-
-    if (!gameState) {
+    if (!gameState || !playersState || !thisPlayerState) {
         return null
+    }
+
+    const isPlayerTurn = gameState.turn % playersState.players.length === thisPlayerState.index
+
+    if (!isPlayerTurn) {
+        return <></>
     }
 
     return (
         <>
             {gameState.phaseType === PhaseType.DEPLOY && (
-                <DeployPopup
-                    props={deployPopupProps}
-                    onOpen={handlePopupOpen}
-                    onClose={handlePopupClose}
-                />
+                <DeployPopup {...deployPopupProps} />
             )}
 
             {gameState.phaseType === PhaseType.ATTACK && (
-                <AttackPopup
-                    props={attackPopupProps}
-                    onOpen={handlePopupOpen}
-                    onClose={handlePopupClose}
-                />
+                <AttackPopup {...attackPopupProps} />
             )}
 
             {gameState.phaseType === PhaseType.CONQUER && (
-                <ConquerPopup
-                    props={conquerPopupProps}
-                    onOpen={handlePopupOpen}
-                    onClose={handlePopupClose}
-                />
+                <ConquerPopup {...conquerPopupProps} />
             )}
 
             {gameState.phaseType === PhaseType.REINFORCE && (
-                <ReinforcePopup
-                    props={reinforcePopupProps}
-                    onOpen={handlePopupOpen}
-                    onClose={handlePopupClose}
-                />
+                <ReinforcePopup {...reinforcePopupProps} />
             )}
 
             {gameState.phaseType === PhaseType.CARDS && (
-                <CardsPopup
-                    props={cardsPopupProps}
-                    onOpen={handlePopupOpen}
-                    onClose={handlePopupClose}
-                />
+                <CardsPopup {...cardsPopupProps} />
             )}
 
-            {(gameState.phaseType === PhaseType.ATTACK || gameState.phaseType === PhaseType.REINFORCE || gameState.phaseType === PhaseType.CARDS) && !isPopupOpen && (
+            {(gameState.phaseType === PhaseType.ATTACK ||
+                    gameState.phaseType === PhaseType.REINFORCE ||
+                    gameState.phaseType === PhaseType.CARDS
+                ) &&
                 <Button onClick={handleAdvance}>Advance</Button>
-            )}
+            }
         </>
     )
 }

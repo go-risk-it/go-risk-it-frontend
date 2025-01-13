@@ -1,14 +1,14 @@
-import { PlayersState, PlayerState } from "../../../api/message/playersState.ts"
-import { BoardState, Region } from "../../../api/message/boardState.ts"
-import { AttackMove } from "../../../api/message/attackMove.ts"
-import { AttackAction, AttackActionType } from "../../../hooks/useAttackMoveReducer.ts"
-import { GameState, PhaseType } from "../../../api/message/gameState.ts"
+import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
+import {BoardState, Region} from "../../../api/message/boardState.ts"
+import {AttackMove} from "../../../api/message/attackMove.ts"
+import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReducer.ts"
+import {GameState} from "../../../api/message/gameState.ts"
 import Graph from "./Graph.ts"
-import { AttackPopupProps } from "../Popup/AttackPopup.tsx"
+import {AttackPopupProps} from "../Popup/AttackPopup.tsx"
 
 export function onRegionClickAttack(thisPlayerState: PlayerState, region: Region,
-    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
-    graph: Graph) {
+                                    attackMove: AttackMove, dispatchAttackMove: (action: AttackAction) => void,
+                                    graph: Graph) {
     if (!attackMove.sourceRegionId) {
         if (region.ownerId === thisPlayerState.userId && region.troops > 1) {
             return () => dispatchAttackMove({
@@ -49,7 +49,7 @@ export const getAttackPopupProps = (
     const targetOwner = playersState.players.find(p => p.userId === targetRegion?.ownerId)
 
     return {
-        isVisible: gameState.phaseType === PhaseType.ATTACK && attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
+        isVisible: attackMove.sourceRegionId !== null && attackMove.targetRegionId !== null,
         sourceRegion: attackMove.sourceRegionId || "",
         targetRegion: attackMove.targetRegionId || "",
         troopsInSource: attackMove.troopsInSource,
@@ -59,7 +59,7 @@ export const getAttackPopupProps = (
             attackingTroops,
         }),
         onCancel: () => {
-            dispatchAttackMove({ type: AttackActionType.RESET })
+            dispatchAttackMove({type: AttackActionType.RESET})
         },
         onConfirm: () => {
             doAttack(attackMove, gameState).then(response => {
@@ -67,7 +67,7 @@ export const getAttackPopupProps = (
             }).catch(error => {
                 console.error("Error attacking: ", error)
             })
-            dispatchAttackMove({ type: AttackActionType.RESET })
+            dispatchAttackMove({type: AttackActionType.RESET})
         },
         sourceOwnerIndex: sourceOwner?.index ?? 0,
         targetOwnerIndex: targetOwner?.index ?? 0,

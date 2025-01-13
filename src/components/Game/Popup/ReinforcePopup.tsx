@@ -8,7 +8,6 @@ import Slider from "@mui/material/Slider"
 import Typography from "@mui/material/Typography"
 import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Box from "@mui/material/Box"
-import {PopupProps} from "./PopupProps"
 
 export interface ReinforcePopupProps {
     isVisible: boolean;
@@ -23,23 +22,11 @@ export interface ReinforcePopupProps {
     ownerIndex: number;
 }
 
-const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
-    {
-        props,
-        onOpen,
-        onClose,
-    },
+const ReinforcePopup: React.FC<ReinforcePopupProps> = (
+    props,
 ) => {
     const [localMovingTroops, setLocalMovingTroops] = useState(props.movingTroops)
     const maxMovableTroops = Math.max(1, props.troopsInSource - 1)
-
-    useEffect(() => {
-        if (props.isVisible) {
-            onOpen()
-        } else {
-            onClose()
-        }
-    }, [props.isVisible, onOpen, onClose])
 
     useEffect(() => {
         setLocalMovingTroops(props.movingTroops)
@@ -51,10 +38,8 @@ const ReinforcePopup: React.FC<PopupProps<ReinforcePopupProps>> = (
         props.onMovingTroopsChange(validValue)
     }
 
-    if (!props.isVisible) return null
-
     return (
-        <Dialog open={props.isVisible} onClose={props.onCancel}>
+        <Dialog open={props.isVisible} onClose={props.onCancel} className="risk-it-move-popup">
             <DialogTitle>Reinforce</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>

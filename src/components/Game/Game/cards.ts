@@ -1,8 +1,8 @@
-import { GameState, PhaseType } from "../../../api/message/gameState.ts"
-import { Card, CardState } from "../../../api/message/cardState.ts"
-import { CardMove } from "../../../api/message/cardMove.ts"
-import { CardAction, CardActionType } from "../../../hooks/useCardMoveReducer.ts"
-import { CardsPopupProps } from "../Popup/CardsPopup.tsx"
+import {GameState} from "../../../api/message/gameState.ts"
+import {Card, CardState} from "../../../api/message/cardState.ts"
+import {CardMove} from "../../../api/message/cardMove.ts"
+import {CardAction, CardActionType} from "../../../hooks/useCardMoveReducer.ts"
+import {CardsPopupProps} from "../Popup/CardsPopup.tsx"
 
 enum CardValue {
     ARTILLERY = 1,
@@ -72,10 +72,9 @@ export const getCardsPopupProps = (
     cardState: CardState,
     cardMove: CardMove,
     dispatchCardMove: (action: CardAction) => void,
-    isPlayersTurn: boolean,
 ): CardsPopupProps => {
     return {
-        isVisible: gameState.phaseType === PhaseType.CARDS && isPlayersTurn,
+        isVisible: true,
         playerCards: cardState.cards,
         onCombinationAdd: (combination: number[]) => {
             dispatchCardMove({
@@ -118,7 +117,7 @@ export const getCardsPopupProps = (
             }).catch(error => {
                 console.error("Error playing cards: ", error)
             })
-            dispatchCardMove({ type: CardActionType.RESET })
+            dispatchCardMove({type: CardActionType.RESET})
         },
     }
 }

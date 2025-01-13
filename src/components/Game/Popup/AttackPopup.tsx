@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -10,7 +10,6 @@ import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Box from "@mui/material/Box"
 
 import "./Popup.css"
-import {PopupProps} from "./PopupProps"
 
 export interface AttackPopupProps {
     isVisible: boolean
@@ -25,22 +24,10 @@ export interface AttackPopupProps {
     targetOwnerIndex: number
 }
 
-const AttackPopup: React.FC<PopupProps<AttackPopupProps>> = (
-    {
-        props,
-        onOpen,
-        onClose,
-    },
+const AttackPopup: React.FC<AttackPopupProps> = (
+    props,
 ) => {
     const [attackingTroops, setAttackingTroops] = useState(1)
-
-    useEffect(() => {
-        if (props.isVisible) {
-            onOpen()
-        } else {
-            onClose()
-        }
-    }, [props.isVisible, onOpen, onClose])
 
     const maxAttackingTroops = Math.min(props.troopsInSource - 1, 3)
 
@@ -49,10 +36,8 @@ const AttackPopup: React.FC<PopupProps<AttackPopupProps>> = (
         props.onSetTroops(newValue)
     }
 
-    if (!props.isVisible) return null
-
     return (
-        <Dialog open={props.isVisible} onClose={props.onCancel}>
+        <Dialog open={props.isVisible} onClose={props.onCancel} className="risk-it-move-popup">
             <DialogTitle>Attack</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>

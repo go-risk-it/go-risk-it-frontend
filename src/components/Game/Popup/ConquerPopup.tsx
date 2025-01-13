@@ -1,16 +1,15 @@
-import React, {useState, useEffect} from "react"
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import RegionDisplay from '../RegionDisplay/RegionDisplay';
-import Box from '@mui/material/Box';
+import React, {useEffect, useState} from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
+import Button from "@mui/material/Button"
+import Slider from "@mui/material/Slider"
+import Typography from "@mui/material/Typography"
+import RegionDisplay from "../RegionDisplay/RegionDisplay"
+import Box from "@mui/material/Box"
 
 import "./Popup.css"
-import { PopupProps } from "./PopupProps";
 
 export interface ConquerPopupProps {
     isVisible: boolean
@@ -24,49 +23,34 @@ export interface ConquerPopupProps {
     targetOwnerIndex: number // Add this line
 }
 
-const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
-    {
-        props,
-        onOpen,
-        onClose,
-    },
+const ConquerPopup: React.FC<ConquerPopupProps> = (
+    props,
 ) => {
-    const [troopsToMove, setTroopsToMove] = useState(props.minTroopsToMove);
-    const maxTroopsToMove = props.troopsInSource - 1;
+    const [troopsToMove, setTroopsToMove] = useState(props.minTroopsToMove)
+    const maxTroopsToMove = props.troopsInSource - 1
 
     useEffect(() => {
-        props.onSetTroops(troopsToMove);
-    }, [troopsToMove, props]);
+        props.onSetTroops(troopsToMove)
+    }, [troopsToMove, props])
 
     const handleTroopsChange = (newValue: number) => {
-        setTroopsToMove(newValue);
-    };
-
-    useEffect(() => {
-        if (props.isVisible) {
-            onOpen();
-        } else {
-            onClose();
-        }
-    }, [props.isVisible, onOpen, onClose]);
-
-    if (!props.isVisible) {
-        return null;
+        setTroopsToMove(newValue)
     }
 
+
     return (
-        <Dialog open={props.isVisible} onClose={onClose}>
+        <Dialog open={props.isVisible} className="risk-it-move-popup">
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay 
-                        regionId={props.sourceRegion} 
+                    <RegionDisplay
+                        regionId={props.sourceRegion}
                         troops={props.troopsInSource - troopsToMove}
                         ownerIndex={props.sourceOwnerIndex}
                     />
                     <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay 
-                        regionId={props.targetRegion} 
+                    <RegionDisplay
+                        regionId={props.targetRegion}
                         troops={troopsToMove}
                         ownerIndex={props.sourceOwnerIndex}
                     />
@@ -89,7 +73,7 @@ const ConquerPopup: React.FC<PopupProps<ConquerPopupProps>> = (
                 <Button onClick={props.onConfirm}>Conquer</Button>
             </DialogActions>
         </Dialog>
-    );
+    )
 }
 
 export default ConquerPopup

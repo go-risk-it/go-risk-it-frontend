@@ -1,6 +1,6 @@
 import {BoardState} from "../../../api/message/boardState.ts"
 import {ConquerMove} from "../../../api/message/conquerMove.ts"
-import {ConquerPhaseState, GameState, PhaseType} from "../../../api/message/gameState.ts"
+import {ConquerPhaseState, GameState} from "../../../api/message/gameState.ts"
 import {ConquerAction, ConquerActionType} from "../../../hooks/useConquerMoveReducer.ts"
 import {ConquerPopupProps} from "../Popup/ConquerPopup.tsx"
 import {PlayersState} from "../../../api/message/playersState.ts"
@@ -41,7 +41,7 @@ export const getConquerPopupProps = (
     }
 
     return {
-        isVisible: gameState.phaseType === PhaseType.CONQUER,
+        isVisible: true,
         sourceRegion: phaseState.attackingRegionId,
         targetRegion: phaseState.defendingRegionId,
         troopsInSource: troopsInSource,

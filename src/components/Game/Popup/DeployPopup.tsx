@@ -9,7 +9,6 @@ import Typography from "@mui/material/Typography"
 import RegionDisplay from "../RegionDisplay/RegionDisplay"
 
 import "./Popup.css"
-import {PopupProps} from "./PopupProps"
 
 export interface DeployPopupProps {
     isVisible: boolean
@@ -22,39 +21,25 @@ export interface DeployPopupProps {
     ownerIndex: number
 }
 
-const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
-    {
-        props,
-        onOpen,
-        onClose,
-    },
+const DeployPopup: React.FC<DeployPopupProps> = (
+    props,
 ) => {
-    const [desiredTroops, setDesiredTroops] = useState(props.currentTroops);
+    const [desiredTroops, setDesiredTroops] = useState(props.currentTroops)
 
     useEffect(() => {
-        if (props.isVisible) {
-            onOpen();
-        } else {
-            onClose();
-        }
-    }, [props.isVisible, onOpen, onClose]);
-
-    useEffect(() => {
-        setDesiredTroops(props.currentTroops);
-    }, [props.currentTroops]);
+        setDesiredTroops(props.currentTroops)
+    }, [props.currentTroops])
 
     const handleTroopsChange = (newValue: number) => {
-        setDesiredTroops(newValue);
-        props.onSetTroops(newValue);
-    };
-
-    if (!props.isVisible) return null;
+        setDesiredTroops(newValue)
+        props.onSetTroops(newValue)
+    }
 
     return (
         <Dialog open={props.isVisible} onClose={props.onCancel} className="risk-it-move-popup">
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
-                <RegionDisplay 
+                <RegionDisplay
                     regionId={props.region}
                     troops={props.currentTroops}
                     ownerIndex={props.ownerIndex}
@@ -79,7 +64,7 @@ const DeployPopup: React.FC<PopupProps<DeployPopupProps>> = (
                 <Button onClick={props.onConfirm}>Deploy</Button>
             </DialogActions>
         </Dialog>
-    );
-};
+    )
+}
 
 export default DeployPopup
