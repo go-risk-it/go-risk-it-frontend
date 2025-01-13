@@ -26,7 +26,9 @@ export interface CardsPopupProps {
 const CardsPopup: React.FC<CardsPopupProps> = (
     props,
 ) => {
+
     const [selectedCards, setSelectedCards] = useState<number[]>([])
+
 
     const handleCardClick = (card: Card) => {
         let newSelectedCards: number[]
@@ -49,9 +51,13 @@ const CardsPopup: React.FC<CardsPopupProps> = (
 
     const availableCards = props.playerCards.filter(card => !props.selectedCombinations.some(combination => combination.cardIDs.includes(card.id)))
 
+    if (!props.isVisible) {
+        return null
+    }
+
     return (
         <Dialog
-            open={props.isVisible}
+            open={true}
             onClose={props.onCancel}
             maxWidth={false}
             fullWidth

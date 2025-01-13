@@ -36,8 +36,12 @@ const AttackPopup: React.FC<AttackPopupProps> = (
         props.onSetTroops(newValue)
     }
 
+    if (!props.isVisible) {
+        return null
+    }
+
     return (
-        <Dialog open={props.isVisible} onClose={props.onCancel} className="risk-it-move-popup">
+        <Dialog open={true} onClose={props.onCancel} className="risk-it-move-popup">
             <DialogTitle>Attack</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>

@@ -35,8 +35,12 @@ const DeployPopup: React.FC<DeployPopupProps> = (
         props.onSetTroops(newValue)
     }
 
+    if (!props.isVisible) {
+        return null
+    }
+
     return (
-        <Dialog open={props.isVisible} onClose={props.onCancel} className="risk-it-move-popup">
+        <Dialog open={true} onClose={props.onCancel} className="risk-it-move-popup">
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
                 <RegionDisplay

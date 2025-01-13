@@ -37,9 +37,12 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         setTroopsToMove(newValue)
     }
 
+    if (!props.isVisible) {
+        return null
+    }
 
     return (
-        <Dialog open={props.isVisible} className="risk-it-move-popup">
+        <Dialog open={true} className="risk-it-move-popup">
             <DialogTitle>Conquer</DialogTitle>
             <DialogContent>
                 <Box display="flex" justifyContent="space-between" mb={2}>
