@@ -69,6 +69,10 @@ export const WebsocketProvider = ({ gameId, children }: { gameId: number, childr
                 console.error("Error parsing WebSocket message:", message.data)
             }
         }
+
+        ws.current.onerror = (error: Event) => {
+            console.error("WebSocket error:", error)
+        }
     }, [session, socketUrl])
 
     const teardownWebSocket = useCallback(() => {
