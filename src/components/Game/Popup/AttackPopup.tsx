@@ -36,6 +36,11 @@ const AttackPopup: React.FC<AttackPopupProps> = (
         props.onSetTroops(newValue)
     }
 
+    const attack = () => {
+        props.onConfirm()
+        setAttackingTroops(1)
+    }
+
     if (!props.isVisible) {
         return null
     }
@@ -73,7 +78,7 @@ const AttackPopup: React.FC<AttackPopupProps> = (
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.onCancel}>Cancel</Button>
-                <Button onClick={props.onConfirm}>Attack</Button>
+                <Button onClick={attack}>Attack</Button>
             </DialogActions>
         </Dialog>
     )
