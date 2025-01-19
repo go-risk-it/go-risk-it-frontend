@@ -26,16 +26,15 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
     props,
 ) => {
     const [localMovingTroops, setLocalMovingTroops] = useState(props.movingTroops)
-    const maxMovableTroops = Math.max(1, props.troopsInSource - 1)
+    const maxMovableTroops = props.troopsInSource - 1
 
     useEffect(() => {
         setLocalMovingTroops(props.movingTroops)
     }, [props.movingTroops])
 
     const handleTroopsChange = (newValue: number) => {
-        const validValue = Math.max(1, Math.min(newValue, maxMovableTroops))
-        setLocalMovingTroops(validValue)
-        props.onMovingTroopsChange(validValue)
+        setLocalMovingTroops(newValue)
+        props.onMovingTroopsChange(newValue)
     }
 
     if (!props.isVisible) {
@@ -67,7 +66,7 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
                     step={1}
                     marks
                     valueLabelDisplay="auto"
-                    disabled={maxMovableTroops === 1}
+                    disabled={maxMovableTroops <= 1}
                 />
                 <Typography gutterBottom>
                     Moving Troops: {localMovingTroops}

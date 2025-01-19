@@ -1,5 +1,5 @@
 import React from "react";
-import { ReinforceMove } from '../api/message/reinforceMove';
+import {ReinforceMove} from '../api/message/reinforceMove';
 
 export enum ReinforceActionType {
     SET_SOURCE = "setSource",
@@ -36,17 +36,17 @@ const initialState: ReinforceMove = {
     targetRegionId: '',
     troopsInSource: 0,
     troopsInTarget: 0,
-    movingTroops: 0,
+    movingTroops: 1,
 };
 
 function reinforceMoveReducer(reinforceMove: ReinforceMove, action: ReinforceAction): ReinforceMove {
     switch (action.type) {
         case ReinforceActionType.SET_SOURCE:
-            return { ...reinforceMove, sourceRegionId: action.regionId, troopsInSource: action.troops, movingTroops: 0 };
+            return {...reinforceMove, sourceRegionId: action.regionId, troopsInSource: action.troops, movingTroops: 1};
         case ReinforceActionType.SET_TARGET:
-            return { ...reinforceMove, targetRegionId: action.regionId, troopsInTarget: action.troops, movingTroops: 0 };
+            return {...reinforceMove, targetRegionId: action.regionId, troopsInTarget: action.troops, movingTroops: 1};
         case ReinforceActionType.SET_MOVING_TROOPS:
-            return { ...reinforceMove, movingTroops: Math.min(action.troops, reinforceMove.troopsInSource - 1) };
+            return {...reinforceMove, movingTroops: Math.min(action.troops, reinforceMove.troopsInSource - 1)};
         case ReinforceActionType.RESET:
             return initialState;
         default:
@@ -56,5 +56,5 @@ function reinforceMoveReducer(reinforceMove: ReinforceMove, action: ReinforceAct
 
 export const useReinforceMoveReducer = () => {
     const [reinforceMove, dispatchReinforceMove] = React.useReducer(reinforceMoveReducer, initialState);
-    return { reinforceMove, dispatchReinforceMove };
+    return {reinforceMove, dispatchReinforceMove};
 };

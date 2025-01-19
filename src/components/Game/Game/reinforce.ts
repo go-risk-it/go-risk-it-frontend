@@ -18,8 +18,14 @@ export const onRegionClickReinforce = (
     }
 
     if (!reinforceMove.sourceRegionId) {
-        return () => {
-            dispatchReinforceMove({type: ReinforceActionType.SET_SOURCE, regionId: region.id, troops: region.troops})
+        if (region.troops > 1) {
+            return () => {
+                dispatchReinforceMove({
+                    type: ReinforceActionType.SET_SOURCE,
+                    regionId: region.id,
+                    troops: region.troops
+                })
+            }
         }
     } else if (reinforceMove.sourceRegionId !== region.id && graph.canReach(reinforceMove.sourceRegionId, region.id)) {
         return () => {
