@@ -21,6 +21,7 @@ import PopupManager from "../Popup/PopupManager.tsx"
 import {MapProvider} from "../../../providers/Map.tsx"
 import {useServerQuerier} from "../../../hooks/useServerQuerier.ts"
 import CardsStatus from "../Cards/CardsStatus.tsx"
+import StatusBar from "../StatusBar/StatusBar.tsx"
 
 
 const Game: React.FC = () => {
@@ -51,6 +52,7 @@ const Game: React.FC = () => {
         <MapProvider boardState={boardState} thisPlayerState={thisPlayerState}>
             <div>
                 <Button onClick={signout}>Sign out</Button>
+                <StatusBar/>
                 <MapContainer
                     onRegionClick={(graph, region) => {
                         if (gameState.turn % playersState.players.length !== thisPlayerState.index) {

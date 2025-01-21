@@ -1,0 +1,32 @@
+:root {
+    --player0-color: #00ffff;
+    --player1-color: #ff0000;
+    --player2-color: #0000ff;
+    --player3-color: #00ff00;
+    --player4-color: #ff00ff;
+    --player5-color: #ffff00;
+}
+
+/* Player color styles */
+.player-0-color { color: var(--player0-color); }
+.player-1-color { color: var(--player1-color); }
+.player-2-color { color: var(--player2-color); }
+.player-3-color { color: var(--player3-color); }
+.player-4-color { color: var(--player4-color); }
+.player-5-color { color: var(--player5-color); }
+
+/* Player background styles */
+.player-0-bg { background-color: var(--player0-color); }
+.player-1-bg { background-color: var(--player1-color); }
+.player-2-bg { background-color: var(--player2-color); }
+.player-3-bg { background-color: var(--player3-color); }
+.player-4-bg { background-color: var(--player4-color); }
+.player-5-bg { background-color: var(--player5-color); }
+
+/* Player border styles */
+.player-0-border { border-color: var(--player0-color); }
+.player-1-border { border-color: var(--player1-color); }
+.player-2-border { border-color: var(--player2-color); }
+.player-3-border { border-color: var(--player3-color); }
+.player-4-border { border-color: var(--player4-color); }
+.player-5-border { border-color: var(--player5-color); }

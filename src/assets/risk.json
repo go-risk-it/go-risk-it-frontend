@@ -1,7 +1,7 @@
 {
   "id": "map",
   "name": "Map",
-  "viewBox": "0 0 1180 731",
+  "viewBox": "150 100 800 550",
   "continents": [
     {
       "id": "oceania",

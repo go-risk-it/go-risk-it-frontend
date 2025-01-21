@@ -1,11 +1,4 @@
-:root {
-    --player0-color: #00ffff;
-    --player1-color: #ff0000;
-    --player2-color: #0000ff;
-    --player3-color: #00ff00;
-    --player4-color: #ff00ff;
-    --player5-color: #ffff00;
-}
+@import "../colors.css";
 
 .risk-it-map-container {
     position: relative;
