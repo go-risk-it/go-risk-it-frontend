@@ -1,53 +1,54 @@
 /* Card Display Styles */
-.risk-it-card-selectable {
+.cards-container {
+    background-color: #213547;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    padding: 1rem;
+}
+
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.5rem;
+}
+.risk-it-card {
+    background-color: #1a1a1a;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    width: 100px;
+    height: 120px;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.risk-it-card.selectable {
     cursor: pointer;
-    border: 2px solid #4caf50;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid #4caf50;
 }
 
-.risk-it-card-selectable:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.risk-it-card.selected {
+    border-left: 4px solid #ff9800;
+    background-color: #1f1f1f;
 }
 
-.risk-it-card-not-selectable {
-    cursor: not-allowed;
-    opacity: 0.5;
-    background-color: #f0f0f0;
-    border: 2px dashed #cccccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+.risk-it-card.not-selectable {
+    opacity: 0.3;
 }
 
-.risk-it-card-not-selectable:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.risk-it-region-display {
+    width: 3.5em;
+    height: 3.5em;
 }
 
-.risk-it-card-selected {
-    border: 2px solid #ff9800;
-    border-radius: 8px;
-    background-color: #fff3e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+.card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.risk-it-card-selected:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Region size */
-.risk-it-card-selectable svg.risk-it-region-display,
-.risk-it-card-not-selectable svg.risk-it-region-display,
-.risk-it-card-selected svg.risk-it-region-display {
-    width: 5em;
-    height: 5em;
-}
 .combination-cards {
     display: inline-flex;
     gap: 4px;
@@ -56,7 +57,9 @@
 .combination-cards .risk-it-card-selected {
     transform: scale(0.7);
     transform-origin: center;
-}.combination-cards svg.risk-it-region-display {
+}
+
+.combination-cards svg.risk-it-region-display {
     width: 3.5em;
     height: 3.5em;
 }

@@ -7,16 +7,18 @@ import {useGameState} from "../../../hooks/useGameState.ts"
 const CardsStatus: React.FC = () => {
     const {cardState} = useGameState()
     return (
-        <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
-            <Typography variant="h6">Your Cards:</Typography>
-            {cardState.cards.map(card => (
-                <CardDisplay
-                    key={card.id}
-                    card={card}
-                    onCardClick={null}
-                    isSelected={false}
-                />
-            ))}
+        <Box className="cards-container">
+            <Typography variant="subtitle1" className="cards-title">Your Cards</Typography>
+            <Box className="cards-grid">
+                {cardState.cards.map(card => (
+                    <CardDisplay
+                        key={card.id}
+                        card={card}
+                        onCardClick={null}
+                        isSelected={false}
+                    />
+                ))}
+            </Box>
         </Box>
     )
 }
