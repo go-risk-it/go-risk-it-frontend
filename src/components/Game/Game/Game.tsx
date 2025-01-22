@@ -50,47 +50,43 @@ const Game: React.FC = () => {
 
     return (
         <MapProvider boardState={boardState} thisPlayerState={thisPlayerState}>
-            <div>
-                <Button onClick={signout}>Sign out</Button>
+            <div className="game-container">
+                <Button className="signout-button" onClick={signout}>Sign out</Button>
                 <StatusBar/>
-                <MapContainer
-                    onRegionClick={(graph, region) => {
-                        if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
-                            return null
-                        }
-                        switch (gameState.phaseType) {
-                            case PhaseType.DEPLOY:
-                                return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
-                            case PhaseType.ATTACK:
-                                return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
-                            case PhaseType.REINFORCE:
-                                return onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph)
-                            default:
+                <div className="right-side-container">
+                    <MapContainer
+                        onRegionClick={(graph, region) => {
+                            if (gameState.turn % playersState.players.length !== thisPlayerState.index) {
                                 return null
-                        }
-                    }
-                    }
-                />
-
-                <PopupManager
-                    deployPopupProps={getDeployPopupProps(
-                        doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, thisPlayerState.index,
-                    )}
-                    attackPopupProps={getAttackPopupProps(
-                        doAttack, gameState, attackMove, dispatchAttackMove, boardState, playersState,
-                    )}
-                    conquerPopupProps={getConquerPopupProps(
-                        doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, playersState,
-                    )}
-                    reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
-                    cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove)}
-                    handleAdvance={handleAdvance}
-                />
-                <CardsStatus/>
-            </div>
-        </MapProvider>
-
-    )
-}
-
+                            }
+                            switch (gameState.phaseType) {
+                                case PhaseType.DEPLOY:
+                                    return onRegionClickDeploy(thisPlayerState, region, deployMove, dispatchDeployMove)
+                                case PhaseType.ATTACK:
+                                    return onRegionClickAttack(thisPlayerState, region, attackMove, dispatchAttackMove, graph)
+                                case PhaseType.REINFORCE:
+                                    return onRegionClickReinforce(thisPlayerState, region, reinforceMove, dispatchReinforceMove, graph)
+                                default:
+                                    return null
+                            }
+                        }}
+                    />
+                    <PopupManager
+                        deployPopupProps={getDeployPopupProps(
+                            doDeploy, gameState, phaseState as DeployPhaseState, deployMove, dispatchDeployMove, thisPlayerState.index,
+                        )}
+                        attackPopupProps={getAttackPopupProps(
+                            doAttack, gameState, attackMove, dispatchAttackMove, boardState, playersState,
+                        )}
+                        conquerPopupProps={getConquerPopupProps(
+                            doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, playersState,
+                        )}
+                        reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
+                        cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove)}
+                        handleAdvance={handleAdvance}
+                    />
+                    <CardsStatus/>
+                </div>
+            </div>        </MapProvider>
+    )}
 export default Game

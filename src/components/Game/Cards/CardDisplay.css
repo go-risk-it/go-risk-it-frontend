@@ -4,6 +4,7 @@
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     padding: 1rem;
+    width: 100%;
 }
 
 .cards-grid {
@@ -11,8 +12,8 @@
     flex-wrap: wrap;
     gap: 0.75rem;
     padding: 0.5rem;
-}
-.risk-it-card {
+    width: 100%;
+}.risk-it-card {
     background-color: #1a1a1a;
     border-radius: 0.5rem;
     padding: 0.75rem;
