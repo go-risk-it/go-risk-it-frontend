@@ -18,22 +18,24 @@ const StatusBar = () => {
 
     return (
         <div className="status-bar">
-            {/* Phase Section */}
-            <div className="status-bar__section status-bar__phase">
-                <div>
-                    <span className="status-bar__heading">
-                        {gameState.phaseType.toUpperCase()} phase
-                    </span>
-                    {gameState.phaseType === PhaseType.DEPLOY && (
-                        <span className="status-bar__troops">
-                            Deployable Troops: {(phaseState as DeployPhaseState).deployableTroops}
+            {/* Game Info Box */}
+            <div className="status-bar__game-info">
+                <div className="status-bar__section status-bar__phase">
+                    <div>
+                        <span className="status-bar__heading">
+                            {gameState.phaseType.toUpperCase()} phase
                         </span>
-                    )}
+                        {gameState.phaseType === PhaseType.DEPLOY && (
+                            <span className="status-bar__troops">
+                                Deployable Troops: {(phaseState as DeployPhaseState).deployableTroops}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Players Section */}
-            <div className="status-bar__section">
+            {/* Players Box */}
+            <div className="status-bar__players-box">
                 <h2 className="status-bar__heading">Players</h2>
                 <div className="status-bar__players">
                     {playersState.players
@@ -76,7 +78,6 @@ const StatusBar = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    )}
 
 export default StatusBar
