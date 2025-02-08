@@ -1,10 +1,10 @@
 import {createContext, ReactElement, useContext, useEffect, useState} from "react"
 import {useAuth} from "../hooks/useAuth.ts"
-import {BoardState} from "../api/message/boardState.ts"
-import {PlayersState, PlayerState} from "../api/message/playersState.ts"
-import {GameState, GameStateAPI, PhaseState} from "../api/message/gameState.ts"
+import {BoardState} from "../api/game/message/boardState.ts"
+import {PlayersState, PlayerState} from "../api/game/message/playersState.ts"
+import {GameState, GameStateAPI, PhaseState} from "../api/game/message/gameState.ts"
 import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
-import {CardState} from "../api/message/cardState.ts"
+import {CardState} from "../api/game/message/cardState.ts"
 
 
 export const GameStateContext = createContext<{

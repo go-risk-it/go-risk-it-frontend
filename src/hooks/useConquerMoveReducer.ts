@@ -1,5 +1,5 @@
 import React from "react"
-import {ConquerMove} from "../api/message/conquerMove.ts"
+import {ConquerMove} from "../api/game/message/conquerMove.ts"
 
 export enum ConquerActionType {
     SET_TROOPS = "setTroops",

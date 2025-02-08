@@ -1,7 +1,7 @@
 import "./StatusBar.css"
 import {useGameState} from "../../../hooks/useGameState.ts"
-import {DeployPhaseState, PhaseType} from "../../../api/message/gameState.ts"
-import {ConnectionStatus, PlayerStatus} from "../../../api/message/playersState.ts"
+import {DeployPhaseState, PhaseType} from "../../../api/game/message/gameState.ts"
+import {ConnectionStatus, PlayerStatus} from "../../../api/game/message/playersState.ts"
 
 const StatusBar = () => {
     const {gameState, phaseState, playersState, thisPlayerState} = useGameState()

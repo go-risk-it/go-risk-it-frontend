@@ -1,9 +1,9 @@
-import {BoardState} from "../../../api/message/boardState.ts"
-import {ConquerMove} from "../../../api/message/conquerMove.ts"
-import {ConquerPhaseState, GameState} from "../../../api/message/gameState.ts"
+import {BoardState} from "../../../api/game/message/boardState.ts"
+import {ConquerMove} from "../../../api/game/message/conquerMove.ts"
+import {ConquerPhaseState, GameState} from "../../../api/game/message/gameState.ts"
 import {ConquerAction, ConquerActionType} from "../../../hooks/useConquerMoveReducer.ts"
 import {ConquerPopupProps} from "../Popup/ConquerPopup.tsx"
-import {PlayersState} from "../../../api/message/playersState.ts"
+import {PlayersState} from "../../../api/game/message/playersState.ts"
 
 
 export const getConquerPopupProps = (

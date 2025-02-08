@@ -1,8 +1,8 @@
 import React, {createContext, ReactNode, useMemo} from "react"
 import world from "../assets/risk.json"
 import Graph from "../components/Game/Game/Graph"
-import {BoardState} from "../api/message/boardState.ts"
-import {PlayerState} from "../api/message/playersState.ts"
+import {BoardState} from "../api/game/message/boardState.ts"
+import {PlayerState} from "../api/game/message/playersState.ts"
 
 export interface MapType {
     id: string;

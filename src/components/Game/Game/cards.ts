@@ -1,6 +1,6 @@
-import {GameState} from "../../../api/message/gameState.ts"
-import {Card, CardState} from "../../../api/message/cardState.ts"
-import {CardMove} from "../../../api/message/cardMove.ts"
+import {GameState} from "../../../api/game/message/gameState.ts"
+import {Card, CardState} from "../../../api/game/message/cardState.ts"
+import {CardMove} from "../../../api/game/message/cardMove.ts"
 import {CardAction, CardActionType} from "../../../hooks/useCardMoveReducer.ts"
 import {CardsPopupProps} from "../Popup/CardsPopup.tsx"
 

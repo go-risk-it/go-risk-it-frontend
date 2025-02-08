@@ -1,5 +1,5 @@
 import React from "react"
-import {PhaseType} from "../../../api/message/gameState.ts"
+import {PhaseType} from "../../../api/game/message/gameState.ts"
 import DeployPopup, {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 import AttackPopup, {AttackPopupProps} from "../Popup/AttackPopup.tsx"
 import ConquerPopup, {ConquerPopupProps} from "../Popup/ConquerPopup.tsx"

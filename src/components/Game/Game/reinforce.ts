@@ -1,9 +1,9 @@
-import {PlayerState} from "../../../api/message/playersState"
-import {Region} from "../../../api/message/boardState"
-import {ReinforceMove} from "../../../api/message/reinforceMove"
+import {PlayerState} from "../../../api/game/message/playersState"
+import {Region} from "../../../api/game/message/boardState"
+import {ReinforceMove} from "../../../api/game/message/reinforceMove"
 import {ReinforceAction, ReinforceActionType} from "../../../hooks/useReinforceMoveReducer.ts"
 import Graph from "./Graph"
-import {GameState} from "../../../api/message/gameState"
+import {GameState} from "../../../api/game/message/gameState"
 import {ReinforcePopupProps} from "../Popup/ReinforcePopup.tsx"
 
 export const onRegionClickReinforce = (

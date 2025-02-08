@@ -1,11 +1,11 @@
 import {useAuth} from "./useAuth.ts"
-import {DeployMove} from "../api/message/deployMove.ts"
-import {AttackMove} from "../api/message/attackMove.ts"
-import {GameState} from "../api/message/gameState.ts"
-import {ConquerMove} from "../api/message/conquerMove.ts"
-import {ReinforceMove} from "../api/message/reinforceMove.ts"
-import {AdvanceMove} from "../api/message/advanceMove.ts"
-import {CardMove} from "../api/message/cardMove.ts"
+import {DeployMove} from "../api/game/message/deployMove.ts"
+import {AttackMove} from "../api/game/message/attackMove.ts"
+import {GameState} from "../api/game/message/gameState.ts"
+import {ConquerMove} from "../api/game/message/conquerMove.ts"
+import {ReinforceMove} from "../api/game/message/reinforceMove.ts"
+import {AdvanceMove} from "../api/game/message/advanceMove.ts"
+import {CardMove} from "../api/game/message/cardMove.ts"
 
 export const useServerQuerier = () => {
     const {session} = useAuth()
@@ -13,41 +13,52 @@ export const useServerQuerier = () => {
         throw Error("Session not found")
     }
 
-    const doMove = async (move: unknown, url: string): Promise<Response> => {
-        const body = JSON.stringify(move)
+    const doGet = async (url: string): Promise<Response> => {
+        return fetch(url, {
+            method: "GET",
+        })
+    }
+
+    const doPostAuthenticated = async (url: string, body: unknown = null): Promise<Response> => {
+        const json_body = JSON.stringify(body)
         return fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.access_token}`,
             },
-            body: body,
+            body: json_body,
         })
     }
 
     const doDeploy = async (deployMove: DeployMove, gameState: GameState): Promise<Response> => {
-        return doMove(deployMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/deployments`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/deployments`, deployMove)
     }
 
     const doAttack = async (attackMove: AttackMove, gameState: GameState): Promise<Response> => {
-        return doMove(attackMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/attacks`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/attacks`, attackMove)
     }
 
     const doConquer = async (conquerMove: ConquerMove, gameState: GameState): Promise<Response> => {
-        return doMove(conquerMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/conquers`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/conquers`, conquerMove)
     }
 
     const doReinforce = async (reinforceMove: ReinforceMove, gameState: GameState): Promise<Response> => {
-        return doMove(reinforceMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/reinforcements`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/reinforcements`, reinforceMove)
     }
 
     const doAdvance = async (advanceMove: AdvanceMove, gameState: GameState): Promise<Response> => {
-        return doMove(advanceMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/advancements`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/advancements`, advanceMove)
     }
 
     const doPlayCards = async (cardMove: CardMove, gameState: GameState): Promise<Response> => {
         console.log("Playing cards: ", cardMove)
-        return doMove(cardMove, `${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/cards`)
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/games/${gameState.id}/moves/cards`, cardMove)
+    }
+
+
+    const getAvailableLobbies = async () => {
+        return doGet(`${process.env.REACT_APP_API_URL!}/lobbies/summary`)
     }
 
     return {
@@ -57,5 +68,6 @@ export const useServerQuerier = () => {
         doReinforce,
         doAdvance,
         doPlayCards,
+        getAvailableLobbies,
     }
 }

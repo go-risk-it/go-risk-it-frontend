@@ -1,5 +1,5 @@
 import React from "react"
-import {Card} from "../../../api/message/cardState"
+import {Card} from "../../../api/game/message/cardState"
 import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"

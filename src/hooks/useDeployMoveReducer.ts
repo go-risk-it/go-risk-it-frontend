@@ -1,5 +1,5 @@
 import React from "react"
-import {DeployMove} from "../api/message/deployMove.ts"
+import {DeployMove} from "../api/game/message/deployMove.ts"
 
 export enum DeployActionType {
     SET_REGION = "setRegion",

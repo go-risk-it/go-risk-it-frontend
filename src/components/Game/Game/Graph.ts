@@ -1,6 +1,6 @@
 // class that handles the graph of the regions
 
-import {BoardState, Region} from "../../../api/message/boardState.ts"
+import {BoardState, Region} from "../../../api/game/message/boardState.ts"
 
 // a link is an object with "source" and "target" properties (strings)
 interface Link {

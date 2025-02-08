@@ -1,5 +1,5 @@
 import React from "react"
-import {CardMove} from "../api/message/cardMove.ts"
+import {CardMove} from "../api/game/message/cardMove.ts"
 
 export enum CardActionType {
     COMBINATION_ADD = "selectCombination",

@@ -7,9 +7,9 @@ import {Box, IconButton} from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 
 import "./Popup.css"
-import {Card} from "../../../api/message/cardState.ts"
+import {Card} from "../../../api/game/message/cardState.ts"
 import CardDisplay from "../Cards/CardDisplay.tsx"
-import {CardCombination} from "../../../api/message/cardMove.ts"
+import {CardCombination} from "../../../api/game/message/cardMove.ts"
 import Typography from "@mui/material/Typography"
 
 export interface CardsPopupProps {

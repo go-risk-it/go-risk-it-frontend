@@ -1,5 +1,5 @@
 import React from "react"
-import {AttackMove} from "../api/message/attackMove.ts"
+import {AttackMove} from "../api/game/message/attackMove.ts"
 
 export enum AttackActionType {
     SET_SOURCE_REGION = "setSourceRegion",

@@ -1,5 +1,5 @@
 import React from "react";
-import {ReinforceMove} from '../api/message/reinforceMove';
+import {ReinforceMove} from '../api/game/message/reinforceMove';
 
 export enum ReinforceActionType {
     SET_SOURCE = "setSource",

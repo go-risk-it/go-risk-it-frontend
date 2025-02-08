@@ -1,8 +1,8 @@
-import {PlayerState} from "../../../api/message/playersState.ts"
-import {Region} from "../../../api/message/boardState.ts"
-import {DeployMove} from "../../../api/message/deployMove.ts"
+import {PlayerState} from "../../../api/game/message/playersState.ts"
+import {Region} from "../../../api/game/message/boardState.ts"
+import {DeployMove} from "../../../api/game/message/deployMove.ts"
 import {DeployAction, DeployActionType} from "../../../hooks/useDeployMoveReducer.ts"
-import {DeployPhaseState, GameState} from "../../../api/message/gameState.ts"
+import {DeployPhaseState, GameState} from "../../../api/game/message/gameState.ts"
 import {DeployPopupProps} from "../Popup/DeployPopup.tsx"
 
 export function onRegionClickDeploy(thisPlayerState: PlayerState, region: Region, deployMove: DeployMove, dispatchDeployMove: (action: DeployAction) => void) {

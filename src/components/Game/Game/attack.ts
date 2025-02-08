@@ -1,8 +1,8 @@
-import {PlayersState, PlayerState} from "../../../api/message/playersState.ts"
-import {BoardState, Region} from "../../../api/message/boardState.ts"
-import {AttackMove} from "../../../api/message/attackMove.ts"
+import {PlayersState, PlayerState} from "../../../api/game/message/playersState.ts"
+import {BoardState, Region} from "../../../api/game/message/boardState.ts"
+import {AttackMove} from "../../../api/game/message/attackMove.ts"
 import {AttackAction, AttackActionType} from "../../../hooks/useAttackMoveReducer.ts"
-import {GameState} from "../../../api/message/gameState.ts"
+import {GameState} from "../../../api/game/message/gameState.ts"
 import Graph from "./Graph.ts"
 import {AttackPopupProps} from "../Popup/AttackPopup.tsx"
 
