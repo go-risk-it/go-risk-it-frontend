@@ -12,7 +12,7 @@ const ShowLobby: React.FC<{ lobby: { id: number, numberOfParticipants: number } 
 
 const ShowLobbies: React.FC = () => {
     const {getAvailableLobbies} = useServerQuerier()
-    const [lobbies, setLobbies] = useState<LobbiesList>({lobbies: []})
+    const [lobbies, setLobbies] = useState<LobbiesList>({owned: [], joined: [], joinable: []})
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
@@ -38,9 +38,18 @@ const ShowLobbies: React.FC = () => {
 
     return (
         <div>
-            <h1>Lobbies you can join</h1>
+            <h1>Lobbies you own</h1>
+            {lobbies.owned.map(lobby => (
+                <ShowLobby key={lobby.id} lobby={lobby}/>
+            ))}
 
-            {lobbies.lobbies.map(lobby => (
+            <h1>Lobbies you joined</h1>
+            {lobbies.joined.map(lobby => (
+                <ShowLobby key={lobby.id} lobby={lobby}/>
+            ))}
+
+            <h1>Lobbies you can join</h1>
+            {lobbies.joinable.map(lobby => (
                 <ShowLobby key={lobby.id} lobby={lobby}/>
             ))}
             <a href="/">Go back to home</a>

@@ -5,5 +5,7 @@ export interface Lobby {
 }
 
 export interface LobbiesList {
-    lobbies: Lobby[];
+    owned: Lobby[];
+    joined: Lobby[];
+    joinable: Lobby[];
 }

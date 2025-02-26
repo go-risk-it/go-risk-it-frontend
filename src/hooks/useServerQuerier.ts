@@ -13,9 +13,12 @@ export const useServerQuerier = () => {
         throw Error("Session not found")
     }
 
-    const doGet = async (url: string): Promise<Response> => {
+    const doGetAuthenticated = async (url: string): Promise<Response> => {
         return fetch(url, {
             method: "GET",
+            headers: {
+                "Authorization": `Bearer ${session.access_token}`,
+            },
         })
     }
 
@@ -58,7 +61,7 @@ export const useServerQuerier = () => {
 
 
     const getAvailableLobbies = async () => {
-        return doGet(`${process.env.REACT_APP_API_URL!}/lobbies/summary`)
+        return doGetAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies/summary`)
     }
 
     return {
