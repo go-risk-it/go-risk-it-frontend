@@ -43,16 +43,18 @@ const ShowLobbies: React.FC = () => {
         fetchLobbies()
     }, [])
 
-    if (!user || !user.email) return null
+    if (user?.email === undefined) return <div>Not logged in</div>
+
+    const participantName = user.email.split('@')[0]
 
     const handleCreateLobby = () => {
-        createLobby(user.email).then(() => {
+        createLobby(participantName).then(() => {
             fetchLobbies()
         })
     }
 
     const handleJoinLobby = (lobbyId: number) => {
-        joinLobby(lobbyId, user.email).then(() =>
+        joinLobby(lobbyId, participantName).then(() =>
             fetchLobbies(),
         )
     }
@@ -66,7 +68,7 @@ const ShowLobbies: React.FC = () => {
             {lobbies.owned.map(lobby => (
                 <ShowLobby key={lobby.id} lobby={lobby}/>
             ))}
-            {/* Button to create a new lobby */}
+
             <button onClick={handleCreateLobby}>Create a new lobby</button>
 
             <h2>Lobbies you joined</h2>
