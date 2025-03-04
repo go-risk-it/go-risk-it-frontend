@@ -6,6 +6,8 @@ import {ConquerMove} from "../api/game/message/conquerMove.ts"
 import {ReinforceMove} from "../api/game/message/reinforceMove.ts"
 import {AdvanceMove} from "../api/game/message/advanceMove.ts"
 import {CardMove} from "../api/game/message/cardMove.ts"
+import {JoinLobby} from "../api/lobby/joinLobby.ts"
+import {CreateLobby} from "../api/lobby/createLobby.ts"
 
 export const useServerQuerier = () => {
     const {session} = useAuth()
@@ -23,15 +25,17 @@ export const useServerQuerier = () => {
     }
 
     const doPostAuthenticated = async (url: string, body: unknown = null): Promise<Response> => {
-        const json_body = JSON.stringify(body)
-        return fetch(url, {
+        const options: RequestInit = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.access_token}`,
             },
-            body: json_body,
-        })
+        }
+        if (body !== null) {
+            options.body = JSON.stringify(body)
+        }
+        return fetch(url, options)
     }
 
     const doDeploy = async (deployMove: DeployMove, gameState: GameState): Promise<Response> => {
@@ -64,6 +68,16 @@ export const useServerQuerier = () => {
         return doGetAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies/summary`)
     }
 
+    const createLobby = async (ownerName: string) => {
+        const body: CreateLobby = {ownerName: ownerName}
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies`, body)
+    }
+
+    const joinLobby = async (lobbyId: number, participantName: string) => {
+        const body: JoinLobby = {participantName: participantName}
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies/${lobbyId}/join`, body)
+    }
+
     return {
         doDeploy,
         doAttack,
@@ -72,5 +86,7 @@ export const useServerQuerier = () => {
         doAdvance,
         doPlayCards,
         getAvailableLobbies,
+        createLobby,
+        joinLobby,
     }
 }

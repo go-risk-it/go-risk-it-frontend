@@ -11,8 +11,6 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute/ProtectedRoute.tsx"
 import {WebsocketProvider} from "./providers/Websocket.tsx"
 import {GameStateProvider} from "./providers/GameState.tsx"
 import Home from "./components/Home/Home.tsx"
-import GamesList from "./components/Home/GamesList.tsx"
-import ShowLobbies from "./components/Home/ShowLobbies.tsx"
 
 
 const App = () => {
@@ -21,8 +19,8 @@ const App = () => {
             <AuthProvider>
                 <Routes>
                     <Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>}/>
-                    <Route path="/games" element={<ProtectedRoute><GamesList/></ProtectedRoute>}/>
-                    <Route path="/lobbies" element={<ProtectedRoute><ShowLobbies/></ProtectedRoute>}/>
+                    {/*<Route path="/games" element={<ProtectedRoute><GamesList/></ProtectedRoute>}/>*/}
+                    {/*<Route path="/lobbies" element={<ProtectedRoute><ShowLobbies/></ProtectedRoute>}/>*/}
                     <Route path="/games/:id" element={
                         <ProtectedRoute>
                             <GameWithParams/>
