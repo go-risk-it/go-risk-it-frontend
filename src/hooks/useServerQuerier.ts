@@ -78,6 +78,10 @@ export const useServerQuerier = () => {
         return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies/${lobbyId}/join`, body)
     }
 
+    const startGame = async (lobbyId: number) => {
+        return doPostAuthenticated(`${process.env.REACT_APP_API_URL!}/lobbies/${lobbyId}/start`)
+    }
+
     return {
         doDeploy,
         doAttack,
@@ -88,5 +92,6 @@ export const useServerQuerier = () => {
         getAvailableLobbies,
         createLobby,
         joinLobby,
+        startGame,
     }
 }
