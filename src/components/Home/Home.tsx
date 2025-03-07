@@ -1,5 +1,5 @@
 import {useAuth} from "../../hooks/useAuth.ts"
-import GamesList from "./GamesList.tsx"
+import ShowGames from "./ShowGames.tsx"
 import ShowLobbies from "./ShowLobbies.tsx"
 import Button from "@mui/material/Button"
 import React from "react"
@@ -17,7 +17,7 @@ const Home: React.FC = () => {
 
             <h1>Want to risk it all?</h1>
 
-            <GamesList/>
+            <ShowGames/>
 
             <ShowLobbies/>
         </div>

@@ -1,4 +1,3 @@
-
 export interface Lobby {
     id: number;
     numberOfParticipants: number;

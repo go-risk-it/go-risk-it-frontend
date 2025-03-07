@@ -19,7 +19,7 @@ const App = () => {
             <AuthProvider>
                 <Routes>
                     <Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>}/>
-                    {/*<Route path="/games" element={<ProtectedRoute><GamesList/></ProtectedRoute>}/>*/}
+                    {/*<Route path="/games" element={<ProtectedRoute><ShowGames/></ProtectedRoute>}/>*/}
                     {/*<Route path="/lobbies" element={<ProtectedRoute><ShowLobbies/></ProtectedRoute>}/>*/}
                     <Route path="/games/:id" element={
                         <ProtectedRoute>
