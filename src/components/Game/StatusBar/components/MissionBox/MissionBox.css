@@ -1,0 +1,43 @@
+.mission-box {
+  flex: 1;
+  background-color: #213547;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  width: 100%;
+}
+
+.mission-box__heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mission-box__content {
+  margin-top: 0.75rem;
+  background-color: #1a1a1a;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mission-box__icon {
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: #f59e0b;
+}
+
+.mission-box__text-container {
+  text-align: center;
+}
+
+.mission-box__text {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+  color: #f3f4f6;
+}

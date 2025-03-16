@@ -1,0 +1,20 @@
+.players-box {
+  flex: 2;
+  background-color: #213547;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  width: 100%;
+}
+
+.players-box__heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.players-box__list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
