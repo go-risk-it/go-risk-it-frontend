@@ -2,11 +2,12 @@ import "./StatusBar.css"
 import {useGameState} from "../../../hooks/useGameState.ts"
 import {DeployPhaseState, PhaseType} from "../../../api/game/message/gameState.ts"
 import {ConnectionStatus, PlayerStatus} from "../../../api/game/message/playersState.ts"
+import MissionBox from "./MissionBox.tsx"
 
 const StatusBar = () => {
-    const {gameState, phaseState, playersState, thisPlayerState} = useGameState()
+    const {gameState, phaseState, playersState, thisPlayerState, missionState} = useGameState()
 
-    if (!gameState || !phaseState || !playersState || !thisPlayerState) {
+    if (!gameState || !phaseState || !playersState || !thisPlayerState || !missionState) {
         return (
             <div className="status-bar__loading">
                 Loading...
@@ -33,6 +34,13 @@ const StatusBar = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Mission Box */}
+            <MissionBox
+                missionState={missionState}
+                playersState={playersState}
+                thisPlayerState={thisPlayerState}
+            />
 
             {/* Players Box */}
             <div className="status-bar__players-box">

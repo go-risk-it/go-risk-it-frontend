@@ -5,6 +5,7 @@ import {PlayersState, PlayerState} from "../api/game/message/playersState.ts"
 import {GameState, GameStateAPI, PhaseState} from "../api/game/message/gameState.ts"
 import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
 import {CardState} from "../api/game/message/cardState.ts"
+import {MissionState} from "../api/game/message/missionState.ts";
 
 
 export const GameStateContext = createContext<{
@@ -14,6 +15,7 @@ export const GameStateContext = createContext<{
     phaseState: PhaseState | null,
     playersState: PlayersState | null,
     thisPlayerState: PlayerState | null,
+    missionState: MissionState | null,
 }>({
     boardState: null,
     cardState: {cards: []},
@@ -21,6 +23,7 @@ export const GameStateContext = createContext<{
     phaseState: null,
     playersState: null,
     thisPlayerState: null,
+    missionState: null,
 })
 
 // arguments of GameStateProvider are
@@ -35,6 +38,8 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
     const [thisPlayerState, setThisPlayerState] = useState<PlayerState | null>(null)
     const [gameState, setGameState] = useState<GameState | null>(null)
     const [phaseState, setPhaseState] = useState<PhaseState | null>(null)
+    const [missionState, setMissionState] = useState<MissionState | null>(null)
+
 
     useEffect(() => {
         subscribe((msg: WebsocketMessage) => {
@@ -65,6 +70,10 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                     phaseType: data.phase.type,
                 })
                 setPhaseState(data.phase.state)
+            } else if (msg.type === "missionState") {
+                console.log("Received mission state: ", msg.data)
+                const data = msg.data as MissionState
+                setMissionState(data)
             } else {
                 console.warn("Unhandled message: ", msg)
             }
@@ -84,6 +93,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                 phaseState,
                 playersState,
                 thisPlayerState,
+                missionState,
             }}> {children}
         </GameStateContext.Provider>
     )
