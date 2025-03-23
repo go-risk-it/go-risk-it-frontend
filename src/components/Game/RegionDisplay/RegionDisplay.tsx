@@ -40,7 +40,6 @@ const RegionDisplay: React.FC<RegionDisplayProps> = ({regionId, troops, ownerInd
                     strokeWidth="1"
                 />
             </svg>
-            {troops !== undefined && <Typography variant="body2">Troops: {troops}</Typography>}
         </Box>
     )
 }

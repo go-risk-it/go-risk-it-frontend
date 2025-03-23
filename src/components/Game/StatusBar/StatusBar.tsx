@@ -20,11 +20,6 @@ const StatusBar = () => {
 
     return (
         <div className="status-bar">
-            <GameInfoBox
-                phaseType={gameState.phaseType}
-                phaseState={phaseState}
-            />
-
             <MissionBox
                 missionState={missionState}
                 playersState={playersState}

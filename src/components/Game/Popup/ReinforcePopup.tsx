@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -8,6 +8,10 @@ import Slider from "@mui/material/Slider"
 import Typography from "@mui/material/Typography"
 import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Box from "@mui/material/Box"
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+
+import "./Popup.css"
 
 export interface ReinforcePopupProps {
     isVisible: boolean;
@@ -25,16 +29,16 @@ export interface ReinforcePopupProps {
 const ReinforcePopup: React.FC<ReinforcePopupProps> = (
     props,
 ) => {
-    const [localMovingTroops, setLocalMovingTroops] = useState(props.movingTroops)
-    const maxMovableTroops = props.troopsInSource - 1
-
-    useEffect(() => {
-        setLocalMovingTroops(props.movingTroops)
-    }, [props.movingTroops])
+    const [movingTroops, setMovingTroops] = useState(0)
 
     const handleTroopsChange = (newValue: number) => {
-        setLocalMovingTroops(newValue)
+        setMovingTroops(newValue)
         props.onMovingTroopsChange(newValue)
+    }
+
+    const reinforce = () => {
+        props.onConfirm()
+        setMovingTroops(0)
     }
 
     if (!props.isVisible) {
@@ -43,39 +47,104 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
 
     return (
         <Dialog open={true} onClose={props.onCancel} className="risk-it-move-popup">
-            <DialogTitle>Reinforce</DialogTitle>
-            <DialogContent>
-                <Box display="flex" justifyContent="space-between" mb={2}>
-                    <RegionDisplay
-                        regionId={props.sourceRegionId}
-                        troops={props.troopsInSource - localMovingTroops}
-                        ownerIndex={props.ownerIndex}
-                    />
-                    <Typography variant="h6" alignSelf="center">→</Typography>
-                    <RegionDisplay
-                        regionId={props.targetRegionId}
-                        troops={props.troopsInTarget + localMovingTroops}
-                        ownerIndex={props.ownerIndex}
-                    />
+            <DialogTitle>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CompareArrowsIcon sx={{ color: 'var(--accent-color)' }} />
+                    Reinforce Territory
                 </Box>
-                <Slider
-                    value={localMovingTroops}
-                    onChange={(_, newValue) => handleTroopsChange(newValue as number)}
-                    min={1}
-                    max={maxMovableTroops}
-                    step={1}
-                    marks
-                    valueLabelDisplay="auto"
-                    disabled={maxMovableTroops <= 1}
-                />
-                <Typography gutterBottom>
-                    Moving Troops: {localMovingTroops}
-                </Typography>
+            </DialogTitle>
+            <DialogContent>
+                <Box 
+                    display="flex" 
+                    justifyContent="space-between" 
+                    alignItems="center"
+                    sx={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        borderRadius: '16px',
+                        padding: '1.5rem',
+                        marginBottom: '2rem',
+                        transition: 'all 0.3s ease-out',
+                        '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            transform: 'scale(1.02)'
+                        }
+                    }}
+                >
+                    <Box textAlign="center">
+                        <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
+                            From
+                        </Typography>
+                        <RegionDisplay
+                            regionId={props.sourceRegionId}
+                            troops={props.troopsInSource - movingTroops}
+                            ownerIndex={props.ownerIndex}
+                        />
+                        <Typography variant="h6" sx={{ mt: 1 }}>
+                            {props.troopsInSource - movingTroops} Remaining
+                        </Typography>
+                    </Box>
+                    <ArrowForwardIcon 
+                        sx={{ 
+                            fontSize: '2rem',
+                            color: 'var(--accent-color)',
+                            filter: 'drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.3))'
+                        }} 
+                    />
+                    <Box textAlign="center">
+                        <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
+                            To
+                        </Typography>
+                        <RegionDisplay
+                            regionId={props.targetRegionId}
+                            troops={props.troopsInTarget + movingTroops}
+                            ownerIndex={props.ownerIndex}
+                        />
+                        <Typography variant="h6" sx={{ mt: 1 }}>
+                            {props.troopsInTarget + movingTroops} After Move
+                        </Typography>
+                    </Box>
+                </Box>
+                <Box
+                    sx={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        borderRadius: '16px',
+                        padding: '1.5rem',
+                        transition: 'all 0.3s ease-out',
+                        '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.05)'
+                        }
+                    }}
+                >
+                    <Typography variant="subtitle1" sx={{ mb: 2, opacity: 0.7 }}>
+                        Select Troops to Move
+                    </Typography>
+                    <Slider
+                        value={movingTroops}
+                        onChange={(_, newValue) => handleTroopsChange(newValue as number)}
+                        min={0}
+                        max={props.troopsInSource - 1}
+                        step={1}
+                        marks
+                        valueLabelDisplay="auto"
+                    />
+                    <Typography variant="h6" sx={{ mt: 2, textAlign: 'center' }}>
+                        Moving {movingTroops} {movingTroops === 1 ? 'Troop' : 'Troops'}
+                    </Typography>
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.onCancel}>Cancel</Button>
-                <Button onClick={props.onConfirm} disabled={localMovingTroops > maxMovableTroops}>
-                    Confirm
+                <Button 
+                    onClick={reinforce}
+                    disabled={movingTroops === 0}
+                    sx={{
+                        minWidth: '120px',
+                        '&:not(:disabled)': {
+                            background: 'linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, white)) !important'
+                        }
+                    }}
+                >
+                    Move Troops
                 </Button>
             </DialogActions>
         </Dialog>
