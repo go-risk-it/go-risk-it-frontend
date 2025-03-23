@@ -3,11 +3,12 @@ import {useGameState} from "../../../hooks/useGameState.ts"
 import GameInfoBox from "./components/GameInfoBox/GameInfoBox"
 import MissionBox from "./components/MissionBox/MissionBox"
 import PlayersBox from "./components/PlayersBox/PlayersBox"
+import MoveLogBox from "./components/MoveLogBox/MoveLogBox.tsx";
 
 const StatusBar = () => {
-    const {gameState, phaseState, playersState, thisPlayerState, missionState} = useGameState()
+    const {gameState, phaseState, playersState, thisPlayerState, missionState, moveHistory} = useGameState()
 
-    if (!gameState || !phaseState || !playersState || !thisPlayerState || !missionState) {
+    if (!gameState || !phaseState || !playersState || !thisPlayerState || !missionState || !moveHistory) {
         return (
             <div className="status-bar__loading">
                 Loading...
@@ -35,6 +36,13 @@ const StatusBar = () => {
                 currentTurnPlayer={currentTurnPlayer}
                 thisPlayerState={thisPlayerState}
             />
+
+            <MoveLogBox
+                moveHistory={moveHistory}
+                playersState={playersState}
+                maxMoves={10}
+                />
+
         </div>
     )
 }

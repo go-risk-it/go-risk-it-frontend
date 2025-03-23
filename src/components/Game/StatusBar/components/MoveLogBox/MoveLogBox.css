@@ -1,0 +1,61 @@
+.move-log-box {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    max-height: 300px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.move-log-box__header {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.move-log-box__header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.move-log-box__content {
+    overflow-y: auto;
+    max-height: 240px;
+}
+
+.move-log-box__list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.move-log-box__item {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.move-log-box__item:last-child {
+    border-bottom: none;
+}
+
+.move-log-box__timestamp {
+    color: #aaa;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.move-log-box__description {
+    line-height: 1.4;
+}
+
+.move-log-box__empty-message {
+    color: #aaa;
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+}

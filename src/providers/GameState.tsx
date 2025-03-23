@@ -6,6 +6,7 @@ import {GameState, GameStateAPI, PhaseState} from "../api/game/message/gameState
 import {WebsocketContext, WebsocketMessage} from "./Websocket.tsx"
 import {CardState} from "../api/game/message/cardState.ts"
 import {MissionState} from "../api/game/message/missionState.ts";
+import {MoveHistory} from "../api/game/message/moveLog.ts";
 
 
 export const GameStateContext = createContext<{
@@ -16,6 +17,7 @@ export const GameStateContext = createContext<{
     playersState: PlayersState | null,
     thisPlayerState: PlayerState | null,
     missionState: MissionState | null,
+    moveHistory: MoveHistory | null,
 }>({
     boardState: null,
     cardState: {cards: []},
@@ -24,6 +26,7 @@ export const GameStateContext = createContext<{
     playersState: null,
     thisPlayerState: null,
     missionState: null,
+    moveHistory: null,
 })
 
 // arguments of GameStateProvider are
@@ -39,6 +42,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
     const [gameState, setGameState] = useState<GameState | null>(null)
     const [phaseState, setPhaseState] = useState<PhaseState | null>(null)
     const [missionState, setMissionState] = useState<MissionState | null>(null)
+    const [moveHistory, setMoveHistory] = useState<MoveHistory | null>(null)
 
 
     useEffect(() => {
@@ -74,14 +78,26 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                 console.log("Received mission state: ", msg.data)
                 const data = msg.data as MissionState
                 setMissionState(data)
-            } else {
-                console.warn("Unhandled message: ", msg)
+            } else if (msg.type === "moveHistory") {
+                console.log("Received move history: ", msg.data)
+                const data = msg.data as MoveHistory
+                data.moves.forEach(move => {
+                    const moveStr = move.move as unknown as string
+                    const resultStr = move.result as unknown as string
+                    const decodedMove = atob(moveStr)
+                    const decodedResult = atob(resultStr)
+                    move.move = JSON.parse(decodedMove)
+                    move.result = JSON.parse(decodedResult)
+                })
+                const newMoveHistory = moveHistory ? {...moveHistory, ...data} : data
+                setMoveHistory(newMoveHistory)
+            } else {                console.warn("Unhandled message: ", msg)
             }
         })
         return () => {
             unsubscribe()
         }
-    }, [session, subscribe, unsubscribe])
+    }, [moveHistory, session, subscribe, unsubscribe])
 
 
     return (
@@ -94,6 +110,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                 playersState,
                 thisPlayerState,
                 missionState,
+                moveHistory,
             }}> {children}
         </GameStateContext.Provider>
     )
