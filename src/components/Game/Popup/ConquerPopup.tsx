@@ -23,7 +23,6 @@ export interface ConquerPopupProps {
     onConfirm: () => void
     sourceOwnerIndex: number // Add this line
     targetOwnerIndex: number // Add this line
-    onCancel: () => void
 }
 
 const ConquerPopup: React.FC<ConquerPopupProps> = (
@@ -48,7 +47,6 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
     return (
         <Dialog 
             open={true} 
-            onClose={props.onCancel} 
             className="risk-it-move-popup"
             maxWidth={false}
             fullWidth={false}
@@ -147,7 +145,6 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onCancel}>Cancel</Button>
                 <Button 
                     onClick={conquer}
                     sx={{

@@ -1,5 +1,4 @@
 import React, {useEffect, useRef} from "react"
-import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
 import "../Map/SVGMap.css"
 import "./RegionDisplay.css"
@@ -12,7 +11,7 @@ interface RegionDisplayProps {
     ownerIndex: number;
 }
 
-const RegionDisplay: React.FC<RegionDisplayProps> = ({regionId, troops, ownerIndex}) => {
+const RegionDisplay: React.FC<RegionDisplayProps> = ({regionId, ownerIndex}) => {
     const {getSvgPathForRegion} = useMapData()
     const svgRef = useRef<SVGSVGElement>(null)
     const svgPath = getSvgPathForRegion(regionId)
