@@ -90,12 +90,8 @@ const MoveLogBox = ({moveHistory, playersState, maxMoves}: MoveLogBoxProps) => {
 
                 case PhaseType.ATTACK: {
                     const attackMove = move.move as AttackMove;
-                    if (move.result && Object.keys(move.result).length > 0) {
-                        const result = move.result as AttackResult;
-                        return `${playerName} successfully attacked ${formatRegionId(attackMove.defendingRegionId)} from ${formatRegionId(attackMove.attackingRegionId)} with ${attackMove.attackingTroops} troops, conquering it with ${result.conqueringTroops} troops.`;
-                    } else {
-                        return `${playerName} attacked ${formatRegionId(attackMove.defendingRegionId)} from ${formatRegionId(attackMove.attackingRegionId)} with ${attackMove.attackingTroops} troops.`;
-                    }
+                    const attackResult = move.result as AttackResult;
+                    return `${playerName} attacked ${formatRegionId(attackMove.defendingRegionId)} from ${formatRegionId(attackMove.attackingRegionId)} with ${attackMove.attackingTroops} troops, conquering it with ${attackResult.conqueringTroops} troops.`;
                 }
 
                 case PhaseType.CONQUER: {
