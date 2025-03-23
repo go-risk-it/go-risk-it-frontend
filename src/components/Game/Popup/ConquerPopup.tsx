@@ -44,6 +44,8 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         return null
     }
 
+    props.onSetTroops(props.minTroopsToMove)
+
     return (
         <Dialog 
             open={true} 
