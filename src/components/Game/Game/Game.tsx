@@ -153,7 +153,7 @@ const Game: React.FC = () => {
                         doConquer, gameState, phaseState as ConquerPhaseState, boardState, conquerMove, dispatchConquerMove, playersState,
                     )}
                     reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
-                    cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove)}
+                    cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove, handleAdvance)}
                     handleAdvance={handleAdvance}
                 />
             </div>

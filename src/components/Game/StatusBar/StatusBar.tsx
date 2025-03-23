@@ -1,6 +1,5 @@
 import "./StatusBar.css"
 import {useGameState} from "../../../hooks/useGameState.ts"
-import GameInfoBox from "./components/GameInfoBox/GameInfoBox"
 import MissionBox from "./components/MissionBox/MissionBox"
 import PlayersBox from "./components/PlayersBox/PlayersBox"
 import MoveLogBox from "./components/MoveLogBox/MoveLogBox.tsx";

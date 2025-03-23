@@ -72,6 +72,7 @@ export const getCardsPopupProps = (
     cardState: CardState,
     cardMove: CardMove,
     dispatchCardMove: (action: CardAction) => void,
+    onAdvancePhase: () => void,
 ): CardsPopupProps => {
     return {
         isVisible: true,
@@ -109,8 +110,6 @@ export const getCardsPopupProps = (
             )
         },
         selectedCombinations: cardMove.combinations,
-        onCancel: () => {
-        },
         onConfirm: () => {
             doPlayCards(cardMove, gameState).then(response => {
                 console.log("Cards response: ", response)
@@ -119,5 +118,9 @@ export const getCardsPopupProps = (
             })
             dispatchCardMove({type: CardActionType.RESET})
         },
+        onAdvance: () => {
+            onAdvancePhase()
+            dispatchCardMove({type: CardActionType.RESET})
+        }
     }
 }

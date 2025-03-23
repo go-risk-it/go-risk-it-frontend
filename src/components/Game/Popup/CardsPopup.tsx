@@ -19,8 +19,8 @@ export interface CardsPopupProps {
     onCombinationRemove: (index: number) => void
     isCardSelectable: (selectedCards: number[], card: Card) => boolean
     selectedCombinations: CardCombination[]
-    onCancel: () => void
     onConfirm: () => void
+    onAdvance: () => void
 }
 
 const CardsPopup: React.FC<CardsPopupProps> = (props) => {
@@ -57,7 +57,6 @@ const CardsPopup: React.FC<CardsPopupProps> = (props) => {
     return (
         <Dialog 
             open={true} 
-            onClose={props.onCancel} 
             className="risk-it-move-popup"
             maxWidth={false}
             fullWidth={false}
@@ -127,14 +126,27 @@ const CardsPopup: React.FC<CardsPopupProps> = (props) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onCancel}>
-                    Cancel
+                <Button
+                    onClick={props.onAdvance}
+                    sx={{
+                        '&:not(:disabled)': {
+                            color: 'rgba(255, 255, 255, 0.7) !important',
+                            background: 'rgba(255, 255, 255, 0.1) !important'
+                        }
+                    }}
+                >
+                    Advance without using cards
                 </Button>
                 <Button
                     onClick={props.onConfirm}
                     disabled={props.selectedCombinations.length === 0}
+                    sx={{
+                        '&:not(:disabled)': {
+                            background: 'linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, white)) !important'
+                        }
+                    }}
                 >
-                    Play Cards
+                    Play combinations
                 </Button>
             </DialogActions>
         </Dialog>
