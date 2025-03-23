@@ -11,6 +11,12 @@ interface CardDisplayProps {
     isSelected: boolean;
 }
 
+const formatRegionName = (name: string) => {
+    return name.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+}
+
 const CardDisplay: React.FC<CardDisplayProps> = ({card, onCardClick, isSelected}) => {
     const isSelectable = onCardClick !== null
     const className = `risk-it-card ${
@@ -18,15 +24,25 @@ const CardDisplay: React.FC<CardDisplayProps> = ({card, onCardClick, isSelected}
     }`
 
     return (
-        <Box className={className} onClick={isSelectable ? () => onCardClick(card) : undefined}>
+        <Box 
+            className={className} 
+            onClick={isSelectable ? () => onCardClick(card) : undefined}
+            role={isSelectable ? "button" : undefined}
+            aria-pressed={isSelected}
+        >
+            <Typography className="card-type">
+                {card.type}
+            </Typography>
             <div className="card-content">
-                <Typography className="card-type">{card.type}</Typography>
                 {card.type !== "jolly" ? (
                     <div className="card-region">
                         <RegionDisplay
                             regionId={card.region}
                             ownerIndex={-1}
                         />
+                        <div className="region-name">
+                            {formatRegionName(card.region)}
+                        </div>
                     </div>
                 ) : (
                     <Typography className="jolly-text">★</Typography>

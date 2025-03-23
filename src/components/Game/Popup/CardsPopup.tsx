@@ -3,14 +3,14 @@ import Dialog from "@mui/material/Dialog"
 import DialogContent from "@mui/material/DialogContent"
 import DialogActions from "@mui/material/DialogActions"
 import Button from "@mui/material/Button"
-import {Box, IconButton} from "@mui/material"
+import {Box, IconButton, Typography} from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
+import {FaScroll, FaLayerGroup} from "react-icons/fa"
 
 import "./Popup.css"
 import {Card} from "../../../api/game/message/cardState.ts"
 import CardDisplay from "../Cards/CardDisplay.tsx"
 import {CardCombination} from "../../../api/game/message/cardMove.ts"
-import Typography from "@mui/material/Typography"
 
 export interface CardsPopupProps {
     isVisible: boolean
@@ -23,12 +23,8 @@ export interface CardsPopupProps {
     onConfirm: () => void
 }
 
-const CardsPopup: React.FC<CardsPopupProps> = (
-    props,
-) => {
-
+const CardsPopup: React.FC<CardsPopupProps> = (props) => {
     const [selectedCards, setSelectedCards] = useState<number[]>([])
-
 
     const handleCardClick = (card: Card) => {
         let newSelectedCards: number[]
@@ -37,7 +33,6 @@ const CardsPopup: React.FC<CardsPopupProps> = (
         } else {
             newSelectedCards = [...selectedCards, card.id]
             if (newSelectedCards.length === 3) {
-                console.log("Forming combination: ", newSelectedCards)
                 props.onCombinationAdd(newSelectedCards)
                 newSelectedCards = []
             }
@@ -49,7 +44,11 @@ const CardsPopup: React.FC<CardsPopupProps> = (
         props.onCombinationRemove(index)
     }
 
-    const availableCards = props.playerCards.filter(card => !props.selectedCombinations.some(combination => combination.cardIDs.includes(card.id)))
+    const availableCards = props.playerCards.filter(
+        card => !props.selectedCombinations.some(
+            combination => combination.cardIDs.includes(card.id)
+        )
+    )
 
     if (!props.isVisible) {
         return null
@@ -60,14 +59,13 @@ const CardsPopup: React.FC<CardsPopupProps> = (
             open={true}
             onClose={props.onCancel}
             maxWidth={false}
-            fullWidth
             className="risk-it-move-popup"
         >
-            <DialogContent className="cards-container">
-                <Box display="flex" flexDirection="column">
+            <DialogContent>
+                <Box className="cards-popup-container">
                     <div className="cards-selection-area">
-                        <Typography className="section-title" variant="h6" align="center">
-                            Your Cards
+                        <Typography className="section-title">
+                            <FaScroll /> Available Cards ({availableCards.length})
                         </Typography>
                         <div className="cards-grid">
                             {availableCards.map(card => (
@@ -82,43 +80,56 @@ const CardsPopup: React.FC<CardsPopupProps> = (
                     </div>
 
                     <div className="combinations-area">
-                        <Typography className="section-title" variant="h6">
-                            Selected Combinations
+                        <Typography className="section-title">
+                            <FaLayerGroup /> Selected Combinations ({props.selectedCombinations.length})
                         </Typography>
                         <div className="combinations-content">
-                            {props.selectedCombinations.map((combination: CardCombination, index: number) => (
-                                <div key={index} className="combination-row">
-                                    <div className="combination-cards">
-                                        {combination.cardIDs.map(cardId => {
-                                            const card = props.playerCards.find((c: Card) => c.id === cardId)
-                                            return card ? (
-                                                <CardDisplay
-                                                    key={card.id}
-                                                    card={card}
-                                                    onCardClick={null}
-                                                    isSelected={true}
-                                                />
-                                            ) : null
-                                        })}
-                                    </div>
-                                    <IconButton onClick={() => handleCombinationRemove(index)}>
-                                        <CloseIcon/>
-                                    </IconButton>
+                            {props.selectedCombinations.length === 0 ? (
+                                <div className="empty-combinations">
+                                    Select three cards to form a combination
                                 </div>
-                            ))}
+                            ) : (
+                                props.selectedCombinations.map((combination: CardCombination, index: number) => (
+                                    <div key={index} className="combination-row">
+                                        <div className="combination-cards">
+                                            {combination.cardIDs.map(cardId => {
+                                                const card = props.playerCards.find(c => c.id === cardId)
+                                                return card ? (
+                                                    <CardDisplay
+                                                        key={card.id}
+                                                        card={card}
+                                                        onCardClick={null}
+                                                        isSelected={true}
+                                                    />
+                                                ) : null
+                                            })}
+                                        </div>
+                                        <IconButton 
+                                            onClick={() => handleCombinationRemove(index)}
+                                            size="small"
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </Box>
             </DialogContent>
             <DialogActions>
+                <Button onClick={props.onCancel}>
+                    Cancel
+                </Button>
                 <Button
                     onClick={props.onConfirm}
                     disabled={props.selectedCombinations.length === 0}
                 >
-                    Play cards
+                    Play Cards
                 </Button>
             </DialogActions>
-        </Dialog>)
+        </Dialog>
+    )
 }
 
 export default CardsPopup

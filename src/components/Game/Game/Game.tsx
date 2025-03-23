@@ -130,7 +130,9 @@ const Game: React.FC = () => {
                                 <FaScroll /> Your Cards ({cardState.cards.length})
                             </div>
                         </div>
-                        <CardsStatus />
+                        <div className="cards-container">
+                            <CardsStatus />
+                        </div>
                     </div>
                 )}
 
