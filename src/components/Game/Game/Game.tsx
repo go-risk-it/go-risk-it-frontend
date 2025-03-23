@@ -22,8 +22,7 @@ import {MapProvider} from "../../../providers/Map.tsx"
 import {useServerQuerier} from "../../../hooks/useServerQuerier.ts"
 import CardsStatus from "../Cards/CardsStatus.tsx"
 import StatusBar from "../StatusBar/StatusBar.tsx"
-// Import icons
-import { FaFlag, FaCrosshairs, FaShieldAlt, FaScroll } from 'react-icons/fa'
+import {FaCrosshairs, FaFlag, FaScroll, FaShieldAlt} from "react-icons/fa"
 
 const Game: React.FC = () => {
     const {signout} = useAuth()
