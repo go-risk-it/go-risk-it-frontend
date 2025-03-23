@@ -2,110 +2,157 @@
 
 .risk-it-map-container {
     position: relative;
-    margin: 1rem auto;
     width: 100%;
     height: 100%;
-    stroke: #fff;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
 }
 
 svg.risk-it-map-container path {
-    fill: #8c8c8c;
     cursor: pointer;
     outline: none;
+    transition: all var(--transition-speed) var(--transition-timing);
 }
 
-/* Define two classes for inactive and active paths. Set hover and focus for active paths */
-svg.risk-it-map-container path.risk-it-region.active {
-    filter: saturate(150%);
+/* Region styling */
+svg.risk-it-map-container path.risk-it-region {
+    stroke-width: 1.5;
+    filter: brightness(0.95) saturate(1.1);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-svg.risk-it-map-container path.risk-it-region.active:hover {
-    filter: saturate(120%);
+svg.risk-it-map-container path.risk-it-region:hover {
+    filter: brightness(1.1) saturate(1.2);
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 2.5;
+    box-shadow: 
+        inset 0 0 15px rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(255, 255, 255, 0.2);
 }
 
-svg.risk-it-map-container path.risk-it-region.active:focus {
-    filter: drop-shadow(0 0 5px #fff);
+/* Selectable regions */
+svg.risk-it-map-container path.risk-it-region.risk-it-region-selectable {
+    cursor: pointer;
+    animation: region-pulse 2s infinite var(--transition-timing);
 }
 
-svg.risk-it-map-container path.risk-it-region.inactive {
-    filter: saturate(50%);
+svg.risk-it-map-container path.risk-it-region.risk-it-region-not-selectable {
+    cursor: not-allowed;
+    filter: brightness(0.6) saturate(0.7);
+    opacity: 0.7;
 }
 
-/* Define 6 classes for the 6 different colors */
+/* Enhanced pulse animation */
+@keyframes region-pulse {
+    0% {
+        filter: brightness(1) saturate(1.1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+        stroke-width: 1.5;
+    }
+    50% {
+        filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+        stroke-width: 3;
+    }
+    100% {
+        filter: brightness(1) saturate(1.1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+        stroke-width: 1.5;
+    }
+}
+
+/* Player colors with enhanced effects */
 svg.risk-it-map-container path.risk-it-region.risk-it-player0 {
     fill: var(--player0-color);
+    filter: drop-shadow(0 2px 6px rgba(78, 205, 196, 0.4));
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player1 {
     fill: var(--player1-color);
+    filter: drop-shadow(0 2px 6px rgba(255, 107, 107, 0.4));
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player2 {
     fill: var(--player2-color);
+    filter: drop-shadow(0 2px 6px rgba(69, 183, 209, 0.4));
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player3 {
     fill: var(--player3-color);
+    filter: drop-shadow(0 2px 6px rgba(150, 206, 180, 0.4));
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player4 {
     fill: var(--player4-color);
+    filter: drop-shadow(0 2px 6px rgba(212, 165, 165, 0.4));
 }
 
 svg.risk-it-map-container path.risk-it-region.risk-it-player5 {
     fill: var(--player5-color);
+    filter: drop-shadow(0 2px 6px rgba(255, 230, 109, 0.4));
 }
 
-/* Define the keyframes for the highlight animation */
-@keyframes region-highlight {
-    0% {
-        stroke-width: 2; /* Normal stroke width */
-        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8)); /* Initial shadow */
-    }
-    50% {
-        stroke-width: 4; /* Highlighted stroke width */
-        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.8)); /* Increased shadow */
-    }
-    100% {
-        stroke-width: 2; /* Normal stroke width */
-        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8)); /* Return to initial shadow */
-    }
+/* Troop count styling */
+.troop-count {
+    fill: var(--text-primary);
+    font-weight: 700;
+    font-size: 16px;
+    text-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
 }
 
-/* Define a CSS class for selectable regions with pulsing animation */
-svg.risk-it-map-container path.risk-it-region.risk-it-region-selectable {
-    stroke: #000000;
-    cursor: pointer;
-    animation: region-highlight 2s infinite; /* Adjust the animation duration and iteration count as needed */
+/* Continent highlighting */
+.risk-it-continent {
+    transition: all var(--transition-speed) var(--transition-timing);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
 }
 
-svg.risk-it-map-container path.risk-it-region.risk-it-region-not-selectable {
-    /*filter: saturate(50%);*/
-    cursor: not-allowed;
+.risk-it-continent:hover {
+    filter: 
+        brightness(1.1)
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.2));
 }
 
-/* Continent colors */
-/* Set properties for filter.feFlood.floodColor and result */
-svg.risk-it-map-container filter feFlood.risk-it-player0 {
-    flood-color: var(--player0-color);
+/* Continent owner highlighting */
+.risk-it-continent[filter^="url(#outline"] {
+    transition: all var(--transition-speed) var(--transition-timing);
 }
 
-svg.risk-it-map-container filter feFlood.risk-it-player1 {
-    flood-color: var(--player1-color);
+.risk-it-continent[filter^="url(#outline"]:hover {
+    filter: brightness(1.15) saturate(1.2);
 }
 
-svg.risk-it-map-container filter feFlood.risk-it-player2 {
-    flood-color: var(--player2-color);
+/* Continent borders */
+.risk-it-continent-border {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 3;
+    stroke-dasharray: 8 4;
+    pointer-events: none;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
 }
 
-svg.risk-it-map-container filter feFlood.risk-it-player3 {
-    flood-color: var(--player3-color);
+/* Region labels */
+.region-label {
+    font-size: 12px;
+    fill: var(--text-secondary);
+    text-anchor: middle;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-svg.risk-it-map-container filter feFlood.risk-it-player4 {
-    flood-color: var(--player4-color);
-}
-
-svg.risk-it-map-container filter feFlood.risk-it-player5 {
-    flood-color: var(--player5-color);
+/* Continent labels */
+.continent-label {
+    font-size: 24px;
+    fill: var(--text-secondary);
+    text-anchor: middle;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.15;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }

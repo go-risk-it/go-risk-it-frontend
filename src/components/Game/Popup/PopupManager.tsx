@@ -5,9 +5,7 @@ import AttackPopup, {AttackPopupProps} from "../Popup/AttackPopup.tsx"
 import ConquerPopup, {ConquerPopupProps} from "../Popup/ConquerPopup.tsx"
 import ReinforcePopup, {ReinforcePopupProps} from "../Popup/ReinforcePopup.tsx"
 import CardsPopup, {CardsPopupProps} from "../Popup/CardsPopup.tsx"
-import {Button} from "@mui/material"
 import {useGameState} from "../../../hooks/useGameState.ts"
-
 
 const PopupManager: React.FC<{
     deployPopupProps: DeployPopupProps
@@ -22,7 +20,7 @@ const PopupManager: React.FC<{
           conquerPopupProps,
           reinforcePopupProps,
           cardsPopupProps,
-          handleAdvance,
+          handleAdvance: _handleAdvance, // Renamed to indicate it's unused
       }) => {
     const {gameState, playersState, thisPlayerState} = useGameState()
 
@@ -57,13 +55,6 @@ const PopupManager: React.FC<{
             {gameState.phaseType === PhaseType.CARDS && (
                 <CardsPopup {...cardsPopupProps} />
             )}
-
-            {(gameState.phaseType === PhaseType.ATTACK ||
-                    gameState.phaseType === PhaseType.REINFORCE ||
-                    gameState.phaseType === PhaseType.CARDS
-                ) &&
-                <Button onClick={handleAdvance}>Advance</Button>
-            }
         </>
     )
 }

@@ -1,10 +1,28 @@
 :root {
-    --player0-color: #00ffff;
-    --player1-color: #ff0000;
-    --player2-color: #0000ff;
-    --player3-color: #00ff00;
-    --player4-color: #ff00ff;
-    --player5-color: #ffff00;
+    /* Modern, sophisticated color palette with better contrast */
+    --player0-color: #4ECDC4;  /* Turquoise */
+    --player1-color: #FF6B6B;  /* Coral Red */
+    --player2-color: #45B7D1;  /* Ocean Blue */
+    --player3-color: #96CEB4;  /* Sage Green */
+    --player4-color: #D4A5A5;  /* Dusty Rose */
+    --player5-color: #FFE66D;  /* Mellow Yellow */
+    
+    /* UI Theme Colors */
+    --background-dark: #1a1a1a;
+    --background-light: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent-color: #6c5ce7;
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    /* Shadows and Effects */
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --hover-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    
+    /* Animations */
+    --transition-speed: 0.3s;
+    --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Player color styles */
@@ -30,3 +48,34 @@
 .player-3-border { border-color: var(--player3-color); }
 .player-4-border { border-color: var(--player4-color); }
 .player-5-border { border-color: var(--player5-color); }
+
+/* Additional Utility Classes */
+.text-glow {
+    text-shadow: var(--text-shadow);
+}
+
+.card-hover {
+    transition: transform var(--transition-speed) var(--transition-timing),
+                box-shadow var(--transition-speed) var(--transition-timing);
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+}
+
+/* Player color styles with opacity variants */
+.player-0-color-light { color: color-mix(in srgb, var(--player0-color) 70%, white); }
+.player-1-color-light { color: color-mix(in srgb, var(--player1-color) 70%, white); }
+.player-2-color-light { color: color-mix(in srgb, var(--player2-color) 70%, white); }
+.player-3-color-light { color: color-mix(in srgb, var(--player3-color) 70%, white); }
+.player-4-color-light { color: color-mix(in srgb, var(--player4-color) 70%, white); }
+.player-5-color-light { color: color-mix(in srgb, var(--player5-color) 70%, white); }
+
+/* Player background styles with gradient */
+.player-0-bg-gradient { background: linear-gradient(135deg, var(--player0-color), color-mix(in srgb, var(--player0-color) 70%, black)); }
+.player-1-bg-gradient { background: linear-gradient(135deg, var(--player1-color), color-mix(in srgb, var(--player1-color) 70%, black)); }
+.player-2-bg-gradient { background: linear-gradient(135deg, var(--player2-color), color-mix(in srgb, var(--player2-color) 70%, black)); }
+.player-3-bg-gradient { background: linear-gradient(135deg, var(--player3-color), color-mix(in srgb, var(--player3-color) 70%, black)); }
+.player-4-bg-gradient { background: linear-gradient(135deg, var(--player4-color), color-mix(in srgb, var(--player4-color) 70%, black)); }
+.player-5-bg-gradient { background: linear-gradient(135deg, var(--player5-color), color-mix(in srgb, var(--player5-color) 70%, black)); }
