@@ -23,6 +23,7 @@ export interface ConquerPopupProps {
     onConfirm: () => void
     sourceOwnerIndex: number // Add this line
     targetOwnerIndex: number // Add this line
+    onCancel: () => void
 }
 
 const ConquerPopup: React.FC<ConquerPopupProps> = (
@@ -45,7 +46,21 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
     }
 
     return (
-        <Dialog open={true} onClose={props.onConfirm} className="risk-it-move-popup">
+        <Dialog 
+            open={true} 
+            onClose={props.onCancel} 
+            className="risk-it-move-popup"
+            maxWidth={false}
+            fullWidth={false}
+            PaperProps={{
+                sx: {
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                }
+            }}
+        >
             <DialogTitle>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <FlagIcon sx={{ color: 'var(--accent-color)' }} />
@@ -132,7 +147,7 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onConfirm}>Cancel</Button>
+                <Button onClick={props.onCancel}>Cancel</Button>
                 <Button 
                     onClick={conquer}
                     sx={{

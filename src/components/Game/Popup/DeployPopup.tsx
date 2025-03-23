@@ -44,7 +44,21 @@ const DeployPopup: React.FC<DeployPopupProps> = (
     const troopsToAdd = desiredTroops - props.currentTroops
 
     return (
-        <Dialog open={true} onClose={props.onCancel} className="risk-it-move-popup">
+        <Dialog 
+            open={true} 
+            onClose={props.onCancel} 
+            className="risk-it-move-popup"
+            maxWidth={false}
+            fullWidth={false}
+            PaperProps={{
+                sx: {
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                }
+            }}
+        >
             <DialogTitle>Deploy Troops</DialogTitle>
             <DialogContent>
                 <Box 

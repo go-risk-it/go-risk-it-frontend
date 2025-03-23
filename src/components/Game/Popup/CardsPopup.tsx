@@ -55,11 +55,20 @@ const CardsPopup: React.FC<CardsPopupProps> = (props) => {
     }
 
     return (
-        <Dialog
-            open={true}
-            onClose={props.onCancel}
-            maxWidth={false}
+        <Dialog 
+            open={true} 
+            onClose={props.onCancel} 
             className="risk-it-move-popup"
+            maxWidth={false}
+            fullWidth={false}
+            PaperProps={{
+                sx: {
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                }
+            }}
         >
             <DialogContent>
                 <Box className="cards-popup-container">
