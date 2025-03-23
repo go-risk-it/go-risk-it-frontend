@@ -11,6 +11,7 @@ import {
     PhaseType,
     ReinforceMove
 } from "../../../../../api/game/message/moveLog.ts";
+import {useEffect, useRef, useState} from "react";
 
 interface MoveLogBoxProps {
     moveHistory: MoveHistory;
@@ -18,8 +19,62 @@ interface MoveLogBoxProps {
     maxMoves: number;
 }
 
+const getRelativeTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) {
+        return `${seconds} seconds ago`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) {
+        return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) {
+        return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    }
+
+    const days = Math.floor(hours / 24);
+    return `${days} day${days !== 1 ? 's' : ''} ago`;
+};
+
 const MoveLogBox = ({moveHistory, playersState, maxMoves}: MoveLogBoxProps) => {
-    console.log("MoveLogBox props:", moveHistory, playersState, maxMoves);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [, setTimeUpdate] = useState(0);
+
+    useEffect(() => {
+        // Update every minute instead of every second
+        const timer = setInterval(() => {
+            setTimeUpdate(prev => prev + 1);
+        }, 60000); // 60 seconds
+
+        return () => clearInterval(timer);
+    }, []);
+
+    // For very recent moves (< 1 minute), we can use a separate effect
+    useEffect(() => {
+        const recentMoves = moveHistory.moves.filter(
+            move => (Date.now() - new Date(move.created).getTime()) < 60000
+        );
+
+        if (recentMoves.length === 0) return;
+
+        const secondTimer = setInterval(() => {
+            setTimeUpdate(prev => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(secondTimer);
+    }, [moveHistory.moves]);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
+    }, [moveHistory.moves]);
     // Function to get a human-readable description of a move
     const getMoveDescription = (move: MovePerformed): string => {
         const player = playersState.players.find(p => p.userId === move.userId);
@@ -74,17 +129,16 @@ const MoveLogBox = ({moveHistory, playersState, maxMoves}: MoveLogBoxProps) => {
             .join(' ');
     };
 
-    // Get the latest moves, limited by maxMoves
+    // Get the moves in chronological order (oldest to newest)
     const latestMoves = [...moveHistory.moves]
-        .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime())
-        .slice(0, maxMoves);
-
+        .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime())
+        .slice(-maxMoves);
     return (
         <div className="move-log-box">
             <div className="move-log-box__header">
                 <h3>Recent Moves</h3>
             </div>
-            <div className="move-log-box__content">
+            <div className="move-log-box__content" ref={contentRef}>
                 {latestMoves.length === 0 ? (
                     <p className="move-log-box__empty-message">No moves yet</p>
                 ) : (
@@ -92,21 +146,16 @@ const MoveLogBox = ({moveHistory, playersState, maxMoves}: MoveLogBoxProps) => {
                         {latestMoves.map((move, index) => (
                             <li key={index} className="move-log-box__item">
                                 <span className="move-log-box__timestamp">
-                                    {new Date(move.created).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
+                                    {getRelativeTime(move.created)}
                                 </span>
                                 <span className="move-log-box__description">
                                     {getMoveDescription(move)}
                                 </span>
-                            </li>
-                        ))}
+                            </li>))}
                     </ul>
                 )}
             </div>
         </div>
     );
 };
-
 export default MoveLogBox;

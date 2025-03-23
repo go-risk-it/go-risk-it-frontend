@@ -89,9 +89,14 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                     move.move = JSON.parse(decodedMove)
                     move.result = JSON.parse(decodedResult)
                 })
-                const newMoveHistory = moveHistory ? {...moveHistory, ...data} : data
-                setMoveHistory(newMoveHistory)
-            } else {                console.warn("Unhandled message: ", msg)
+                setMoveHistory(prevHistory => {
+                    if (!prevHistory) return data
+                    return {
+                        moves: [...prevHistory.moves, ...data.moves]
+                    }
+                })
+            } else {
+                console.warn("Unhandled message: ", msg)
             }
         })
         return () => {
