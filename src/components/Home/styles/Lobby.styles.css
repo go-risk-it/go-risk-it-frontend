@@ -1,0 +1,10 @@
+.lobbies-section {
+  margin-bottom: 32px;
+}
+
+
+.empty-state {
+  text-align: center;
+  padding: 32px;
+  border: 2px dashed;
+}

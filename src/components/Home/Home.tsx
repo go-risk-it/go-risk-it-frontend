@@ -7,7 +7,6 @@ import {
     Typography, 
     Container, 
     Box, 
-    Button, 
     ThemeProvider, 
     CssBaseline,
     Tabs,
@@ -16,7 +15,8 @@ import {
     Avatar,
     Menu,
     MenuItem,
-    Divider
+    Divider,
+    Stack
 } from "@mui/material"
 import {
     LogoutRounded,
@@ -26,6 +26,7 @@ import {
 } from "@mui/icons-material"
 import React, { useState } from "react"
 import { theme } from "../../theme"
+import { commonStyles } from "../../styles/common.styles"
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -42,10 +43,9 @@ function TabPanel(props: TabPanelProps) {
             id={`tabpanel-${index}`}
             aria-labelledby={`tab-${index}`}
             {...other}
-            style={{ height: '100%' }}
         >
             {value === index && (
-                <Box sx={{ height: '100%', pt: 3 }}>
+                <Box sx={commonStyles.fullHeight}>
                     {children}
                 </Box>
             )}
@@ -82,20 +82,18 @@ const Home: React.FC = () => {
                 display: 'flex', 
                 flexDirection: 'column',
                 minHeight: '100vh',
-                backgroundColor: 'background.default'
+                bgcolor: 'background.default'
             }}>
-                <AppBar position="fixed" color="inherit" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <AppBar position="fixed" color="inherit" elevation={0} sx={commonStyles.headerContainer}>
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
                             <Typography 
                                 variant="h6" 
-                                sx={{ 
-                                    background: 'linear-gradient(45deg, #6366f1, #818cf8)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
+                                sx={{
+                                    ...commonStyles.gradientText,
                                     fontWeight: 700,
                                     fontSize: { xs: '1.2rem', md: '1.5rem' },
-                                    mr: 4
+                                    mr: { xs: 2, sm: 4 }
                                 }}
                             >
                                 Risk It All
@@ -104,17 +102,23 @@ const Home: React.FC = () => {
                             <Tabs 
                                 value={tabValue} 
                                 onChange={handleTabChange}
-                                sx={{ flexGrow: 1 }}
+                                sx={{ 
+                                    flexGrow: 1,
+                                    '& .MuiTab-root': {
+                                        minWidth: 'auto',
+                                        px: { xs: 1, sm: 2 }
+                                    }
+                                }}
                             >
                                 <Tab 
                                     icon={<GamesIcon />} 
-                                    label="Active Games" 
-                                    iconPosition="start"
+                                    label={<Box sx={{ display: { xs: 'none', sm: 'block' } }}>Active Games</Box>}
+                                    aria-label="Active Games"
                                 />
                                 <Tab 
                                     icon={<LobbiesIcon />} 
-                                    label="Lobbies" 
-                                    iconPosition="start"
+                                    label={<Box sx={{ display: { xs: 'none', sm: 'block' } }}>Lobbies</Box>}
+                                    aria-label="Lobbies"
                                 />
                             </Tabs>
 
@@ -131,26 +135,19 @@ const Home: React.FC = () => {
                                 anchorEl={anchorEl}
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
-                                PaperProps={{
-                                    sx: {
-                                        mt: 1,
-                                        background: 'linear-gradient(180deg, #27272a 0%, #18181b 100%)',
-                                        border: '1px solid #27272a',
-                                        minWidth: 180
-                                    }
+                                slotProps={{
+                                    paper: { sx: commonStyles.menuPaper }
                                 }}
                             >
-                                <MenuItem>
-                                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                                <Stack spacing={0.5} px={2} py={1}>
+                                    <Typography variant="body2" color="text.secondary">
                                         Signed in as
                                     </Typography>
-                                </MenuItem>
-                                <MenuItem>
-                                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                    <Typography variant="body1" fontWeight={500}>
                                         {session?.user?.id}
                                     </Typography>
-                                </MenuItem>
-                                <Divider sx={{ my: 1, borderColor: '#27272a' }} />
+                                </Stack>
+                                <Divider sx={{ borderColor: 'divider' }} />
                                 <MenuItem onClick={handleSignOut}>
                                     <LogoutRounded sx={{ mr: 2, fontSize: 20 }} />
                                     <Typography>Sign out</Typography>
@@ -162,12 +159,7 @@ const Home: React.FC = () => {
 
                 <Box
                     component="main"
-                    sx={{
-                        flexGrow: 1,
-                        pt: '64px', // AppBar height
-                        height: '100vh',
-                        overflow: 'auto'
-                    }}
+                    sx={commonStyles.mainContent}
                 >
                     <Container maxWidth="xl" sx={{ py: 3, height: '100%' }}>
                         <TabPanel value={tabValue} index={0}>
