@@ -1,12 +1,11 @@
 :root {
-    /* Modern, sophisticated color palette with better contrast */
-    --player0-color: #4ECDC4;  /* Turquoise */
-    --player1-color: #FF6B6B;  /* Coral Red */
-    --player2-color: #45B7D1;  /* Ocean Blue */
-    --player3-color: #96CEB4;  /* Sage Green */
-    --player4-color: #D4A5A5;  /* Dusty Rose */
-    --player5-color: #FFE66D;  /* Mellow Yellow */
-    
+    /* Distinctive color palette with better contrast */
+    --player0-color: #00BFB2;  /* Vibrant Teal */
+    --player1-color: #FF4365;  /* Bright Pink-Red */
+    --player2-color: #FFB400;  /* Golden Yellow */
+    --player3-color: #1B998B;  /* Deep Sea Green */
+    --player4-color: #9B4DCA;  /* Royal Purple */
+    --player5-color: #FF7F11;  /* Bright Orange */
     /* UI Theme Colors */
     --background-dark: #1a1a1a;
     --background-light: #2a2a2a;
