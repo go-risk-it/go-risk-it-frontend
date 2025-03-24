@@ -46,6 +46,7 @@ function cardMoveReducer(cardMove: CardMove, action: CardAction): CardMove {
     }
 }
 
+
 export const useCardMoveReducer = () => {
     const [cardMove, dispatchCardMove] = React.useReducer(cardMoveReducer, initialState)
 

@@ -1,14 +1,13 @@
 @import "../colors.css";
-
 .risk-it-map-container {
     position: relative;
     width: 100%;
     height: 100%;
     stroke: rgba(255, 255, 255, 0.2);
     stroke-width: 1.5;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+    transform: translateZ(0);
+    will-change: transform;
 }
-
 svg.risk-it-map-container path {
     cursor: pointer;
     outline: none;
@@ -19,16 +18,12 @@ svg.risk-it-map-container path {
 svg.risk-it-map-container path.risk-it-region {
     stroke-width: 1.5;
     filter: brightness(0.95) saturate(1.1);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 svg.risk-it-map-container path.risk-it-region:hover {
     filter: brightness(1.1) saturate(1.2);
     stroke: rgba(255, 255, 255, 0.6);
-    stroke-width: 2.5;
-    box-shadow: 
-        inset 0 0 15px rgba(0, 0, 0, 0.4),
-        0 0 10px rgba(255, 255, 255, 0.2);
+    stroke-width: 5;
 }
 
 /* Selectable regions */
@@ -43,23 +38,20 @@ svg.risk-it-map-container path.risk-it-region.risk-it-region-not-selectable {
     opacity: 0.7;
 }
 
-/* Enhanced pulse animation */
 @keyframes region-pulse {
     0% {
-        filter: brightness(1) saturate(1.1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
-        stroke-width: 1.5;
+        opacity: 0.8;
+        filter: brightness(0.95);
     }
     50% {
-        filter: brightness(1.3) saturate(1.4) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
-        stroke-width: 3;
+        opacity: 1;
+        filter: brightness(1.1);
     }
     100% {
-        filter: brightness(1) saturate(1.1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
-        stroke-width: 1.5;
+        opacity: 0.8;
+        filter: brightness(0.95);
     }
-}
-
-/* Player colors with enhanced effects */
+}/* Player colors with enhanced effects */
 svg.risk-it-map-container path.risk-it-region.risk-it-player0 {
     fill: var(--player0-color);
     filter: drop-shadow(0 2px 6px rgba(78, 205, 196, 0.4));
@@ -95,7 +87,7 @@ svg.risk-it-map-container path.risk-it-region.risk-it-player5 {
     fill: var(--text-primary);
     font-weight: 700;
     font-size: 16px;
-    text-shadow: 
+    text-shadow:
         0 1px 3px rgba(0, 0, 0, 0.8),
         0 0 15px rgba(0, 0, 0, 0.5);
     pointer-events: none;
