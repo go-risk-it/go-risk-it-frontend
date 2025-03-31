@@ -147,7 +147,6 @@ const AttackPopup: React.FC<AttackPopupProps> = (
                 <Button onClick={props.onCancel}>Cancel</Button>
                 <Button 
                     onClick={attack}
-                    disabled={maxAttackingTroops === 1}
                     sx={{
                         minWidth: '120px',
                         '&:not(:disabled)': {
