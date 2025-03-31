@@ -37,7 +37,6 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
 
     const conquer = () => {
         props.onConfirm()
-        setMovingTroops(props.minTroopsToMove)
     }
 
     if (!props.isVisible) {
