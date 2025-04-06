@@ -411,6 +411,10 @@
     },
     {
       "source": "east_africa",
+      "target": "north_africa"
+    },
+    {
+      "source": "east_africa",
       "target": "south_africa"
     },
     {
