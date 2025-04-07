@@ -36,11 +36,6 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
         props.onMovingTroopsChange(newValue)
     }
 
-    const reinforce = () => {
-        props.onConfirm()
-        setMovingTroops(0)
-    }
-
     if (!props.isVisible) {
         return null
     }
@@ -149,7 +144,7 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
             <DialogActions>
                 <Button onClick={props.onCancel}>Cancel</Button>
                 <Button 
-                    onClick={reinforce}
+                    onClick={props.onConfirm}
                     disabled={movingTroops === 0}
                     sx={{
                         minWidth: '120px',

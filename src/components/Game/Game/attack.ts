@@ -56,7 +56,7 @@ export const getAttackPopupProps = (
         troopsInTarget: attackMove.troopsInTarget,
         onSetTroops: (attackingTroops: number) => dispatchAttackMove({
             type: AttackActionType.SET_TROOPS,
-            attackingTroops,
+            attackingTroops: attackingTroops,
         }),
         onCancel: () => {
             dispatchAttackMove({type: AttackActionType.RESET})

@@ -28,14 +28,14 @@ const DeployPopup: React.FC<DeployPopupProps> = (
 ) => {
     const [desiredTroops, setDesiredTroops] = useState(props.currentTroops)
 
-    useEffect(() => {
-        setDesiredTroops(props.currentTroops)
-    }, [props.currentTroops])
-
     const handleTroopsChange = (newValue: number) => {
         setDesiredTroops(newValue)
         props.onSetTroops(newValue)
     }
+
+    useEffect(() => {
+        handleTroopsChange(props.currentTroops)
+    }, [props.currentTroops])
 
     if (!props.isVisible) {
         return null

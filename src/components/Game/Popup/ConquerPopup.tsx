@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -35,16 +35,13 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
         props.onSetTroops(newValue)
     }
 
-    const conquer = () => {
-        props.onConfirm()
-        setMovingTroops(movingTroops)
-    }
+    useEffect(() => {
+        handleTroopsChange(props.minTroopsToMove)
+    }, [props.minTroopsToMove])
 
     if (!props.isVisible) {
         return null
     }
-
-    props.onSetTroops(props.minTroopsToMove)
 
     return (
         <Dialog 
@@ -148,7 +145,7 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
             </DialogContent>
             <DialogActions>
                 <Button 
-                    onClick={conquer}
+                    onClick={props.onConfirm}
                     sx={{
                         minWidth: '120px',
                         '&:not(:disabled)': {

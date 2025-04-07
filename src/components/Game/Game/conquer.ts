@@ -23,12 +23,10 @@ export const getConquerPopupProps = (
     const troopsInSource = sourceRegion?.troops || 0
 
     const onSetTroops = (troopsToMove: number) => {
-        if (troopsToMove !== conquerMove.troops) {
-            dispatchConquerMove({
-                type: ConquerActionType.SET_TROOPS,
-                troops: troopsToMove,
-            })
-        }
+        dispatchConquerMove({
+            type: ConquerActionType.SET_TROOPS,
+            troops: troopsToMove,
+        })
     }
 
     const onConfirm = () => {

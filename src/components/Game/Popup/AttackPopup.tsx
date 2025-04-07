@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -29,18 +29,18 @@ const AttackPopup: React.FC<AttackPopupProps> = (
     props,
 ) => {
     const [attackingTroops, setAttackingTroops] = useState(1)
-
-    const maxAttackingTroops = Math.min(props.troopsInSource - 1, 3)
+    const [maxAttackingTroops, setMaxAttackingTroops] = useState(3)
 
     const handleTroopsChange = (newValue: number) => {
         setAttackingTroops(newValue)
         props.onSetTroops(newValue)
     }
 
-    const attack = () => {
-        props.onConfirm()
-        setAttackingTroops(1)
-    }
+    useEffect(() => {
+        const maxTroops = Math.min(props.troopsInSource - 1, 3)
+        setMaxAttackingTroops(maxTroops)
+        handleTroopsChange(maxTroops)
+    }, [props.troopsInSource])
 
     if (!props.isVisible) {
         return null
@@ -146,7 +146,7 @@ const AttackPopup: React.FC<AttackPopupProps> = (
             <DialogActions>
                 <Button onClick={props.onCancel}>Cancel</Button>
                 <Button 
-                    onClick={attack}
+                    onClick={props.onConfirm}
                     sx={{
                         minWidth: '120px',
                         '&:not(:disabled)': {
