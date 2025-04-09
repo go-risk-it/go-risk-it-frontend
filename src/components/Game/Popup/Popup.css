@@ -86,7 +86,7 @@
 
 /* Action buttons */
 .risk-it-move-popup .MuiButton-root {
-    background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, white)) !important;
+    background: var(--accent-color);
     color: var(--text-primary) !important;
     padding: 0.75rem 2rem !important;
     font-size: 1rem !important;
@@ -101,7 +101,7 @@
 .risk-it-move-popup .MuiButton-root:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 85%, white), color-mix(in srgb, var(--accent-color) 55%, white)) !important;
+    background: var(--accent-color);
 }
 
 .risk-it-move-popup .MuiButton-root:disabled {

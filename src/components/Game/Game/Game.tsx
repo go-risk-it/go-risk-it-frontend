@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
@@ -23,9 +23,11 @@ import { useServerQuerier } from "../../../hooks/useServerQuerier.ts"
 import CardsStatus from "../Cards/CardsStatus.tsx"
 import StatusBar from "../StatusBar/StatusBar.tsx"
 import { FaCrosshairs, FaFlag, FaScroll, FaShieldAlt } from "react-icons/fa"
+import AdvancePopup from "../Popup/AdvancePopup.tsx"
 
 const Game: React.FC = () => {
     const { signout } = useAuth()
+    const [showAdvancePopup, setShowAdvancePopup] = useState(false)
 
     const { deployMove, dispatchDeployMove } = useDeployMoveReducer()
     const { attackMove, dispatchAttackMove } = useAttackMoveReducer()
@@ -44,6 +46,15 @@ const Game: React.FC = () => {
             currentPhase: gameState.phaseType,
         }
         doAdvance(advanceMove, gameState)
+        setShowAdvancePopup(false)
+    }
+
+    const handleAdvanceClick = () => {
+        setShowAdvancePopup(true)
+    }
+
+    const handleAdvanceCancel = () => {
+        setShowAdvancePopup(false)
     }
 
     const getPhaseIcon = () => {
@@ -91,7 +102,7 @@ const Game: React.FC = () => {
                         ) && (
                                 <Button
                                     variant="contained"
-                                    onClick={handleAdvance}
+                                    onClick={handleAdvanceClick}
                                     className="advance-button"
                                 >
                                     Advance
@@ -157,6 +168,13 @@ const Game: React.FC = () => {
                     reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
                     cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove, handleAdvance)}
                     handleAdvance={handleAdvance}
+                />
+
+                {/* Advance Confirmation Popup */}
+                <AdvancePopup
+                    isVisible={showAdvancePopup}
+                    onConfirm={handleAdvance}
+                    onCancel={handleAdvanceCancel}
                 />
             </div>
         </MapProvider>
