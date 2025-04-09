@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -41,9 +41,9 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
     }
 
     return (
-        <Dialog 
-            open={true} 
-            onClose={props.onCancel} 
+        <Dialog
+            open={true}
+            onClose={props.onCancel}
             className="risk-it-move-popup"
             maxWidth={false}
             fullWidth={false}
@@ -63,9 +63,9 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
                 </Box>
             </DialogTitle>
             <DialogContent>
-                <Box 
-                    display="flex" 
-                    justifyContent="space-between" 
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
                     alignItems="center"
                     sx={{
                         background: 'rgba(255, 255, 255, 0.03)',
@@ -92,12 +92,12 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
                             {props.troopsInSource - movingTroops} Remaining
                         </Typography>
                     </Box>
-                    <ArrowForwardIcon 
-                        sx={{ 
+                    <ArrowForwardIcon
+                        sx={{
                             fontSize: '2rem',
                             color: 'var(--accent-color)',
                             filter: 'drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.3))'
-                        }} 
+                        }}
                     />
                     <Box textAlign="center">
                         <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
@@ -130,7 +130,7 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
                     <Slider
                         value={movingTroops}
                         onChange={(_, newValue) => handleTroopsChange(newValue as number)}
-                        min={0}
+                        min={1}
                         max={props.troopsInSource - 1}
                         step={1}
                         marks
@@ -143,7 +143,7 @@ const ReinforcePopup: React.FC<ReinforcePopupProps> = (
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.onCancel}>Cancel</Button>
-                <Button 
+                <Button
                     onClick={props.onConfirm}
                     disabled={movingTroops === 0}
                     sx={{

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -44,8 +44,8 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
     }
 
     return (
-        <Dialog 
-            open={true} 
+        <Dialog
+            open={true}
             className="risk-it-move-popup"
             maxWidth={false}
             fullWidth={false}
@@ -65,9 +65,9 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 </Box>
             </DialogTitle>
             <DialogContent>
-                <Box 
-                    display="flex" 
-                    justifyContent="space-between" 
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
                     alignItems="center"
                     sx={{
                         background: 'rgba(255, 255, 255, 0.03)',
@@ -91,15 +91,15 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                             ownerIndex={props.sourceOwnerIndex}
                         />
                         <Typography variant="h6" sx={{ mt: 1 }}>
-                            {props.troopsInSource} Remaining
+                            {props.troopsInSource - movingTroops} Remaining
                         </Typography>
                     </Box>
-                    <ArrowForwardIcon 
-                        sx={{ 
+                    <ArrowForwardIcon
+                        sx={{
                             fontSize: '2rem',
                             color: 'var(--accent-color)',
                             filter: 'drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.3))'
-                        }} 
+                        }}
                     />
                     <Box textAlign="center">
                         <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
@@ -144,7 +144,7 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button 
+                <Button
                     onClick={props.onConfirm}
                     sx={{
                         minWidth: '120px',

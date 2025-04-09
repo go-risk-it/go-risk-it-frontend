@@ -2,39 +2,39 @@ import React from "react"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
-import {useAuth} from "../../../hooks/useAuth.ts"
-import {useGameState} from "../../../hooks/useGameState.ts"
-import {ConquerPhaseState, DeployPhaseState, PhaseType} from "../../../api/game/message/gameState.ts"
-import {useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.ts"
-import {getDeployPopupProps, onRegionClickDeploy} from "./deploy.ts"
-import {useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.ts"
-import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
-import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.ts"
-import {getConquerPopupProps} from "./conquer.ts"
-import {useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.ts"
-import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
-import {useCardMoveReducer} from "../../../hooks/useCardMoveReducer.ts"
-import {getCardsPopupProps} from "./cards.ts"
-import {AdvanceMove} from "../../../api/game/message/advanceMove.ts"
+import { useAuth } from "../../../hooks/useAuth.ts"
+import { useGameState } from "../../../hooks/useGameState.ts"
+import { ConquerPhaseState, DeployPhaseState, PhaseType } from "../../../api/game/message/gameState.ts"
+import { useDeployMoveReducer } from "../../../hooks/useDeployMoveReducer.ts"
+import { getDeployPopupProps, onRegionClickDeploy } from "./deploy.ts"
+import { useAttackMoveReducer } from "../../../hooks/useAttackMoveReducer.ts"
+import { getAttackPopupProps, onRegionClickAttack } from "./attack.ts"
+import { useConquerMoveReducer } from "../../../hooks/useConquerMoveReducer.ts"
+import { getConquerPopupProps } from "./conquer.ts"
+import { useReinforceMoveReducer } from "../../../hooks/useReinforceMoveReducer.ts"
+import { getReinforcePopupProps, onRegionClickReinforce } from "./reinforce.ts"
+import { useCardMoveReducer } from "../../../hooks/useCardMoveReducer.ts"
+import { getCardsPopupProps } from "./cards.ts"
+import { AdvanceMove } from "../../../api/game/message/advanceMove.ts"
 import MapContainer from "../Map/MapContainer.tsx"
 import PopupManager from "../Popup/PopupManager.tsx"
-import {MapProvider} from "../../../providers/Map.tsx"
-import {useServerQuerier} from "../../../hooks/useServerQuerier.ts"
+import { MapProvider } from "../../../providers/Map.tsx"
+import { useServerQuerier } from "../../../hooks/useServerQuerier.ts"
 import CardsStatus from "../Cards/CardsStatus.tsx"
 import StatusBar from "../StatusBar/StatusBar.tsx"
-import {FaCrosshairs, FaFlag, FaScroll, FaShieldAlt} from "react-icons/fa"
+import { FaCrosshairs, FaFlag, FaScroll, FaShieldAlt } from "react-icons/fa"
 
 const Game: React.FC = () => {
-    const {signout} = useAuth()
+    const { signout } = useAuth()
 
-    const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
-    const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
-    const {conquerMove, dispatchConquerMove} = useConquerMoveReducer()
-    const {reinforceMove, dispatchReinforceMove} = useReinforceMoveReducer()
-    const {cardMove, dispatchCardMove} = useCardMoveReducer()
-    const {doDeploy, doAttack, doConquer, doReinforce, doAdvance, doPlayCards} = useServerQuerier()
+    const { deployMove, dispatchDeployMove } = useDeployMoveReducer()
+    const { attackMove, dispatchAttackMove } = useAttackMoveReducer()
+    const { conquerMove, dispatchConquerMove } = useConquerMoveReducer()
+    const { reinforceMove, dispatchReinforceMove } = useReinforceMoveReducer()
+    const { cardMove, dispatchCardMove } = useCardMoveReducer()
+    const { doDeploy, doAttack, doConquer, doReinforce, doAdvance, doPlayCards } = useServerQuerier()
 
-    const {boardState, cardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
+    const { boardState, cardState, gameState, phaseState, playersState, thisPlayerState } = useGameState()
     if (!boardState || !playersState || !thisPlayerState || !gameState || !phaseState || !cardState) {
         return null
     }
@@ -67,36 +67,39 @@ const Game: React.FC = () => {
             <div className="game-container">
                 {/* Left Sidebar */}
                 <div className="game-sidebar">
-                    <StatusBar/>
+                    <StatusBar />
                 </div>
 
                 {/* Top Phase Bar */}
                 <div className="game-phase-bar">
                     <div className="phase-indicator">
+                        <div className="phase-indicator__turn">
+                            <div className={`phase-indicator__player-avatar player-${currentPlayer.index}-bg`}>
+                                {currentPlayer.name[0].toUpperCase()}
+                            </div>
+                            <span>{currentPlayer.name}'s Turn</span>
+                        </div>
                         <div className="phase-indicator__phase">
                             {getPhaseIcon()}
                             <span className="phase-indicator__text">
                                 {gameState.phaseType} Phase
                             </span>
                         </div>
-                        <div className="phase-indicator__turn">
-                            <div className={`phase-indicator__player-avatar player-${currentPlayer.index}-bg`}>
-                                {currentPlayer.name[0].toUpperCase()}
-                            </div>
-                            <span>{currentPlayer.name}'s Turn</span>
-                            {isCurrentPlayerTurn && (gameState.phaseType === PhaseType.ATTACK ||
-                                gameState.phaseType === PhaseType.REINFORCE ||
-                                gameState.phaseType === PhaseType.CARDS
-                            ) && (
-                                <Button 
-                                    variant="contained" 
+                        {isCurrentPlayerTurn && (gameState.phaseType === PhaseType.ATTACK ||
+                            gameState.phaseType === PhaseType.REINFORCE ||
+                            gameState.phaseType === PhaseType.CARDS
+                        ) && (
+                                <Button
+                                    variant="contained"
                                     onClick={handleAdvance}
                                     className="advance-button"
                                 >
                                     Advance
                                 </Button>
                             )}
-                        </div>
+                        {isCurrentPlayerTurn && (gameState.phaseType === PhaseType.DEPLOY) && (
+                            <span>{(phaseState as DeployPhaseState).deployableTroops} left to deploy</span>
+                        )}
                     </div>
                 </div>
 

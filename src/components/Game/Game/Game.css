@@ -79,6 +79,7 @@
     z-index: 5;
     min-height: 3rem;
     position: relative;
+    width: 100%;
 }
 
 /* Phase indicator */
@@ -86,7 +87,7 @@
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    width: 100%;
+    /* width: 100%; */
     height: 100%;
 }
 
@@ -115,10 +116,9 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding-left: 1.25rem;
-    border-left: 1px solid var(--border-color);
+    padding-right: 1rem;
+    border-right: 1px solid var(--border-color);
     flex: 1;
-    margin-right: 8rem;
 }
 
 .phase-indicator__player-avatar {
@@ -268,7 +268,7 @@
     .game-container {
         grid-template-columns: minmax(200px, 25%) 1fr;
     }
-    
+
     .card {
         flex: 0 0 100px;
     }
@@ -279,25 +279,24 @@
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr auto auto;
     }
-    
+
     .game-sidebar {
         grid-column: 1;
         grid-row: 4;
         max-height: 30vh;
     }
-    
+
     .game-phase-bar {
         grid-column: 1;
     }
-    
+
     .cards-section {
         grid-column: 1;
         grid-row: 3;
     }
-    
+
     .map-container {
         grid-column: 1;
         grid-row: 2;
     }
 }
-
