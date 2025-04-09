@@ -72,6 +72,7 @@ export const GameStateProvider = ({children}: { children: ReactElement }) => {
                     id: data.id,
                     turn: data.turn,
                     phaseType: data.phase.type,
+                    winnerUserId: data.winnerUserId,
                 })
                 setPhaseState(data.phase.state)
             } else if (msg.type === "missionState") {

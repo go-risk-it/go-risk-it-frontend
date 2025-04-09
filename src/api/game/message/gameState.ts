@@ -24,6 +24,7 @@ export interface GameState {
     id: number;
     turn: number;
     phaseType: PhaseType;
+    winnerUserId: string;
 }
 
 export interface GameStateAPI {
@@ -32,6 +33,7 @@ export interface GameStateAPI {
     phase: {
         type: PhaseType;
         state: PhaseState;
-    }
+    }; 
+    winnerUserId: string;
 }
 

@@ -34,6 +34,10 @@ const PopupManager: React.FC<{
         return <></>
     }
 
+    if(gameState.winnerUserId) {
+        return <></>
+    }
+
     return (
         <>
             {gameState.phaseType === PhaseType.DEPLOY && (
