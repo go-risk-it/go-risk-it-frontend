@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, {useEffect, useState} from "react"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
@@ -8,8 +8,8 @@ import Slider from "@mui/material/Slider"
 import Typography from "@mui/material/Typography"
 import RegionDisplay from "../RegionDisplay/RegionDisplay"
 import Box from "@mui/material/Box"
-import FlagIcon from '@mui/icons-material/Flag'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import FlagIcon from "@mui/icons-material/Flag"
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
 
 import "./Popup.css"
 
@@ -51,16 +51,16 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
             fullWidth={false}
             PaperProps={{
                 sx: {
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)'
-                }
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                },
             }}
         >
             <DialogTitle>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <FlagIcon sx={{ color: 'var(--accent-color)' }} />
+                <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
+                    <FlagIcon sx={{color: "var(--accent-color)"}}/>
                     Conquer Territory
                 </Box>
             </DialogTitle>
@@ -70,19 +70,19 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                     justifyContent="space-between"
                     alignItems="center"
                     sx={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        borderRadius: '16px',
-                        padding: '1.5rem',
-                        marginBottom: '2rem',
-                        transition: 'all 0.3s ease-out',
-                        '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.05)',
-                            transform: 'scale(1.02)'
-                        }
+                        background: "rgba(255, 255, 255, 0.03)",
+                        borderRadius: "16px",
+                        padding: "1.5rem",
+                        marginBottom: "2rem",
+                        transition: "all 0.3s ease-out",
+                        "&:hover": {
+                            background: "rgba(255, 255, 255, 0.05)",
+                            transform: "scale(1.02)",
+                        },
                     }}
                 >
                     <Box textAlign="center">
-                        <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
+                        <Typography variant="subtitle1" sx={{opacity: 0.7, mb: 1}}>
                             Source
                         </Typography>
                         <RegionDisplay
@@ -90,19 +90,19 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                             troops={props.troopsInSource}
                             ownerIndex={props.sourceOwnerIndex}
                         />
-                        <Typography variant="h6" sx={{ mt: 1 }}>
+                        <Typography variant="h6" sx={{mt: 1}}>
                             {props.troopsInSource - movingTroops} Remaining
                         </Typography>
                     </Box>
                     <ArrowForwardIcon
                         sx={{
-                            fontSize: '2rem',
-                            color: 'var(--accent-color)',
-                            filter: 'drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.3))'
+                            fontSize: "2rem",
+                            color: "var(--accent-color)",
+                            filter: "drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.3))",
                         }}
                     />
                     <Box textAlign="center">
-                        <Typography variant="subtitle1" sx={{ opacity: 0.7, mb: 1 }}>
+                        <Typography variant="subtitle1" sx={{opacity: 0.7, mb: 1}}>
                             Target
                         </Typography>
                         <RegionDisplay
@@ -110,23 +110,23 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                             troops={movingTroops}
                             ownerIndex={props.sourceOwnerIndex}
                         />
-                        <Typography variant="h6" sx={{ mt: 1, color: 'var(--accent-color)' }}>
+                        <Typography variant="h6" sx={{mt: 1, color: "var(--accent-color)"}}>
                             {movingTroops} Moving
                         </Typography>
                     </Box>
                 </Box>
                 <Box
                     sx={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        borderRadius: '16px',
-                        padding: '1.5rem',
-                        transition: 'all 0.3s ease-out',
-                        '&:hover': {
-                            background: 'rgba(255, 255, 255, 0.05)'
-                        }
+                        background: "rgba(255, 255, 255, 0.03)",
+                        borderRadius: "16px",
+                        padding: "1.5rem",
+                        transition: "all 0.3s ease-out",
+                        "&:hover": {
+                            background: "rgba(255, 255, 255, 0.05)",
+                        },
                     }}
                 >
-                    <Typography variant="subtitle1" sx={{ mb: 2, opacity: 0.7 }}>
+                    <Typography variant="subtitle1" sx={{mb: 2, opacity: 0.7}}>
                         Select Troops to Move
                     </Typography>
                     <Slider
@@ -138,8 +138,8 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                         marks
                         valueLabelDisplay="auto"
                     />
-                    <Typography variant="h6" sx={{ mt: 2, textAlign: 'center' }}>
-                        Moving {movingTroops} {movingTroops === 1 ? 'Troop' : 'Troops'}
+                    <Typography variant="h6" sx={{mt: 2, textAlign: "center"}}>
+                        Moving {movingTroops} {movingTroops === 1 ? "Troop" : "Troops"}
                     </Typography>
                 </Box>
             </DialogContent>
@@ -147,10 +147,10 @@ const ConquerPopup: React.FC<ConquerPopupProps> = (
                 <Button
                     onClick={props.onConfirm}
                     sx={{
-                        minWidth: '120px',
-                        '&:not(:disabled)': {
-                            background: 'linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, white)) !important'
-                        }
+                        minWidth: "120px",
+                        "&:not(:disabled)": {
+                            background: "linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, white)) !important",
+                        },
                     }}
                 >
                     Conquer

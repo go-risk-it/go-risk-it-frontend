@@ -1,42 +1,42 @@
-import React, { useState } from "react"
+import React, {useState} from "react"
 
 import "./Game.css"
 import Button from "@mui/material/Button"
-import { useAuth } from "../../../hooks/useAuth.ts"
-import { useGameState } from "../../../hooks/useGameState.ts"
-import { ConquerPhaseState, DeployPhaseState, PhaseType } from "../../../api/game/message/gameState.ts"
-import { useDeployMoveReducer } from "../../../hooks/useDeployMoveReducer.ts"
-import { getDeployPopupProps, onRegionClickDeploy } from "./deploy.ts"
-import { useAttackMoveReducer } from "../../../hooks/useAttackMoveReducer.ts"
-import { getAttackPopupProps, onRegionClickAttack } from "./attack.ts"
-import { useConquerMoveReducer } from "../../../hooks/useConquerMoveReducer.ts"
-import { getConquerPopupProps } from "./conquer.ts"
-import { useReinforceMoveReducer } from "../../../hooks/useReinforceMoveReducer.ts"
-import { getReinforcePopupProps, onRegionClickReinforce } from "./reinforce.ts"
-import { useCardMoveReducer } from "../../../hooks/useCardMoveReducer.ts"
-import { getCardsPopupProps } from "./cards.ts"
-import { AdvanceMove } from "../../../api/game/message/advanceMove.ts"
+import {useAuth} from "../../../hooks/useAuth.ts"
+import {useGameState} from "../../../hooks/useGameState.ts"
+import {ConquerPhaseState, DeployPhaseState, PhaseType} from "../../../api/game/message/gameState.ts"
+import {useDeployMoveReducer} from "../../../hooks/useDeployMoveReducer.ts"
+import {getDeployPopupProps, onRegionClickDeploy} from "./deploy.ts"
+import {useAttackMoveReducer} from "../../../hooks/useAttackMoveReducer.ts"
+import {getAttackPopupProps, onRegionClickAttack} from "./attack.ts"
+import {useConquerMoveReducer} from "../../../hooks/useConquerMoveReducer.ts"
+import {getConquerPopupProps} from "./conquer.ts"
+import {useReinforceMoveReducer} from "../../../hooks/useReinforceMoveReducer.ts"
+import {getReinforcePopupProps, onRegionClickReinforce} from "./reinforce.ts"
+import {useCardMoveReducer} from "../../../hooks/useCardMoveReducer.ts"
+import {getCardsPopupProps} from "./cards.ts"
+import {AdvanceMove} from "../../../api/game/message/advanceMove.ts"
 import MapContainer from "../Map/MapContainer.tsx"
 import PopupManager from "../Popup/PopupManager.tsx"
-import { MapProvider } from "../../../providers/Map.tsx"
-import { useServerQuerier } from "../../../hooks/useServerQuerier.ts"
+import {MapProvider} from "../../../providers/Map.tsx"
+import {useServerQuerier} from "../../../hooks/useServerQuerier.ts"
 import CardsStatus from "../Cards/CardsStatus.tsx"
 import StatusBar from "../StatusBar/StatusBar.tsx"
-import { FaCrosshairs, FaFlag, FaScroll, FaShieldAlt } from "react-icons/fa"
+import {FaCrosshairs, FaFlag, FaScroll, FaShieldAlt} from "react-icons/fa"
 import AdvancePopup from "../Popup/AdvancePopup.tsx"
 
 const Game: React.FC = () => {
-    const { signout } = useAuth()
+    const {signout} = useAuth()
     const [showAdvancePopup, setShowAdvancePopup] = useState(false)
 
-    const { deployMove, dispatchDeployMove } = useDeployMoveReducer()
-    const { attackMove, dispatchAttackMove } = useAttackMoveReducer()
-    const { conquerMove, dispatchConquerMove } = useConquerMoveReducer()
-    const { reinforceMove, dispatchReinforceMove } = useReinforceMoveReducer()
-    const { cardMove, dispatchCardMove } = useCardMoveReducer()
-    const { doDeploy, doAttack, doConquer, doReinforce, doAdvance, doPlayCards } = useServerQuerier()
+    const {deployMove, dispatchDeployMove} = useDeployMoveReducer()
+    const {attackMove, dispatchAttackMove} = useAttackMoveReducer()
+    const {conquerMove, dispatchConquerMove} = useConquerMoveReducer()
+    const {reinforceMove, dispatchReinforceMove} = useReinforceMoveReducer()
+    const {cardMove, dispatchCardMove} = useCardMoveReducer()
+    const {doDeploy, doAttack, doConquer, doReinforce, doAdvance, doPlayCards} = useServerQuerier()
 
-    const { boardState, cardState, gameState, phaseState, playersState, thisPlayerState } = useGameState()
+    const {boardState, cardState, gameState, phaseState, playersState, thisPlayerState} = useGameState()
     if (!boardState || !playersState || !thisPlayerState || !gameState || !phaseState || !cardState) {
         return null
     }
@@ -60,11 +60,11 @@ const Game: React.FC = () => {
     const getPhaseIcon = () => {
         switch (gameState.phaseType) {
             case PhaseType.DEPLOY:
-                return <FaFlag className="phase-indicator__phase-icon" />
+                return <FaFlag className="phase-indicator__phase-icon"/>
             case PhaseType.ATTACK:
-                return <FaCrosshairs className="phase-indicator__phase-icon" />
+                return <FaCrosshairs className="phase-indicator__phase-icon"/>
             case PhaseType.REINFORCE:
-                return <FaShieldAlt className="phase-indicator__phase-icon" />
+                return <FaShieldAlt className="phase-indicator__phase-icon"/>
             default:
                 return null
         }
@@ -78,7 +78,7 @@ const Game: React.FC = () => {
             <div className="game-container">
                 {/* Left Sidebar */}
                 <div className="game-sidebar">
-                    <StatusBar />
+                    <StatusBar/>
                 </div>
 
                 {/* Top Phase Bar */}
@@ -100,14 +100,14 @@ const Game: React.FC = () => {
                             gameState.phaseType === PhaseType.REINFORCE ||
                             gameState.phaseType === PhaseType.CARDS
                         ) && (
-                                <Button
-                                    variant="contained"
-                                    onClick={handleAdvanceClick}
-                                    className="advance-button"
-                                >
-                                    Advance
-                                </Button>
-                            )}
+                            <Button
+                                variant="contained"
+                                onClick={handleAdvanceClick}
+                                className="advance-button"
+                            >
+                                Advance
+                            </Button>
+                        )}
                         {isCurrentPlayerTurn && (gameState.phaseType === PhaseType.DEPLOY) && (
                             <span>{(phaseState as DeployPhaseState).deployableTroops} left to deploy</span>
                         )}
@@ -118,7 +118,7 @@ const Game: React.FC = () => {
                 <div className="map-container">
                     <MapContainer
                         onRegionClick={(graph, region) => {
-                            if (!isCurrentPlayerTurn) {
+                            if (!isCurrentPlayerTurn || gameState.winnerUserId) {
                                 return null
                             }
                             switch (gameState.phaseType) {
@@ -140,11 +140,11 @@ const Game: React.FC = () => {
                     <div className="cards-section">
                         <div className="cards-section__header">
                             <div className="cards-section__title">
-                                <FaScroll /> Your Cards ({cardState.cards.length})
+                                <FaScroll/> Your Cards ({cardState.cards.length})
                             </div>
                         </div>
                         <div className="cards-container">
-                            <CardsStatus />
+                            <CardsStatus/>
                         </div>
                     </div>
                 )}
@@ -167,7 +167,6 @@ const Game: React.FC = () => {
                     )}
                     reinforcePopupProps={getReinforcePopupProps(doReinforce, gameState, reinforceMove, dispatchReinforceMove, thisPlayerState.index)}
                     cardsPopupProps={getCardsPopupProps(doPlayCards, gameState, cardState, cardMove, dispatchCardMove, handleAdvance)}
-                    handleAdvance={handleAdvance}
                 />
 
                 {/* Advance Confirmation Popup */}
