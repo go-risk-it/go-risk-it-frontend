@@ -2,7 +2,10 @@
 	import type { Region, GameState } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { reinforce, advance } from '$lib/api/moves';
-	import { getToasts } from '$lib/state/toast.svelte';
+	import { useAction } from '$lib/state/use-action.svelte';
+	import { formatRegionName } from '$lib/utils/format';
+	import TroopSlider from '../../ui/TroopSlider.svelte';
+	import StepProgress from '../../ui/StepProgress.svelte';
 
 	interface Props {
 		regionMap: Map<string, Region>;
@@ -26,102 +29,102 @@
 	);
 	const maxMovingTroops = $derived((sourceRegion?.troops ?? 1) - 1);
 
-	let error = $state('');
-	let submitting = $state(false);
-	const toasts = getToasts();
+	const currentStep = $derived.by(() => {
+		if (!interaction.sourceRegionId) return 1;
+		if (!interaction.targetRegionId) return 2;
+		return 3;
+	});
+
+	const action = useAction();
 
 	async function handleReinforce() {
 		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
 			return;
-		error = '';
-		submitting = true;
-		try {
+		await action.run(async () => {
 			await reinforce(gameState.id, {
-				sourceRegionId: interaction.sourceRegionId,
-				targetRegionId: interaction.targetRegionId,
-				troopsInSource: sourceRegion.troops,
-				troopsInTarget: targetRegion.troops,
+				sourceRegionId: interaction.sourceRegionId!,
+				targetRegionId: interaction.targetRegionId!,
+				troopsInSource: sourceRegion!.troops,
+				troopsInTarget: targetRegion!.troops,
 				movingTroops: interaction.movingTroops
 			});
 			moveState.setReinforceSource('');
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Reinforce failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		} finally {
-			submitting = false;
-		}
+		}, 'Reinforce failed');
 	}
 
 	async function handleAdvance() {
-		try {
+		await action.run(async () => {
 			await advance(gameState.id, { currentPhase: 'reinforce' });
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Advance failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		}
+		}, 'Advance failed');
 	}
 </script>
 
 <div class="space-y-4">
-	<h3 class="text-sm font-bold uppercase tracking-wider text-gray-400">Reinforce</h3>
+	<div class="flex items-center justify-between">
+		<h3 class="text-sm font-bold uppercase tracking-wider text-gray-400">Reinforce</h3>
+		<StepProgress current={currentStep} total={3} />
+	</div>
 
 	{#if !interaction.sourceRegionId}
-		<p class="text-sm text-gray-500">Click one of your regions (with 2+ troops) to move from.</p>
+		<p class="text-sm text-gray-500">
+			<span class="text-xs text-gray-400">Step 1/3:</span> Select your region (2+ troops)
+		</p>
 	{:else if !interaction.targetRegionId}
 		<div class="space-y-2">
 			<div class="text-sm">
 				<span class="text-gray-400">From:</span>
 				<span class="font-semibold"
-					>{interaction.sourceRegionId.replace(/_/g, ' ')} ({sourceRegion?.troops})</span
+					>{formatRegionName(interaction.sourceRegionId)} ({sourceRegion?.troops})</span
 				>
 			</div>
-			<p class="text-sm text-gray-500">Click a connected friendly region to reinforce.</p>
+			<p class="text-sm text-gray-500">
+				<span class="text-xs text-gray-400">Step 2/3:</span> Select a connected friendly region
+			</p>
+			<button
+				onclick={() => moveState.setReinforceSource('')}
+				class="cursor-pointer text-xs text-gray-500 underline hover:text-gray-300"
+			>
+				Cancel selection
+			</button>
 		</div>
 	{:else}
 		<div class="space-y-3">
 			<div class="text-sm">
 				<span class="text-gray-400">From:</span>
 				<span class="font-semibold"
-					>{interaction.sourceRegionId.replace(/_/g, ' ')} ({sourceRegion?.troops})</span
+					>{formatRegionName(interaction.sourceRegionId)} ({sourceRegion?.troops})</span
 				>
 			</div>
 			<div class="text-sm">
 				<span class="text-gray-400">To:</span>
 				<span class="font-semibold"
-					>{interaction.targetRegionId.replace(/_/g, ' ')} ({targetRegion?.troops})</span
+					>{formatRegionName(interaction.targetRegionId)} ({targetRegion?.troops})</span
 				>
 			</div>
 
 			<div>
-				<label for="reinforce-slider" class="mb-1 block text-xs text-gray-400">Moving troops</label
-				>
-				<input
+				<TroopSlider
 					id="reinforce-slider"
-					data-testid="reinforce-slider"
-					type="range"
-					min="1"
+					label="Moving troops"
+					min={1}
 					max={maxMovingTroops}
-					bind:value={interaction.movingTroops}
-					oninput={(e) =>
-						moveState.setReinforceTroops(parseInt((e.target as HTMLInputElement).value))}
-					class="w-full accent-accent"
+					value={interaction.movingTroops}
+					onchange={(v) => moveState.setReinforceTroops(v)}
+					onmax={() => moveState.setReinforceTroops(maxMovingTroops)}
 				/>
-				<div class="text-center text-sm font-semibold">{interaction.movingTroops}</div>
 			</div>
 
-			{#if error}
-				<div class="text-xs text-red-400">{error}</div>
+			{#if action.error}
+				<div class="text-xs text-red-400">{action.error}</div>
 			{/if}
 
 			<button
 				onclick={handleReinforce}
-				disabled={submitting || interaction.movingTroops === 0}
+				disabled={action.submitting || interaction.movingTroops === 0}
 				data-testid="reinforce-btn"
-				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
+				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{submitting ? 'Moving...' : `Move ${interaction.movingTroops} troops`}
+				{action.submitting ? 'Moving...' : `Move ${interaction.movingTroops} troops`}
 			</button>
 		</div>
 	{/if}

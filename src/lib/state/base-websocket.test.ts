@@ -187,23 +187,23 @@ describe('createBaseWebSocket', () => {
 			expect(ws.reconnecting).toBe(true);
 		});
 
-		it('retries after 1000ms initial delay', () => {
+		it('retries after 200ms fast retry delay', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
 			mockInstances[0].onclose!();
 			expect(mockInstances).toHaveLength(1);
-			vi.advanceTimersByTime(999);
+			vi.advanceTimersByTime(199);
 			expect(mockInstances).toHaveLength(1);
 			vi.advanceTimersByTime(1);
 			expect(mockInstances).toHaveLength(2);
 		});
 
-		it('uses exponential backoff delays', () => {
+		it('uses fast retries then exponential backoff delays', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
 
-			// Each close triggers a retry after increasing delay
-			const delays = [1000, 2000, 4000, 8000, 16000];
+			// First 2 retries are fast (200ms), then exponential backoff
+			const delays = [200, 200, 1000, 2000, 4000];
 			for (let i = 0; i < delays.length; i++) {
 				mockInstances[i].onclose!();
 				vi.advanceTimersByTime(delays[i] - 1);
@@ -219,7 +219,7 @@ describe('createBaseWebSocket', () => {
 
 			// Close and wait for retry
 			mockInstances[0].onclose!();
-			vi.advanceTimersByTime(1000);
+			vi.advanceTimersByTime(200);
 			expect(mockInstances).toHaveLength(2);
 
 			// Successful reconnect
@@ -227,9 +227,9 @@ describe('createBaseWebSocket', () => {
 			expect(ws.connected).toBe(true);
 			expect(ws.reconnecting).toBe(false);
 
-			// Next close should start fresh with 1000ms delay
+			// Next close should start fresh with 200ms fast retry delay
 			mockInstances[1].onclose!();
-			vi.advanceTimersByTime(999);
+			vi.advanceTimersByTime(199);
 			expect(mockInstances).toHaveLength(2);
 			vi.advanceTimersByTime(1);
 			expect(mockInstances).toHaveLength(3);
@@ -239,7 +239,7 @@ describe('createBaseWebSocket', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
 
-			const delays = [1000, 2000, 4000, 8000, 16000];
+			const delays = [200, 200, 1000, 2000, 4000];
 			for (let i = 0; i < 5; i++) {
 				mockInstances[i].onclose!();
 				vi.advanceTimersByTime(delays[i]);
@@ -254,7 +254,7 @@ describe('createBaseWebSocket', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
 
-			const delays = [1000, 2000, 4000, 8000, 16000];
+			const delays = [200, 200, 1000, 2000, 4000];
 			for (let i = 0; i < 5; i++) {
 				mockInstances[i].onclose!();
 				vi.advanceTimersByTime(delays[i]);
@@ -309,7 +309,7 @@ describe('createBaseWebSocket', () => {
 			ws.connect();
 
 			// Exhaust retries
-			const delays = [1000, 2000, 4000, 8000, 16000];
+			const delays = [200, 200, 1000, 2000, 4000];
 			for (let i = 0; i < 5; i++) {
 				mockInstances[i].onclose!();
 				vi.advanceTimersByTime(delays[i]);

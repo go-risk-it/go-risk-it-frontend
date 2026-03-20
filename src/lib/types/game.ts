@@ -70,19 +70,28 @@ export interface CardState {
 }
 
 // Mission state from WebSocket
-export type MissionType =
-	| 'TWO_CONTINENTS'
-	| 'TWO_CONTINENTS_PLUS_ONE'
-	| 'EIGHTEEN_TERRITORIES_TWO_TROOPS'
-	| 'TWENTY_FOUR_TERRITORIES'
-	| 'ELIMINATE_PLAYER';
-
-export interface MissionState {
-	type: MissionType;
-	details: Record<string, unknown>;
-}
+export type MissionState =
+	| { type: 'TWO_CONTINENTS'; details: { continent1: string; continent2: string } }
+	| { type: 'TWO_CONTINENTS_PLUS_ONE'; details: { continent1: string; continent2: string } }
+	| { type: 'EIGHTEEN_TERRITORIES_TWO_TROOPS'; details: Record<string, never> }
+	| { type: 'TWENTY_FOUR_TERRITORIES'; details: Record<string, never> }
+	| { type: 'ELIMINATE_PLAYER'; details: { targetUserId: string } };
 
 // Move history from WebSocket
+// Wire format: move and result are base64-encoded JSON strings from the server
+export interface MovePerformedWire {
+	userId: string;
+	phase: PhaseType;
+	move: string;
+	result: string;
+	created: string;
+}
+
+export interface MoveHistoryWire {
+	moves: MovePerformedWire[];
+}
+
+// Decoded format: move and result are parsed JSON objects
 export interface MovePerformed {
 	userId: string;
 	phase: PhaseType;
@@ -95,8 +104,11 @@ export interface MoveHistory {
 	moves: MovePerformed[];
 }
 
-// WebSocket message envelope
-export interface WebSocketMessage {
-	type: string;
-	data: unknown;
-}
+// WebSocket message envelope — discriminated union
+export type WebSocketMessage =
+	| { type: 'boardState'; data: BoardState }
+	| { type: 'cardState'; data: CardState }
+	| { type: 'playerState'; data: PlayersState }
+	| { type: 'gameState'; data: GameStateAPI }
+	| { type: 'missionState'; data: MissionState }
+	| { type: 'moveHistory'; data: MoveHistoryWire };

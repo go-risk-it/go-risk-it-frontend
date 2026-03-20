@@ -2,7 +2,6 @@ import type {
 	BoardState,
 	CardState,
 	GameState,
-	GameStateAPI,
 	Region,
 	MissionState,
 	MoveHistory,
@@ -65,19 +64,19 @@ export function createGameState() {
 	function handleMessage(msg: WebSocketMessage) {
 		switch (msg.type) {
 			case 'boardState':
-				boardState = msg.data as BoardState;
+				boardState = msg.data;
 				break;
 
 			case 'cardState':
-				cardState = msg.data as CardState;
+				cardState = msg.data;
 				break;
 
 			case 'playerState':
-				playersState = msg.data as PlayersState;
+				playersState = msg.data;
 				break;
 
 			case 'gameState': {
-				const data = msg.data as GameStateAPI;
+				const data = msg.data;
 				gameState = {
 					id: data.id,
 					turn: data.turn,
@@ -88,23 +87,19 @@ export function createGameState() {
 			}
 
 			case 'missionState':
-				missionState = msg.data as MissionState;
+				missionState = msg.data;
 				break;
 
 			case 'moveHistory': {
-				const data = msg.data as MoveHistory;
-				// Decode base64-encoded move and result fields
+				const data = msg.data;
 				const decoded: MovePerformed[] = data.moves.map((m) => ({
 					...m,
-					move: JSON.parse(atob(m.move as unknown as string)),
-					result: JSON.parse(atob(m.result as unknown as string))
+					move: JSON.parse(atob(m.move)),
+					result: JSON.parse(atob(m.result))
 				}));
 				moveHistory = { moves: [...moveHistory.moves, ...decoded] };
 				break;
 			}
-
-			default:
-				console.warn('Unhandled WebSocket message type:', msg.type);
 		}
 	}
 

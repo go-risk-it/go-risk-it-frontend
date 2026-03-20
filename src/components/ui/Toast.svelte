@@ -5,7 +5,11 @@
 	const toasts = getToasts();
 </script>
 
-<div class="pointer-events-none fixed right-4 bottom-4 z-50 flex flex-col gap-2">
+<div
+	class="pointer-events-none fixed right-4 bottom-4 z-50 flex flex-col gap-2"
+	aria-live="polite"
+	aria-relevant="additions removals"
+>
 	{#each toasts.items as toast (toast.id)}
 		<div
 			transition:fly={{ x: 100, duration: 200 }}
@@ -18,6 +22,7 @@
 				<button
 					onclick={() => toasts.dismiss(toast.id)}
 					class="cursor-pointer text-white/60 hover:text-white"
+					aria-label="Dismiss notification"
 				>
 					&times;
 				</button>

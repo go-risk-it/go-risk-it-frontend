@@ -8,12 +8,12 @@
 
 	let { currentPhase, isMyTurn }: Props = $props();
 
-	const phases: { id: PhaseType; label: string }[] = [
-		{ id: 'cards', label: 'Cards' },
-		{ id: 'deploy', label: 'Deploy' },
-		{ id: 'attack', label: 'Attack' },
-		{ id: 'conquer', label: 'Conquer' },
-		{ id: 'reinforce', label: 'Reinforce' }
+	const phases: { id: PhaseType; label: string; tooltip: string }[] = [
+		{ id: 'cards', label: 'Cards', tooltip: 'Trade card sets for bonus troops' },
+		{ id: 'deploy', label: 'Deploy', tooltip: 'Place troops on your territories' },
+		{ id: 'attack', label: 'Attack', tooltip: 'Invade adjacent enemy territories' },
+		{ id: 'conquer', label: 'Conquer', tooltip: 'Move troops into conquered territory' },
+		{ id: 'reinforce', label: 'Reinforce', tooltip: 'Move troops between your territories' }
 	];
 </script>
 
@@ -29,6 +29,7 @@
 			class:text-gray-500={currentPhase !== phase.id}
 			class:scale-110={currentPhase === phase.id}
 			data-testid="phase-{phase.id}"
+			title={phase.tooltip}
 		>
 			{phase.label}
 		</div>

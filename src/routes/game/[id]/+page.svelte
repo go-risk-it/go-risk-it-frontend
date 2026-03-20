@@ -12,6 +12,12 @@
 			goto('/auth/signin');
 		}
 	});
+
+	$effect(() => {
+		if (gameId && isNaN(Number(gameId))) {
+			goto('/');
+		}
+	});
 </script>
 
 {#if auth.loading}

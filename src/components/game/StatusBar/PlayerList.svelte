@@ -32,7 +32,7 @@
 					class:player-glow={isCurrent}
 				></div>
 			{/if}
-			<span class="flex-1 text-sm" class:font-bold={isCurrent} class:line-through={isDead}>
+			<span class="flex-1 truncate text-sm" class:font-bold={isCurrent} class:line-through={isDead}>
 				{player.name}
 				{#if isMe}
 					<span class="text-xs text-gray-400">(you)</span>
@@ -41,9 +41,19 @@
 			<span class="text-xs text-gray-400">{player.cardCount} cards</span>
 			{#if !isDead}
 				{#if player.connectionStatus === 'disconnected'}
-					<span class="h-2 w-2 rounded-full bg-red-500" title="Disconnected"></span>
+					<span
+						class="h-2 w-2 rounded-full bg-red-500"
+						title="{player.name} disconnected"
+						role="status"
+						aria-label="{player.name} disconnected"
+					></span>
 				{:else}
-					<span class="h-2 w-2 rounded-full bg-green-500" title="Connected"></span>
+					<span
+						class="h-2 w-2 rounded-full bg-green-500"
+						title="{player.name} connected"
+						role="status"
+						aria-label="{player.name} connected"
+					></span>
 				{/if}
 			{/if}
 		</div>

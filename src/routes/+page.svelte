@@ -67,6 +67,12 @@
 		if (!playerName.trim()) {
 			showCreateForm = true;
 			error = 'Enter your name first';
+			const input = document.querySelector<HTMLInputElement>('[data-testid="player-name-input"]');
+			if (input) {
+				input.focus();
+				input.classList.add('ring-2', 'ring-red-400');
+				input.addEventListener('input', () => input.classList.remove('ring-2', 'ring-red-400'), { once: true });
+			}
 			return;
 		}
 		error = '';
@@ -142,7 +148,7 @@
 				<input
 					type="text"
 					bind:value={playerName}
-					placeholder="Your player name"
+					placeholder="Your player name" maxlength="20"
 					data-testid="player-name-input"
 					class="flex-1 rounded-lg bg-surface-700 px-4 py-2.5 text-gray-100 outline-none transition-colors focus:ring-2 focus:ring-accent"
 				/>
@@ -187,7 +193,10 @@
 						></div>
 					</div>
 				{:else if tab === 'lobbies'}
-					<LobbyList {lobbies} onJoin={handleJoinLobby} />
+					<LobbyList {lobbies} onJoin={handleJoinLobby} onCreate={() => {
+						const input = document.querySelector<HTMLInputElement>('[data-testid="player-name-input"]');
+						if (input) input.focus();
+					}} />
 				{:else}
 					{#if games.length === 0}
 						<div class="py-12 text-center text-gray-500">
