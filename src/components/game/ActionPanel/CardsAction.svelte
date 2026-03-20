@@ -4,7 +4,7 @@
 	import { playCards, advance } from '$lib/api/moves';
 	import { isCardSelectable, isValidCombination } from '$lib/utils/cards';
 	import { playCardPlay } from '$lib/audio/audio.svelte';
-	import { getToasts } from '$lib/state/toast.svelte';
+	import { useAction } from '$lib/state/use-action.svelte';
 
 	interface Props {
 		cardState: CardState;
@@ -25,9 +25,7 @@
 		cardState.cards.filter((c) => !existingCombinationCardIds.includes(c.id))
 	);
 
-	let error = $state('');
-	let submitting = $state(false);
-	const toasts = getToasts();
+	const action = useAction();
 
 	function toggleCard(card: Card) {
 		const selected = [...interaction.selectedCardIds];
@@ -58,29 +56,17 @@
 
 	async function handlePlayCards() {
 		if (interaction.combinations.length === 0) return;
-		error = '';
-		submitting = true;
-		try {
+		await action.run(async () => {
 			await playCards(gameState.id, { combinations: interaction.combinations });
 			playCardPlay();
 			moveState.startPhase('cards');
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Play cards failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		} finally {
-			submitting = false;
-		}
+		}, 'Play cards failed');
 	}
 
 	async function handleAdvance() {
-		try {
+		await action.run(async () => {
 			await advance(gameState.id, { currentPhase: 'cards' });
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Advance failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		}
+		}, 'Advance failed');
 	}
 
 	function cardTypeIcon(type: string): string {
@@ -102,10 +88,16 @@
 <div class="space-y-4">
 	<h3 class="text-sm font-bold uppercase tracking-wider text-gray-400">Cards</h3>
 
+	<div class="rounded bg-surface-700/50 px-2.5 py-2 text-xs text-gray-400">
+		<div class="mb-1 font-semibold text-gray-300">Valid combinations:</div>
+		<div>3 of the same type, or 1 of each type</div>
+		<div class="mt-1">Jolly &#9733; counts as any type</div>
+	</div>
+
 	{#if cardState.cards.length === 0}
 		<p class="text-sm text-gray-500">No cards in hand.</p>
 	{:else}
-		<div class="grid grid-cols-3 gap-2">
+		<div class="grid grid-cols-2 gap-2 min-[375px]:grid-cols-3">
 			{#each availableCards as card (card.id)}
 				{@const isSelected = interaction.selectedCardIds.includes(card.id)}
 				{@const selectable = canSelectCard(card)}
@@ -141,17 +133,17 @@
 			{/each}
 		</div>
 
-		{#if error}
-			<div class="text-xs text-red-400">{error}</div>
+		{#if action.error}
+			<div class="text-xs text-red-400">{action.error}</div>
 		{/if}
 
 		<button
 			onclick={handlePlayCards}
-			disabled={submitting}
+			disabled={action.submitting}
 			data-testid="play-cards-btn"
 			class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 		>
-			{submitting ? 'Playing...' : 'Play Cards'}
+			{action.submitting ? 'Playing...' : 'Play Cards'}
 		</button>
 	{/if}
 

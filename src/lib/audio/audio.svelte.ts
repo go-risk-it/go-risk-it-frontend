@@ -1,5 +1,5 @@
 let ctx: AudioContext | null = null;
-let enabled = $state(true);
+let enabled = $state(typeof localStorage !== 'undefined' ? localStorage.getItem('audio-enabled') !== 'false' : true);
 
 function getContext(): AudioContext {
 	if (!ctx) {
@@ -75,5 +75,6 @@ export const audio = {
 	},
 	toggle() {
 		enabled = !enabled;
+		localStorage.setItem('audio-enabled', String(enabled));
 	}
 };

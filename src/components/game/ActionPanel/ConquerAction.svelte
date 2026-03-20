@@ -2,7 +2,9 @@
 	import type { ConquerPhaseState, Region } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { conquer } from '$lib/api/moves';
-	import { getToasts } from '$lib/state/toast.svelte';
+	import { useAction } from '$lib/state/use-action.svelte';
+	import { formatRegionName } from '$lib/utils/format';
+	import TroopSlider from '../../ui/TroopSlider.svelte';
 
 	interface Props {
 		regionMap: Map<string, Region>;
@@ -25,70 +27,53 @@
 		}
 	});
 
-	let error = $state('');
-	let submitting = $state(false);
-	const toasts = getToasts();
+	const action = useAction();
 
 	async function handleConquer() {
-		error = '';
-		submitting = true;
-		try {
+		await action.run(async () => {
 			await conquer(gameId, { troops: interaction.troops });
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Conquer failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		} finally {
-			submitting = false;
-		}
+		}, 'Conquer failed');
 	}
 </script>
 
 <div class="space-y-4">
-	<h3 class="text-sm font-bold uppercase tracking-wider text-green-400">Territory Conquered!</h3>
+	<h3 class="text-sm font-bold uppercase tracking-wider text-green-400">Move Troops to Conquered Territory</h3>
 
 	<div class="space-y-2">
 		<div class="text-sm">
 			<span class="text-gray-400">From:</span>
 			<span class="font-semibold"
-				>{conquerState.attackingRegionId.replace(/_/g, ' ')} ({attackingRegion?.troops})</span
+				>{formatRegionName(conquerState.attackingRegionId)} ({attackingRegion?.troops})</span
 			>
 		</div>
 		<div class="text-sm">
 			<span class="text-gray-400">To:</span>
 			<span class="font-semibold"
-				>{conquerState.defendingRegionId.replace(/_/g, ' ')} ({defendingRegion?.troops})</span
+				>{formatRegionName(conquerState.defendingRegionId)} ({defendingRegion?.troops})</span
 			>
 		</div>
 	</div>
 
-	<div>
-		<label for="conquer-slider" class="mb-1 block text-xs text-gray-400"
-			>Troops to move (min: {conquerState.minTroopsToMove})</label
-		>
-		<input
-			id="conquer-slider"
-			data-testid="conquer-slider"
-			type="range"
-			min={conquerState.minTroopsToMove}
-			max={maxTroops}
-			bind:value={interaction.troops}
-			oninput={(e) => moveState.setConquerTroops(parseInt((e.target as HTMLInputElement).value))}
-			class="w-full accent-accent"
-		/>
-		<div class="text-center text-sm font-semibold">{interaction.troops}</div>
-	</div>
+	<TroopSlider
+		id="conquer-slider"
+		label="Troops to move (min: {conquerState.minTroopsToMove})"
+		min={conquerState.minTroopsToMove}
+		max={maxTroops}
+		value={interaction.troops}
+		onchange={(v) => moveState.setConquerTroops(v)}
+		onmax={() => moveState.setConquerTroops(maxTroops)}
+	/>
 
-	{#if error}
-		<div class="text-xs text-red-400">{error}</div>
+	{#if action.error}
+		<div class="text-xs text-red-400">{action.error}</div>
 	{/if}
 
 	<button
 		onclick={handleConquer}
-		disabled={submitting}
+		disabled={action.submitting}
 		data-testid="conquer-btn"
-		class="w-full cursor-pointer rounded-lg bg-green-600 py-2 text-sm font-semibold transition-colors hover:bg-green-500 disabled:opacity-50"
+		class="w-full cursor-pointer rounded-lg bg-green-600 py-2 text-sm font-semibold transition-colors hover:bg-green-500 disabled:cursor-not-allowed disabled:opacity-50"
 	>
-		{submitting ? 'Moving...' : `Move ${interaction.troops} troops`}
+		{action.submitting ? 'Moving...' : `Move ${interaction.troops} troops`}
 	</button>
 </div>

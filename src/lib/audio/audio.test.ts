@@ -69,4 +69,36 @@ describe('audio system', () => {
 		const mod = await import('./audio.svelte');
 		expect(() => mod.playDeploy()).not.toThrow();
 	});
+
+	describe('localStorage persistence', () => {
+		it('reads audio-enabled=false from localStorage on init', async () => {
+			vi.resetModules();
+			localStorage.setItem('audio-enabled', 'false');
+			const mod = await import('./audio.svelte');
+			expect(mod.audio.enabled).toBe(false);
+		});
+
+		it('defaults to true when localStorage has no key', async () => {
+			vi.resetModules();
+			localStorage.removeItem('audio-enabled');
+			const mod = await import('./audio.svelte');
+			expect(mod.audio.enabled).toBe(true);
+		});
+
+		it('toggle() writes to localStorage', () => {
+			audioModule.audio.toggle();
+			expect(localStorage.getItem('audio-enabled')).toBe('false');
+			audioModule.audio.toggle();
+			expect(localStorage.getItem('audio-enabled')).toBe('true');
+		});
+
+		it('persists across module reloads', async () => {
+			audioModule.audio.toggle(); // default true → false
+			expect(audioModule.audio.enabled).toBe(false);
+
+			vi.resetModules();
+			const mod = await import('./audio.svelte');
+			expect(mod.audio.enabled).toBe(false);
+		});
+	});
 });

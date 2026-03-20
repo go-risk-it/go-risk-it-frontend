@@ -3,7 +3,10 @@
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { attack, advance } from '$lib/api/moves';
 	import { playAttack } from '$lib/audio/audio.svelte';
-	import { getToasts } from '$lib/state/toast.svelte';
+	import { useAction } from '$lib/state/use-action.svelte';
+	import { formatRegionName } from '$lib/utils/format';
+	import TroopSlider from '../../ui/TroopSlider.svelte';
+	import StepProgress from '../../ui/StepProgress.svelte';
 
 	interface Props {
 		regionMap: Map<string, Region>;
@@ -19,6 +22,8 @@
 
 	let { regionMap, gameState, interaction, moveState }: Props = $props();
 
+	const action = useAction();
+
 	const sourceRegion = $derived(
 		interaction.sourceRegionId ? regionMap.get(interaction.sourceRegionId) : null
 	);
@@ -27,103 +32,101 @@
 	);
 	const maxAttackingTroops = $derived(Math.min((sourceRegion?.troops ?? 1) - 1, 3));
 
-	let error = $state('');
-	let submitting = $state(false);
-	const toasts = getToasts();
+	const currentStep = $derived.by(() => {
+		if (!interaction.sourceRegionId) return 1;
+		if (!interaction.targetRegionId) return 2;
+		return 3;
+	});
 
 	async function handleAttack() {
 		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
 			return;
-		error = '';
-		submitting = true;
-		try {
+		await action.run(async () => {
 			await attack(gameState.id, {
-				sourceRegionId: interaction.sourceRegionId,
-				targetRegionId: interaction.targetRegionId,
-				troopsInSource: sourceRegion.troops,
-				troopsInTarget: targetRegion.troops,
+				sourceRegionId: interaction.sourceRegionId!,
+				targetRegionId: interaction.targetRegionId!,
+				troopsInSource: sourceRegion!.troops,
+				troopsInTarget: targetRegion!.troops,
 				attackingTroops: interaction.attackingTroops
 			});
 			playAttack();
 			moveState.setAttackSource('');
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Attack failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		} finally {
-			submitting = false;
-		}
+		}, 'Attack failed');
 	}
 
 	async function handleAdvance() {
-		try {
+		await action.run(async () => {
 			await advance(gameState.id, { currentPhase: 'attack' });
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Advance failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		}
+		}, 'Advance failed');
 	}
 </script>
 
 <div class="space-y-4">
-	<h3 class="text-sm font-bold uppercase tracking-wider text-gray-400">Attack</h3>
+	<div class="flex items-center justify-between">
+		<h3 class="text-sm font-bold uppercase tracking-wider text-gray-400">Attack</h3>
+		<StepProgress current={currentStep} total={3} />
+	</div>
 
 	{#if !interaction.sourceRegionId}
-		<p class="text-sm text-gray-500">Click one of your regions (with 2+ troops) to attack from.</p>
+		<p class="text-sm text-gray-500">
+			<span class="text-xs text-gray-400">Step 1/3:</span> Select your region (2+ troops)
+		</p>
 	{:else if !interaction.targetRegionId}
 		<div class="space-y-2">
 			<div class="text-sm">
 				<span class="text-gray-400">From:</span>
 				<span class="font-semibold"
-					>{interaction.sourceRegionId.replace(/_/g, ' ')} ({sourceRegion?.troops})</span
+					>{formatRegionName(interaction.sourceRegionId)} ({sourceRegion?.troops})</span
 				>
 			</div>
-			<p class="text-sm text-gray-500">Click an adjacent enemy region to attack.</p>
+			<p class="text-sm text-gray-500">
+				<span class="text-xs text-gray-400">Step 2/3:</span> Select an enemy target
+			</p>
+			<button
+				onclick={() => moveState.setAttackSource('')}
+				class="cursor-pointer text-xs text-gray-500 underline hover:text-gray-300"
+			>
+				Cancel selection
+			</button>
 		</div>
 	{:else}
 		<div class="space-y-3">
 			<div class="text-sm">
 				<span class="text-gray-400">From:</span>
 				<span class="font-semibold"
-					>{interaction.sourceRegionId.replace(/_/g, ' ')} ({sourceRegion?.troops})</span
+					>{formatRegionName(interaction.sourceRegionId)} ({sourceRegion?.troops})</span
 				>
 			</div>
 			<div class="text-sm">
 				<span class="text-gray-400">Target:</span>
 				<span class="font-semibold"
-					>{interaction.targetRegionId.replace(/_/g, ' ')} ({targetRegion?.troops})</span
+					>{formatRegionName(interaction.targetRegionId)} ({targetRegion?.troops})</span
 				>
 			</div>
 
 			<div>
-				<label for="attack-slider" class="mb-1 block text-xs text-gray-400">Attacking troops</label
-				>
-				<input
+				<TroopSlider
 					id="attack-slider"
-					data-testid="attack-slider"
-					type="range"
-					min="1"
+					label="Attacking troops"
+					min={1}
 					max={maxAttackingTroops}
-					bind:value={interaction.attackingTroops}
-					oninput={(e) =>
-						moveState.setAttackingTroops(parseInt((e.target as HTMLInputElement).value))}
-					class="w-full accent-accent"
+					value={interaction.attackingTroops}
+					onchange={(v) => moveState.setAttackingTroops(v)}
+					onmax={() => moveState.setAttackingTroops(maxAttackingTroops)}
 				/>
-				<div class="text-center text-sm font-semibold">{interaction.attackingTroops}</div>
 			</div>
 
-			{#if error}
-				<div class="text-xs text-red-400">{error}</div>
+			{#if action.error}
+				<div class="text-xs text-red-400">{action.error}</div>
 			{/if}
 
 			<button
 				onclick={handleAttack}
-				disabled={submitting}
+				disabled={action.submitting}
 				data-testid="attack-btn"
-				class="w-full cursor-pointer rounded-lg bg-red-600 py-2 text-sm font-semibold transition-colors hover:bg-red-500 disabled:opacity-50"
+				class="w-full cursor-pointer rounded-lg bg-red-600 py-2 text-sm font-semibold transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{submitting ? 'Attacking...' : `Attack with ${interaction.attackingTroops}`}
+				{action.submitting ? 'Attacking...' : `Attack with ${interaction.attackingTroops}`}
 			</button>
 		</div>
 	{/if}

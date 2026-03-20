@@ -3,7 +3,9 @@
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { deploy } from '$lib/api/moves';
 	import { playDeploy } from '$lib/audio/audio.svelte';
-	import { getToasts } from '$lib/state/toast.svelte';
+	import { useAction } from '$lib/state/use-action.svelte';
+	import { formatRegionName } from '$lib/utils/format';
+	import TroopSlider from '../../ui/TroopSlider.svelte';
 
 	interface Props {
 		regionMap: Map<string, Region>;
@@ -21,30 +23,20 @@
 	const currentTroops = $derived(selectedRegion?.troops ?? 0);
 	const maxTroops = $derived(currentTroops + deployableTroops);
 
-	let error = $state('');
-	let submitting = $state(false);
-	const toasts = getToasts();
+	const action = useAction();
 
 	async function handleDeploy() {
 		if (!interaction.regionId || interaction.troops === 0) return;
-		error = '';
-		submitting = true;
-		try {
+		await action.run(async () => {
 			await deploy(gameId, {
-				regionId: interaction.regionId,
+				regionId: interaction.regionId!,
 				currentTroops: currentTroops,
 				desiredTroops: currentTroops + interaction.troops
 			});
 			playDeploy();
 			moveState.setDeployTroops(0);
 			moveState.setDeployRegion('');
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Deploy failed';
-			error = msg;
-			toasts.add(msg, 'error');
-		} finally {
-			submitting = false;
-		}
+		}, 'Deploy failed');
 	}
 </script>
 
@@ -60,7 +52,7 @@
 		<div class="space-y-3">
 			<div class="text-sm">
 				<span class="text-gray-400">Region:</span>
-				<span class="font-semibold">{interaction.regionId.replace(/_/g, ' ')}</span>
+				<span class="font-semibold">{formatRegionName(interaction.regionId)}</span>
 			</div>
 			<div class="text-sm">
 				<span class="text-gray-400">Current troops:</span>
@@ -68,32 +60,28 @@
 			</div>
 
 			<div>
-				<label for="deploy-slider" class="mb-1 block text-xs text-gray-400">Add troops</label>
-				<input
+				<TroopSlider
 					id="deploy-slider"
-					data-testid="deploy-slider"
-					type="range"
-					min="1"
+					label="Add troops"
+					min={1}
 					max={deployableTroops}
-					bind:value={interaction.troops}
-					oninput={(e) =>
-						moveState.setDeployTroops(parseInt((e.target as HTMLInputElement).value))}
-					class="w-full accent-accent"
+					value={interaction.troops}
+					onchange={(v) => moveState.setDeployTroops(v)}
+					onmax={() => moveState.setDeployTroops(deployableTroops)}
 				/>
-				<div class="text-center text-sm font-semibold">{interaction.troops}</div>
 			</div>
 
-			{#if error}
-				<div class="text-xs text-red-400">{error}</div>
+			{#if action.error}
+				<div class="text-xs text-red-400">{action.error}</div>
 			{/if}
 
 			<button
 				onclick={handleDeploy}
-				disabled={submitting || interaction.troops === 0}
+				disabled={action.submitting || interaction.troops === 0}
 				data-testid="deploy-btn"
-				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
+				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{submitting ? 'Deploying...' : `Deploy ${interaction.troops} troops`}
+				{action.submitting ? 'Deploying...' : `Deploy ${interaction.troops} troops`}
 			</button>
 		</div>
 	{:else}

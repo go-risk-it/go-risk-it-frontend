@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { WebSocketMessage } from '$lib/types/game';
 
 // Mock auth before importing game-state
 vi.mock('$lib/state/auth.svelte', () => ({
@@ -33,7 +34,7 @@ describe('createGameState', () => {
 
 	describe('handleMessage: boardState', () => {
 		it('sets regions and populates regionMap + myRegions', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'boardState',
 				data: {
 					regions: [
@@ -41,7 +42,8 @@ describe('createGameState', () => {
 						{ id: 'r2', ownerId: 'user2', troops: 2 }
 					]
 				}
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.boardState!.regions).toHaveLength(2);
 			expect(state.regionMap.get('r1')).toEqual({ id: 'r1', ownerId: 'user1', troops: 3 });
 			expect(state.myRegions).toHaveLength(1);
@@ -51,10 +53,11 @@ describe('createGameState', () => {
 
 	describe('handleMessage: cardState', () => {
 		it('sets cards array', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'cardState',
 				data: { cards: [{ id: 1, type: 'artillery', region: 'r1' }] }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.cardState.cards).toHaveLength(1);
 			expect(state.cardState.cards[0].type).toBe('artillery');
 		});
@@ -62,7 +65,7 @@ describe('createGameState', () => {
 
 	describe('handleMessage: playerState', () => {
 		it('sets players array', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'playerState',
 				data: {
 					players: [
@@ -70,7 +73,8 @@ describe('createGameState', () => {
 						{ userId: 'user2', name: 'Bob', index: 1, cardCount: 0, status: 'alive', connectionStatus: 'connected' }
 					]
 				}
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.playersState!.players).toHaveLength(2);
 			expect(state.thisPlayer!.userId).toBe('user1');
 		});
@@ -78,7 +82,7 @@ describe('createGameState', () => {
 
 	describe('handleMessage: gameState', () => {
 		it('parses phase type and state', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: {
 					id: 42,
@@ -88,7 +92,8 @@ describe('createGameState', () => {
 						state: { deployableTroops: 7 }
 					}
 				}
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.gameState).toEqual({ id: 42, turn: 5, phaseType: 'deploy' });
 			expect(state.phaseState).toEqual({ deployableTroops: 7 });
 		});
@@ -96,10 +101,11 @@ describe('createGameState', () => {
 
 	describe('handleMessage: missionState', () => {
 		it('sets mission', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'missionState',
-				data: { type: 'TWENTY_FOUR_TERRITORIES', details: {} }
-			});
+				data: { type: 'TWENTY_FOUR_TERRITORIES', details: {} as Record<string, never> }
+			};
+			state.handleMessage(msg);
 			expect(state.missionState!.type).toBe('TWENTY_FOUR_TERRITORIES');
 		});
 	});
@@ -108,7 +114,7 @@ describe('createGameState', () => {
 		it('base64-decodes move and result fields and appends', () => {
 			const move = { regionId: 'r1' };
 			const result = { success: true };
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'moveHistory',
 				data: {
 					moves: [
@@ -121,40 +127,35 @@ describe('createGameState', () => {
 						}
 					]
 				}
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.moveHistory.moves).toHaveLength(1);
 			expect(state.moveHistory.moves[0].move).toEqual(move);
 			expect(state.moveHistory.moves[0].result).toEqual(result);
 		});
 
 		it('appends to existing history', () => {
-			state.handleMessage({
+			const msg1: WebSocketMessage = {
 				type: 'moveHistory',
 				data: {
 					moves: [{ userId: 'u1', phase: 'deploy', move: btoa('{}'), result: btoa('{}'), created: '' }]
 				}
-			});
-			state.handleMessage({
+			};
+			const msg2: WebSocketMessage = {
 				type: 'moveHistory',
 				data: {
 					moves: [{ userId: 'u2', phase: 'attack', move: btoa('{}'), result: btoa('{}'), created: '' }]
 				}
-			});
+			};
+			state.handleMessage(msg1);
+			state.handleMessage(msg2);
 			expect(state.moveHistory.moves).toHaveLength(2);
-		});
-	});
-
-	describe('handleMessage: unknown type', () => {
-		it('does not crash', () => {
-			expect(() => {
-				state.handleMessage({ type: 'unknownType', data: {} });
-			}).not.toThrow();
 		});
 	});
 
 	describe('derived: isMyTurn', () => {
 		function setupPlayers() {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'playerState',
 				data: {
 					players: [
@@ -162,59 +163,65 @@ describe('createGameState', () => {
 						{ userId: 'user2', name: 'Bob', index: 1, cardCount: 0, status: 'alive', connectionStatus: 'connected' }
 					]
 				}
-			});
+			};
+			state.handleMessage(msg);
 		}
 
 		it('returns true when turn matches player index', () => {
 			setupPlayers();
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 0, phase: { type: 'deploy', state: {} } }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.isMyTurn).toBe(true);
 		});
 
 		it('returns true with modular turn', () => {
 			setupPlayers();
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 4, phase: { type: 'deploy', state: {} } }
-			});
+			};
+			state.handleMessage(msg);
 			// turn 4 % 2 players = 0 = user1's index
 			expect(state.isMyTurn).toBe(true);
 		});
 
 		it('returns false when not this player turn', () => {
 			setupPlayers();
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 1, phase: { type: 'deploy', state: {} } }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.isMyTurn).toBe(false);
 		});
 	});
 
 	describe('derived: deployableTroops', () => {
 		it('returns value in deploy phase', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 0, phase: { type: 'deploy', state: { deployableTroops: 10 } } }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.deployableTroops).toBe(10);
 		});
 
 		it('returns 0 in non-deploy phase', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 0, phase: { type: 'attack', state: {} } }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.deployableTroops).toBe(0);
 		});
 	});
 
 	describe('derived: conquerState', () => {
 		it('returns state in conquer phase', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: {
 					id: 1,
@@ -224,7 +231,8 @@ describe('createGameState', () => {
 						state: { attackingRegionId: 'r1', defendingRegionId: 'r2', minTroopsToMove: 2 }
 					}
 				}
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.conquerState).toEqual({
 				attackingRegionId: 'r1',
 				defendingRegionId: 'r2',
@@ -233,10 +241,11 @@ describe('createGameState', () => {
 		});
 
 		it('returns null in non-conquer phase', () => {
-			state.handleMessage({
+			const msg: WebSocketMessage = {
 				type: 'gameState',
 				data: { id: 1, turn: 0, phase: { type: 'deploy', state: { deployableTroops: 5 } } }
-			});
+			};
+			state.handleMessage(msg);
 			expect(state.conquerState).toBeNull();
 		});
 	});

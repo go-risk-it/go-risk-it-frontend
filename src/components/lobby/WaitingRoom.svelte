@@ -18,6 +18,7 @@
 
 	let error = $state('');
 	let starting = $state(false);
+	let copied = $state(false);
 
 	$effect(() => {
 		lobbyWs.connect();
@@ -26,6 +27,17 @@
 
 	const participants = $derived(lobbyWs.lobbyState?.participants ?? []);
 	const canStart = $derived(isOwner && participants.length >= 3);
+
+	async function copyInviteLink() {
+		const url = window.location.origin + `/?join=${lobbyId}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch {
+			error = 'Failed to copy — select the URL manually';
+		}
+	}
 
 	async function handleStart() {
 		error = '';
@@ -48,11 +60,21 @@
 <div class="glass mx-auto max-w-md rounded-2xl p-6">
 	<div class="mb-4 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Waiting Room</h2>
-		<span
-			class="h-2 w-2 rounded-full"
-			class:bg-green-500={lobbyWs.connected}
-			class:bg-red-500={!lobbyWs.connected}
-		></span>
+		<div class="flex items-center gap-2">
+			<button
+				onclick={copyInviteLink}
+				class="cursor-pointer rounded-lg bg-surface-600 px-3 py-1.5 text-xs transition-colors hover:bg-surface-500"
+			>
+				{copied ? 'Copied!' : 'Copy invite link'}
+			</button>
+			<span
+				class="h-2 w-2 rounded-full"
+				class:bg-green-500={lobbyWs.connected}
+				class:bg-red-500={!lobbyWs.connected}
+				role="status"
+				aria-label={lobbyWs.connected ? 'Connected' : 'Disconnected'}
+			></span>
+		</div>
 	</div>
 
 	<div class="mb-6 space-y-2">

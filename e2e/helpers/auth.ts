@@ -1,9 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { BrowserContext, Page } from '@playwright/test';
-
-const SUPABASE_URL = 'http://localhost:8000';
-const SUPABASE_ANON_KEY =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzEyNTI3MjAwLAogICJleHAiOiAxODcwMjkzNjAwCn0.iK-jCfr76BF5M83_gxsUMIW4CevRwRjt9ADb8Oe60ow';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

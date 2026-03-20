@@ -80,7 +80,7 @@
 		<circle
 			cx={center.x}
 			cy={center.y}
-			r="8"
+			r="9"
 			fill="rgba(0,0,0,0.7)"
 			stroke={playerColor}
 			stroke-width="1"
@@ -91,7 +91,7 @@
 			text-anchor="middle"
 			dominant-baseline="central"
 			fill="white"
-			font-size="7"
+			font-size="9"
 			font-weight="600"
 			font-family="Inter, sans-serif"
 		>
@@ -103,20 +103,20 @@
 	{#if hovered && center.x !== 0}
 		<g class="tooltip" pointer-events="none">
 			<rect
-				x={center.x - 40}
-				y={center.y - 24}
-				width="80"
-				height="16"
-				rx="3"
-				fill="rgba(0,0,0,0.85)"
+				x={center.x - 50}
+				y={center.y - 26}
+				width="100"
+				height="18"
+				rx="4"
+				fill="rgba(0,0,0,0.9)"
 			/>
 			<text
 				x={center.x}
-				y={center.y - 14}
+				y={center.y - 15}
 				text-anchor="middle"
 				dominant-baseline="central"
 				fill="white"
-				font-size="5"
+				font-size="8"
 				font-family="Inter, sans-serif"
 			>
 				{regionName}
@@ -139,6 +139,10 @@
 			fill-opacity 0.15s,
 			stroke 0.15s,
 			stroke-width 0.15s;
+	}
+	.region:focus-visible path {
+		stroke: var(--color-accent);
+		stroke-width: 2;
 	}
 	.region.clickable:hover path {
 		fill-opacity: 0.8;
@@ -171,7 +175,7 @@
 	}
 	.tooltip {
 		opacity: 0;
-		animation: tooltip-fade 0.15s ease-out forwards;
+		animation: tooltip-fade 0.15s ease-out 0.2s forwards;
 	}
 	@keyframes tooltip-fade {
 		to {

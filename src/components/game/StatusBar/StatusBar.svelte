@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { PlayerState, MissionState } from '$lib/types/game';
+	import type { PlayerState, MissionState, BoardState } from '$lib/types/game';
+	import type { MapLayer, Continent } from '$lib/types/map';
 	import PlayerList from './PlayerList.svelte';
 	import MissionDisplay from './MissionDisplay.svelte';
 
@@ -9,9 +10,12 @@
 		myUserId: string | null;
 		mission: MissionState | null;
 		connected: boolean;
+		boardState: BoardState | null;
+		mapLayers: MapLayer[];
+		continents: Continent[];
 	}
 
-	let { players, currentTurn, myUserId, mission, connected }: Props = $props();
+	let { players, currentTurn, myUserId, mission, connected, boardState, mapLayers, continents }: Props = $props();
 
 	let mobileExpanded = $state(false);
 </script>
@@ -24,14 +28,16 @@
 			class="h-2 w-2 rounded-full"
 			class:bg-green-500={connected}
 			class:bg-red-500={!connected}
-			title={connected ? 'Connected' : 'Disconnected'}
+			role="status"
+			aria-label={connected ? 'Connected to server' : 'Disconnected from server'}
+			title={connected ? 'Connected to server' : 'Disconnected from server'}
 		></span>
 	</div>
 
 	<PlayerList {players} {currentTurn} {myUserId} />
 
 	<div class="mt-auto">
-		<MissionDisplay {mission} />
+		<MissionDisplay {mission} {boardState} {myUserId} {players} {mapLayers} {continents} />
 	</div>
 </aside>
 
@@ -47,6 +53,8 @@
 				class="h-2 w-2 rounded-full"
 				class:bg-green-500={connected}
 				class:bg-red-500={!connected}
+				role="status"
+				aria-label={connected ? 'Connected to server' : 'Disconnected from server'}
 			></span>
 		</div>
 		<span class="text-xs text-gray-400">{mobileExpanded ? '▼' : '▲'}</span>
@@ -56,7 +64,7 @@
 		<div class="max-h-64 overflow-y-auto px-4 pb-4">
 			<PlayerList {players} {currentTurn} {myUserId} />
 			<div class="mt-3">
-				<MissionDisplay {mission} />
+				<MissionDisplay {mission} {boardState} {myUserId} {players} {mapLayers} {continents} />
 			</div>
 		</div>
 	{/if}
