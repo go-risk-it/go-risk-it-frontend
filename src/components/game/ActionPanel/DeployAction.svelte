@@ -71,6 +71,7 @@
 				<label for="deploy-slider" class="mb-1 block text-xs text-gray-400">Add troops</label>
 				<input
 					id="deploy-slider"
+					data-testid="deploy-slider"
 					type="range"
 					min="1"
 					max={deployableTroops}
@@ -89,6 +90,7 @@
 			<button
 				onclick={handleDeploy}
 				disabled={submitting || interaction.troops === 0}
+				data-testid="deploy-btn"
 				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 			>
 				{submitting ? 'Deploying...' : `Deploy ${interaction.troops} troops`}

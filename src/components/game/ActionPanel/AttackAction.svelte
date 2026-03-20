@@ -101,6 +101,7 @@
 				>
 				<input
 					id="attack-slider"
+					data-testid="attack-slider"
 					type="range"
 					min="1"
 					max={maxAttackingTroops}
@@ -119,6 +120,7 @@
 			<button
 				onclick={handleAttack}
 				disabled={submitting}
+				data-testid="attack-btn"
 				class="w-full cursor-pointer rounded-lg bg-red-600 py-2 text-sm font-semibold transition-colors hover:bg-red-500 disabled:opacity-50"
 			>
 				{submitting ? 'Attacking...' : `Attack with ${interaction.attackingTroops}`}
@@ -128,6 +130,7 @@
 
 	<button
 		onclick={handleAdvance}
+		data-testid="skip-attack-btn"
 		class="w-full cursor-pointer rounded-lg bg-surface-600 py-2 text-sm transition-colors hover:bg-surface-500"
 	>
 		Skip to Reinforce

@@ -68,6 +68,7 @@
 		>
 		<input
 			id="conquer-slider"
+			data-testid="conquer-slider"
 			type="range"
 			min={conquerState.minTroopsToMove}
 			max={maxTroops}
@@ -85,6 +86,7 @@
 	<button
 		onclick={handleConquer}
 		disabled={submitting}
+		data-testid="conquer-btn"
 		class="w-full cursor-pointer rounded-lg bg-green-600 py-2 text-sm font-semibold transition-colors hover:bg-green-500 disabled:opacity-50"
 	>
 		{submitting ? 'Moving...' : `Move ${interaction.troops} troops`}

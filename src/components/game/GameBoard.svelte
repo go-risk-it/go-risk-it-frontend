@@ -223,7 +223,7 @@
 		<header class="flex items-center justify-between px-4 py-2">
 			<PhaseBar currentPhase={game.gameState?.phaseType ?? null} isMyTurn={game.isMyTurn} />
 			<div class="flex items-center gap-3">
-				<div class="text-sm text-gray-400">
+				<div class="text-sm text-gray-400" data-testid="turn-indicator">
 					{#if game.isMyTurn}
 						<span class="font-semibold text-accent-light">Your turn</span>
 					{:else}

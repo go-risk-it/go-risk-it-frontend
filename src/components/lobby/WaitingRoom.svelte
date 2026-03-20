@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { createLobbyWebSocket } from '$lib/state/lobby-state.svelte';
-	import { startLobby } from '$lib/api/lobby';
+	import { startLobby, getGames } from '$lib/api/lobby';
 	import { getAuth } from '$lib/state/auth.svelte';
 
 	interface Props {
@@ -31,9 +31,11 @@
 		error = '';
 		starting = true;
 		try {
-			const result = (await startLobby(lobbyId)) as { gameId?: number };
-			if (result?.gameId) {
-				goto(`/game/${result.gameId}`);
+			await startLobby(lobbyId);
+			// Start returns no body — fetch the game ID from games summary
+			const games = await getGames();
+			if (games && games.length > 0) {
+				goto(`/game/${games[0].id}`);
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to start game';
@@ -55,7 +57,10 @@
 
 	<div class="mb-6 space-y-2">
 		{#each participants as participant, i}
-			<div class="flex items-center gap-3 rounded-lg bg-surface-700/50 px-4 py-2.5">
+			<div
+				class="flex items-center gap-3 rounded-lg bg-surface-700/50 px-4 py-2.5"
+				data-testid="participant-{participant.name}"
+			>
 				<span class="flex h-6 w-6 items-center justify-center rounded-full bg-surface-500 text-xs">
 					{i + 1}
 				</span>
@@ -91,6 +96,7 @@
 			<button
 				onclick={handleStart}
 				disabled={!canStart || starting}
+				data-testid="start-game-btn"
 				class="flex-1 cursor-pointer rounded-lg bg-accent py-2.5 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 			>
 				{#if starting}
