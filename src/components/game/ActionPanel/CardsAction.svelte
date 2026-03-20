@@ -112,6 +112,7 @@
 				<button
 					onclick={() => toggleCard(card)}
 					disabled={!selectable}
+					data-testid="card-{card.id}"
 					class="flex cursor-pointer flex-col items-center rounded-lg border px-2 py-2 text-xs transition-all"
 					class:border-accent={isSelected}
 					class:bg-accent-selected={isSelected}
@@ -147,6 +148,7 @@
 		<button
 			onclick={handlePlayCards}
 			disabled={submitting}
+			data-testid="play-cards-btn"
 			class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 		>
 			{submitting ? 'Playing...' : 'Play Cards'}
@@ -155,6 +157,7 @@
 
 	<button
 		onclick={handleAdvance}
+		data-testid="skip-cards-btn"
 		class="w-full cursor-pointer rounded-lg bg-surface-600 py-2 text-sm transition-colors hover:bg-surface-500"
 	>
 		Skip to Deploy

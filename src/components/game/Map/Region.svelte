@@ -61,6 +61,7 @@
 	class:flash={flashActive}
 	role="button"
 	tabindex="0"
+	data-testid="region-{layer.id}"
 	onclick={() => onclick(layer.id)}
 	onkeydown={(e) => e.key === 'Enter' && onclick(layer.id)}
 	onmouseenter={() => (hovered = true)}

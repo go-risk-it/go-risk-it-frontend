@@ -28,6 +28,7 @@
 			class:watching={currentPhase === phase.id && !isMyTurn}
 			class:text-gray-500={currentPhase !== phase.id}
 			class:scale-110={currentPhase === phase.id}
+			data-testid="phase-{phase.id}"
 		>
 			{phase.label}
 		</div>

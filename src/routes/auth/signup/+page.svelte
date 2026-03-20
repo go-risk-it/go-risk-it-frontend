@@ -86,6 +86,7 @@
 			<button
 				type="submit"
 				disabled={submitting}
+				data-testid="signup-submit"
 				class="w-full cursor-pointer rounded-lg bg-accent py-2.5 font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 			>
 				{submitting ? 'Creating account...' : 'Sign Up'}

@@ -27,6 +27,7 @@
 
 	<button
 		onclick={() => onJoin(lobby.id)}
+		data-testid="join-lobby-btn"
 		class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light"
 	>
 		Join

@@ -35,7 +35,7 @@
 		<h1 class="mb-6 text-center text-2xl font-bold">Sign In</h1>
 
 		{#if error}
-			<div class="mb-4 rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-400">
+			<div data-testid="signin-error" class="mb-4 rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-400">
 				{error}
 			</div>
 		{/if}
@@ -65,6 +65,7 @@
 			<button
 				type="submit"
 				disabled={submitting}
+				data-testid="signin-submit"
 				class="w-full cursor-pointer rounded-lg bg-accent py-2.5 font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 			>
 				{submitting ? 'Signing in...' : 'Sign In'}

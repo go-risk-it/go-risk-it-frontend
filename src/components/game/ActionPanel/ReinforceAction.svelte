@@ -99,6 +99,7 @@
 				>
 				<input
 					id="reinforce-slider"
+					data-testid="reinforce-slider"
 					type="range"
 					min="1"
 					max={maxMovingTroops}
@@ -117,6 +118,7 @@
 			<button
 				onclick={handleReinforce}
 				disabled={submitting || interaction.movingTroops === 0}
+				data-testid="reinforce-btn"
 				class="w-full cursor-pointer rounded-lg bg-accent py-2 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 			>
 				{submitting ? 'Moving...' : `Move ${interaction.movingTroops} troops`}
@@ -126,6 +128,7 @@
 
 	<button
 		onclick={handleAdvance}
+		data-testid="end-turn-btn"
 		class="w-full cursor-pointer rounded-lg bg-surface-600 py-2 text-sm transition-colors hover:bg-surface-500"
 	>
 		End Turn

@@ -11,6 +11,11 @@ export interface LobbySummary {
 
 export interface GameSummary {
 	id: number;
+	numberOfParticipants: number;
+}
+
+export interface GamesSummaryResponse {
+	games: GameSummary[];
 }
 
 export interface LobbyState {

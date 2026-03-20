@@ -52,9 +52,9 @@
 		if (!playerName.trim()) return;
 		error = '';
 		try {
-			const result = (await createLobby(playerName.trim())) as { id?: string };
-			if (result?.id) {
-				inLobbyId = result.id;
+			const result = (await createLobby(playerName.trim())) as { lobbyId?: number };
+			if (result?.lobbyId) {
+				inLobbyId = String(result.lobbyId);
 				isLobbyOwner = true;
 				showCreateForm = false;
 			}
@@ -103,6 +103,7 @@
 				<span class="text-sm text-gray-400">{auth.user?.email}</span>
 				<button
 					onclick={() => auth.signOut()}
+					data-testid="signout-btn"
 					class="cursor-pointer rounded-lg bg-surface-600 px-3 py-1.5 text-sm transition-colors hover:bg-surface-500"
 				>
 					Sign Out
@@ -121,6 +122,7 @@
 				<span class="text-sm text-gray-400">{auth.user?.email}</span>
 				<button
 					onclick={() => auth.signOut()}
+					data-testid="signout-btn"
 					class="cursor-pointer rounded-lg bg-surface-600 px-3 py-1.5 text-sm transition-colors hover:bg-surface-500"
 				>
 					Sign Out
@@ -141,11 +143,13 @@
 					type="text"
 					bind:value={playerName}
 					placeholder="Your player name"
+					data-testid="player-name-input"
 					class="flex-1 rounded-lg bg-surface-700 px-4 py-2.5 text-gray-100 outline-none transition-colors focus:ring-2 focus:ring-accent"
 				/>
 				<button
 					onclick={handleCreateLobby}
 					disabled={!playerName.trim()}
+					data-testid="create-game-btn"
 					class="cursor-pointer rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-accent-light disabled:opacity-50"
 				>
 					Create Game
