@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+@theme {
+	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+	/* Player colors */
+	--color-player-0: #ef4444;
+	--color-player-1: #3b82f6;
+	--color-player-2: #22c55e;
+	--color-player-3: #eab308;
+	--color-player-4: #a855f7;
+	--color-player-5: #f97316;
+
+	/* Game surface colors */
+	--color-surface-900: #0a0a0f;
+	--color-surface-800: #12121a;
+	--color-surface-700: #1a1a25;
+	--color-surface-600: #252530;
+	--color-surface-500: #35354a;
+
+	/* Accent */
+	--color-accent: #6366f1;
+	--color-accent-light: #818cf8;
+}
+
+@layer base {
+	body {
+		@apply bg-surface-900 text-gray-100 font-sans antialiased;
+		min-height: 100dvh;
+	}
+
+	/* Glass morphism utility */
+	.glass {
+		background: rgba(18, 18, 26, 0.8);
+		backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	/* Touch-friendly action buttons */
+	.action-btn {
+		min-height: 44px;
+	}
+
+	/* Range slider styling for mobile */
+	input[type='range'] {
+		height: 44px;
+		-webkit-appearance: none;
+		appearance: none;
+		background: transparent;
+	}
+
+	input[type='range']::-webkit-slider-track {
+		height: 6px;
+		border-radius: 3px;
+		background: var(--color-surface-500);
+	}
+
+	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		margin-top: -7px;
+		cursor: pointer;
+	}
+
+	input[type='range']::-moz-range-track {
+		height: 6px;
+		border-radius: 3px;
+		background: var(--color-surface-500);
+	}
+
+	input[type='range']::-moz-range-thumb {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		border: none;
+		cursor: pointer;
+	}
+}
