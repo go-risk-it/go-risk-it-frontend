@@ -1,4 +1,5 @@
 import type { WebSocketMessage } from '$lib/types/game';
+import { parseWebSocketMessage } from '$lib/types/game';
 import { createBaseWebSocket } from '$lib/state/base-websocket.svelte';
 
 type MessageHandler = (msg: WebSocketMessage) => void;
@@ -12,7 +13,7 @@ export function createWebSocket(gameId: string | number) {
 			protocols: ['risk-it.websocket.auth.token', token]
 		}),
 		onMessage: (data) => {
-			const msg = JSON.parse(data) as WebSocketMessage;
+			const msg = parseWebSocketMessage(data);
 			handler?.(msg);
 		},
 		label: 'WebSocket'

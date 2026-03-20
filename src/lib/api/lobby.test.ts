@@ -21,7 +21,7 @@ describe('lobby API', () => {
 
 	it('getLobbies calls GET /lobbies/summary', async () => {
 		await getLobbies();
-		expect(mockGet).toHaveBeenCalledWith('/lobbies/summary');
+		expect(mockGet).toHaveBeenCalledWith('/lobbies/summary', expect.any(Function));
 	});
 
 	it('createLobby calls POST /lobbies with ownerName', async () => {
@@ -41,6 +41,6 @@ describe('lobby API', () => {
 
 	it('getGames calls GET /games/summary', async () => {
 		await getGames();
-		expect(mockGet).toHaveBeenCalledWith('/games/summary');
+		expect(mockGet).toHaveBeenCalledWith('/games/summary', expect.any(Function));
 	});
 });

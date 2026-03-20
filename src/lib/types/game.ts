@@ -39,15 +39,18 @@ export interface ConquerPhaseState {
 	minTroopsToMove: number;
 }
 
-export type PhaseState = Record<string, never> | DeployPhaseState | ConquerPhaseState;
+// Discriminated union on phase.type — enables type narrowing without `as` casts
+export type Phase =
+	| { type: 'deploy'; state: DeployPhaseState }
+	| { type: 'conquer'; state: ConquerPhaseState }
+	| { type: 'cards'; state: Record<string, never> }
+	| { type: 'attack'; state: Record<string, never> }
+	| { type: 'reinforce'; state: Record<string, never> };
 
 export interface GameStateAPI {
 	id: number;
 	turn: number;
-	phase: {
-		type: PhaseType;
-		state: PhaseState;
-	};
+	phase: Phase;
 }
 
 export interface GameState {
@@ -112,3 +115,25 @@ export type WebSocketMessage =
 	| { type: 'gameState'; data: GameStateAPI }
 	| { type: 'missionState'; data: MissionState }
 	| { type: 'moveHistory'; data: MoveHistoryWire };
+
+const VALID_MESSAGE_TYPES = new Set<WebSocketMessage['type']>([
+	'boardState',
+	'cardState',
+	'playerState',
+	'gameState',
+	'missionState',
+	'moveHistory'
+]);
+
+export function parseWebSocketMessage(data: string): WebSocketMessage {
+	const parsed = JSON.parse(data);
+	if (
+		typeof parsed !== 'object' ||
+		parsed === null ||
+		!VALID_MESSAGE_TYPES.has(parsed.type) ||
+		!('data' in parsed)
+	) {
+		throw new Error(`Invalid WebSocket message: ${parsed?.type ?? 'missing type'}`);
+	}
+	return parsed as WebSocketMessage;
+}

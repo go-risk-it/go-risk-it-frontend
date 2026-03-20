@@ -70,11 +70,18 @@ describe('createWebSocket', () => {
 			expect(handler).toHaveBeenCalledWith({ type: 'boardState', data: {} });
 		});
 
-		it('does not throw when no handler registered', () => {
+		it('does not throw when no handler registered (valid message type)', () => {
 			createWebSocket('g1');
 			expect(() => {
-				capturedOptions.onMessage(JSON.stringify({ type: 'test', data: null }));
+				capturedOptions.onMessage(JSON.stringify({ type: 'boardState', data: {} }));
 			}).not.toThrow();
+		});
+
+		it('throws on unknown message type', () => {
+			createWebSocket('g1');
+			expect(() => {
+				capturedOptions.onMessage(JSON.stringify({ type: 'unknown', data: null }));
+			}).toThrow('Invalid WebSocket message: unknown');
 		});
 
 		it('throws on invalid JSON', () => {

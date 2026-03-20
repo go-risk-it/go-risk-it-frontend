@@ -3,7 +3,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 const REQUEST_TIMEOUT_MS = 30_000;
 
-class ApiError extends Error {
+export class ApiError extends Error {
 	constructor(
 		public status: number,
 		message: string
@@ -13,7 +13,13 @@ class ApiError extends Error {
 	}
 }
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+type Validator<T> = (data: unknown) => data is T;
+
+async function request<T>(
+	path: string,
+	options: RequestInit = {},
+	validate?: Validator<T>
+): Promise<T> {
 	const auth = getAuth();
 	const token = auth.accessToken;
 	if (!token) throw new ApiError(401, 'Not authenticated');
@@ -46,11 +52,18 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 		const text = await res.text();
 		if (!text) return {} as T;
 
+		let parsed: unknown;
 		try {
-			return JSON.parse(text) as T;
+			parsed = JSON.parse(text);
 		} catch {
 			throw new ApiError(res.status, 'Invalid JSON response');
 		}
+
+		if (validate && !validate(parsed)) {
+			throw new ApiError(res.status, 'Unexpected response format');
+		}
+
+		return parsed as T;
 	} catch (err) {
 		if (err instanceof ApiError) throw err;
 		if (err instanceof DOMException && err.name === 'AbortError') {
@@ -63,10 +76,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
-	get: <T>(path: string) => request<T>(path),
-	post: <T>(path: string, body?: unknown) =>
+	get: <T>(path: string, validate?: Validator<T>) => request<T>(path, {}, validate),
+	post: <T>(path: string, body?: unknown, validate?: Validator<T>) =>
 		request<T>(path, {
 			method: 'POST',
 			body: body ? JSON.stringify(body) : undefined
-		})
+		}, validate)
 };

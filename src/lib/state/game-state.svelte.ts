@@ -6,12 +6,9 @@ import type {
 	MissionState,
 	MoveHistory,
 	MovePerformed,
-	PhaseState,
-	PlayerState,
+	Phase,
 	PlayersState,
-	WebSocketMessage,
-	DeployPhaseState,
-	ConquerPhaseState
+	WebSocketMessage
 } from '$lib/types/game';
 import { getAuth } from '$lib/state/auth.svelte';
 
@@ -19,7 +16,7 @@ export function createGameState() {
 	let boardState = $state<BoardState | null>(null);
 	let cardState = $state<CardState>({ cards: [] });
 	let gameState = $state<GameState | null>(null);
-	let phaseState = $state<PhaseState | null>(null);
+	let phase = $state<Phase | null>(null);
 	let playersState = $state<PlayersState | null>(null);
 	let missionState = $state<MissionState | null>(null);
 	let moveHistory = $state<MoveHistory>({ moves: [] });
@@ -52,13 +49,13 @@ export function createGameState() {
 	});
 
 	const deployableTroops = $derived.by(() => {
-		if (!phaseState || !gameState || gameState.phaseType !== 'deploy') return 0;
-		return (phaseState as DeployPhaseState).deployableTroops ?? 0;
+		if (!phase || phase.type !== 'deploy') return 0;
+		return phase.state.deployableTroops;
 	});
 
 	const conquerState = $derived.by(() => {
-		if (!phaseState || !gameState || gameState.phaseType !== 'conquer') return null;
-		return phaseState as ConquerPhaseState;
+		if (!phase || phase.type !== 'conquer') return null;
+		return phase.state;
 	});
 
 	function handleMessage(msg: WebSocketMessage) {
@@ -82,7 +79,7 @@ export function createGameState() {
 					turn: data.turn,
 					phaseType: data.phase.type
 				};
-				phaseState = data.phase.state;
+				phase = data.phase;
 				break;
 			}
 
@@ -113,8 +110,8 @@ export function createGameState() {
 		get gameState() {
 			return gameState;
 		},
-		get phaseState() {
-			return phaseState;
+		get phase() {
+			return phase;
 		},
 		get playersState() {
 			return playersState;
