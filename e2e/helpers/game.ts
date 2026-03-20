@@ -106,3 +106,10 @@ export async function endTurn(page: Page): Promise<void> {
 export async function skipCards(page: Page): Promise<void> {
 	await page.locator('[data-testid="skip-cards-btn"]').first().click();
 }
+
+/**
+ * Wait for the game over overlay to appear.
+ */
+export async function waitForGameOver(page: Page): Promise<void> {
+	await page.locator('[data-testid="game-over-result"]').waitFor({ timeout: 30_000 });
+}

@@ -9,7 +9,6 @@ import {
 } from './helpers/api';
 import {
 	waitForGameLoaded,
-	waitForMyTurn,
 	waitForPhase,
 	skipAttack,
 	skipCards,
