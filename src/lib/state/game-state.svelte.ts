@@ -1,3 +1,9 @@
+/**
+ * Central game state store that holds board, players, cards, mission, and phase data.
+ * State is populated exclusively via WebSocket messages processed by {@link handleMessage}.
+ * Derived values (thisPlayer, isMyTurn, regionMap, etc.) are computed reactively with $derived.
+ */
+
 import type {
 	BoardState,
 	CardState,
@@ -12,6 +18,10 @@ import type {
 } from '$lib/types/game';
 import { getAuth } from '$lib/state/auth.svelte';
 
+/**
+ * Create a reactive game state container.
+ * @returns Reactive getters for all game sub-states, derived convenience values, and a message handler.
+ */
 export function createGameState() {
 	let boardState = $state<BoardState | null>(null);
 	let cardState = $state<CardState>({ cards: [] });
@@ -23,17 +33,20 @@ export function createGameState() {
 
 	const auth = getAuth();
 
+	/** The authenticated user's player record, or null if not found in the game. */
 	const thisPlayer = $derived.by(() => {
 		if (!playersState || !auth.user) return null;
 		return playersState.players.find((p) => p.userId === auth.user!.id) ?? null;
 	});
 
+	/** True when the current turn index matches this player's position (turn % playerCount). */
 	const isMyTurn = $derived.by(() => {
 		if (!gameState || !playersState || !thisPlayer) return false;
 		const playerCount = playersState.players.length;
 		return gameState.turn % playerCount === thisPlayer.index;
 	});
 
+	/** Precomputed region ID -> Region lookup for O(1) access by map components. */
 	const regionMap = $derived.by(() => {
 		if (!boardState) return new Map<string, Region>();
 		const map = new Map<string, Region>();
@@ -43,21 +56,28 @@ export function createGameState() {
 		return map;
 	});
 
+	/** Regions owned by the authenticated user, used for deploy/reinforce validation. */
 	const myRegions = $derived.by(() => {
 		if (!boardState || !auth.user) return [];
 		return boardState.regions.filter((r) => r.ownerId === auth.user!.id);
 	});
 
+	/** Number of troops available to deploy (0 when not in deploy phase). */
 	const deployableTroops = $derived.by(() => {
 		if (!phase || phase.type !== 'deploy') return 0;
 		return phase.state.deployableTroops;
 	});
 
+	/** Conquer phase constraints (min/max troops to move), or null when not conquering. */
 	const conquerState = $derived.by(() => {
 		if (!phase || phase.type !== 'conquer') return null;
 		return phase.state;
 	});
 
+	/**
+	 * Process an incoming WebSocket message and update the corresponding state slice.
+	 * @param msg - Typed message from the game WebSocket.
+	 */
 	function handleMessage(msg: WebSocketMessage) {
 		switch (msg.type) {
 			case 'boardState':
@@ -89,6 +109,7 @@ export function createGameState() {
 
 			case 'moveHistory': {
 				const data = msg.data;
+				// Move payloads arrive base64-encoded JSON; decode before storing
 				const decoded: MovePerformed[] = data.moves.map((m) => ({
 					...m,
 					move: JSON.parse(atob(m.move)),

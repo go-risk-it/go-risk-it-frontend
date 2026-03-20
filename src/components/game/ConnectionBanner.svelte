@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Fixed top banner showing WebSocket connection status. Displays a spinner
+	 * during automatic reconnection attempts, and a manual "Reconnect" button
+	 * once all automatic retries are exhausted.
+	 */
 	interface Props {
 		reconnecting: boolean;
 		retriesExhausted: boolean;

@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Renders a grid of available lobbies as cards, or an empty state with a create button
+	 * when no lobbies exist. Delegates individual lobby display to LobbyCard and lobby
+	 * join/create actions to parent callbacks.
+	 */
 	import type { LobbySummary } from '$lib/types/lobby';
 	import LobbyCard from './LobbyCard.svelte';
 

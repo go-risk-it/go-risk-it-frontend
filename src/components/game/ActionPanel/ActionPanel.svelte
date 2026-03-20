@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Responsive action panel that routes to the correct phase-specific action component
+	 * (Cards, Deploy, Attack, Conquer, Reinforce) based on the current move interaction.
+	 * Renders as a right-side panel on desktop (md+) and a collapsible bottom sheet on mobile.
+	 */
 	import { fly, slide } from 'svelte/transition';
 	import type {
 		BoardState,

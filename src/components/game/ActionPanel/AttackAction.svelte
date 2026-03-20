@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Attack phase action panel with a 3-step flow: (1) select source region,
+	 * (2) select adjacent enemy target, (3) choose troop count and execute.
+	 * Also provides a "Skip to Reinforce" button that advances the phase.
+	 * Max attacking troops is capped at min(source troops - 1, 3) per Risk rules.
+	 */
 	import type { Region, GameState } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { attack, advance } from '$lib/api/moves';
@@ -32,12 +38,18 @@
 	);
 	const maxAttackingTroops = $derived(Math.min((sourceRegion?.troops ?? 1) - 1, 3));
 
+	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm attack
 	const currentStep = $derived.by(() => {
 		if (!interaction.sourceRegionId) return 1;
 		if (!interaction.targetRegionId) return 2;
 		return 3;
 	});
 
+	/**
+	 * Submits the attack move with current troop counts for both regions as
+	 * optimistic concurrency guards. Resets source selection on success so
+	 * the player can immediately launch another attack.
+	 */
 	async function handleAttack() {
 		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
 			return;
@@ -54,6 +66,7 @@
 		}, 'Attack failed');
 	}
 
+	/** Advances past the attack phase without attacking (skip to reinforce). */
 	async function handleAdvance() {
 		await action.run(async () => {
 			await advance(gameState.id, { currentPhase: 'attack' });

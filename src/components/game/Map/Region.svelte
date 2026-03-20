@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Renders a single map region as an SVG path with a troop count badge and hover tooltip.
+	 * Uses a tweened store for smooth troop count transitions and triggers a flash animation
+	 * when the region changes ownership (e.g., after a successful attack).
+	 */
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import type { Region } from '$lib/types/game';
@@ -19,14 +24,14 @@
 	const troops = $derived(region?.troops ?? 0);
 	const regionName = $derived(layer.name);
 
-	// Tweened troop display for smooth count animation
+	// Animated troop count — interpolates between old and new values over 300ms
 	const displayTroops = tweened(0, { duration: 300, easing: cubicOut });
 
 	$effect(() => {
 		displayTroops.set(troops);
 	});
 
-	// Track owner changes for flash animation
+	// Detect ownership changes to trigger a brief white flash (capture-flash CSS animation)
 	const currentOwnerId = $derived(region?.ownerId ?? '');
 	let previousOwnerId = $state('');
 	let flashActive = $state(false);
@@ -39,7 +44,7 @@
 		previousOwnerId = currentOwnerId;
 	});
 
-	// Compute center from the path for troop label placement
+	// Derive label center from the SVG path's bounding box
 	let pathEl = $state<SVGPathElement | null>(null);
 	let center = $state({ x: 0, y: 0 });
 

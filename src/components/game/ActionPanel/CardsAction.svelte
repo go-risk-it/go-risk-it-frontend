@@ -1,4 +1,11 @@
 <script lang="ts">
+	/**
+	 * Cards phase action panel for selecting and playing card combinations.
+	 * Valid combinations are 3 cards of the same type or 1 of each type; Jolly cards
+	 * are wild. Cards already assigned to a combination are excluded from the available
+	 * pool. When a third card completes a valid set, it is auto-promoted to a combination.
+	 * Multiple combinations can be queued and submitted in a single API call.
+	 */
 	import type { CardState, GameState, Card } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { playCards, advance } from '$lib/api/moves';
@@ -19,14 +26,21 @@
 
 	let { cardState, gameState, interaction, moveState }: Props = $props();
 
+	// Card IDs already committed to a combination — excluded from the selection pool
 	const existingCombinationCardIds = $derived(interaction.combinations.flatMap((c) => c.cardIDs));
 
+	// Cards not yet assigned to any combination
 	const availableCards = $derived(
 		cardState.cards.filter((c) => !existingCombinationCardIds.includes(c.id))
 	);
 
 	const action = useAction();
 
+	/**
+	 * Toggles a card in/out of the current selection. When the selection reaches
+	 * 3 cards, automatically validates the combination and promotes it if valid;
+	 * otherwise keeps the selection for the player to adjust.
+	 */
 	function toggleCard(card: Card) {
 		const selected = [...interaction.selectedCardIds];
 		const idx = selected.indexOf(card.id);
@@ -48,12 +62,14 @@
 		}
 	}
 
+	/** Whether a card can be added to the current selection (already selected, or selectable per combination rules). */
 	function canSelectCard(card: Card): boolean {
 		if (interaction.selectedCardIds.includes(card.id)) return true;
 		if (interaction.selectedCardIds.length >= 3) return false;
 		return isCardSelectable(card, interaction.selectedCardIds, availableCards, existingCombinationCardIds);
 	}
 
+	/** Submits all queued combinations in one API call, then resets card selection state. */
 	async function handlePlayCards() {
 		if (interaction.combinations.length === 0) return;
 		await action.run(async () => {

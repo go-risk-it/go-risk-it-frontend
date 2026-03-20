@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Sign-up page with email/password registration and password confirmation.
+	 * Redirects already-authenticated users to the home page. Validates that
+	 * passwords match before submitting to the auth API.
+	 */
 	import { goto } from '$app/navigation';
 	import { getAuth } from '$lib/state/auth.svelte';
 
@@ -10,6 +15,7 @@
 	let error = $state('');
 	let submitting = $state(false);
 
+	// Already authenticated users get redirected to home
 	$effect(() => {
 		if (!auth.loading && auth.isAuthenticated) {
 			goto('/');

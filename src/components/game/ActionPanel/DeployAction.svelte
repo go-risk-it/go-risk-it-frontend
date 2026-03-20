@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Deploy phase action panel. Lets the player select a region they own and choose
+	 * how many of their available troops to place there. Sends a deploy API call with
+	 * the current troop count as an optimistic concurrency guard.
+	 */
 	import type { Region } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { deploy } from '$lib/api/moves';
@@ -25,6 +30,12 @@
 
 	const action = useAction();
 
+	/**
+	 * Sends the deploy move to the server. Passes both currentTroops and
+	 * desiredTroops (current + slider value) so the backend can validate
+	 * that the region hasn't changed since the player's view. Resets
+	 * selection on success.
+	 */
 	async function handleDeploy() {
 		if (!interaction.regionId || interaction.troops === 0) return;
 		await action.run(async () => {

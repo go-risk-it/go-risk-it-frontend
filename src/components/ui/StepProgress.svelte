@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Minimal step progress indicator rendered as a row of small dots. Dots up to the
+	 * current step are highlighted with the accent color; remaining dots are dimmed.
+	 * Used to show phase progression within a game turn.
+	 */
 	interface Props {
 		current: number;
 		total: number;

@@ -1,4 +1,11 @@
 <script lang="ts">
+	/**
+	 * Displays the player's secret mission objective with a live progress bar.
+	 * Computes progress differently per mission type: territory count for
+	 * TWENTY_FOUR_TERRITORIES, territories with 2+ troops for EIGHTEEN_TERRITORIES_TWO_TROOPS,
+	 * fully-owned continent count for TWO_CONTINENTS variants, and target player
+	 * elimination status for ELIMINATE_PLAYER.
+	 */
 	import type { MissionState, BoardState, PlayerState } from '$lib/types/game';
 	import type { MapLayer, Continent } from '$lib/types/map';
 
@@ -25,7 +32,7 @@
 		return boardState.regions.filter((r) => r.ownerId === myUserId && r.troops >= 2).length;
 	});
 
-	// Build continent → region IDs map
+	// Map from continent ID to its region IDs (derived from map layer data)
 	const continentRegions = $derived.by(() => {
 		const map = new Map<string, string[]>();
 		for (const layer of mapLayers) {
@@ -36,7 +43,7 @@
 		return map;
 	});
 
-	// Count how many of the target continents are fully owned
+	// For continent-based missions: checks full ownership of each target continent
 	const continentProgress = $derived.by(() => {
 		if (!mission || !boardState || !myUserId) return { owned: 0, target: 0, names: [] as string[] };
 

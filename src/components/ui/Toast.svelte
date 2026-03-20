@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Global toast notification container. Renders dismissible notifications in the
+	 * bottom-right corner with fly-in animations. Styled by toast type (error, success, info)
+	 * and driven by the reactive toast store.
+	 */
 	import { fly } from 'svelte/transition';
 	import { getToasts } from '$lib/state/toast.svelte';
 

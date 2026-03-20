@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Top-level game board that orchestrates the entire in-game experience. Initializes
+	 * WebSocket connectivity, game state, and move state; wires up effects for turn
+	 * notifications, sound, phase transitions, and game-over detection. Delegates rendering
+	 * to GameMap, StatusBar, ActionPanel, and overlay components.
+	 */
 	import GameMap from './Map/GameMap.svelte';
 	import PhaseBar from './PhaseBar.svelte';
 	import StatusBar from './StatusBar/StatusBar.svelte';
@@ -102,7 +108,7 @@
 		}
 	});
 
-	// Game over detection
+	// Game over when exactly one player remains alive
 	const gameOver = $derived.by(() => {
 		if (!game.playersState || !auth.user) return null;
 		const alivePlayers = game.playersState.players.filter((p) => p.status !== 'dead');
@@ -134,7 +140,7 @@
 		};
 	});
 
-	// Build graph when board state + map data are both available
+	// Adjacency graph for computing valid attack/reinforce targets; rebuilt when board changes
 	const graph = $derived.by(() => {
 		if (!game.boardState || !mapData.loaded) return null;
 		return new Graph(mapData.links, game.boardState);
@@ -146,14 +152,17 @@
 		return buildPlayerColorMap(game.playersState.players);
 	});
 
-	// Valid targets based on current interaction
+	/**
+	 * Computes the set of region IDs that are valid click targets for the current
+	 * move interaction. For attack: adjacent enemy regions. For reinforce: any
+	 * friendly region reachable through a connected chain of owned territories.
+	 */
 	const validTargetIds = $derived.by(() => {
 		const targets = new Set<string>();
 		if (!graph || !game.boardState) return targets;
 		const interaction = moveState.interaction;
 
 		if (interaction.phase === 'attack' && interaction.sourceRegionId) {
-			// Valid targets: adjacent enemy regions
 			const neighbors = graph.getNeighbors(interaction.sourceRegionId);
 			const sourceRegion = game.regionMap.get(interaction.sourceRegionId);
 			if (sourceRegion) {
@@ -165,7 +174,6 @@
 				}
 			}
 		} else if (interaction.phase === 'reinforce' && interaction.sourceRegionId) {
-			// Valid targets: reachable friendly regions
 			if (game.boardState) {
 				for (const region of game.boardState.regions) {
 					if (
@@ -220,6 +228,11 @@
 		if (e.key === 'Escape') moveState.reset();
 	}
 
+	/**
+	 * Handles map region clicks by dispatching to the appropriate move-state
+	 * action based on the current phase. In attack/reinforce, implements a
+	 * two-step source-then-target selection with re-selection support.
+	 */
 	function handleRegionClick(regionId: string) {
 		if (!game.isMyTurn || !game.boardState) return;
 		const region = game.regionMap.get(regionId);

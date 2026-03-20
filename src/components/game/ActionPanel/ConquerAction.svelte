@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Conquer phase panel shown after a successful attack. The player must move
+	 * troops from the attacking region into the newly conquered territory.
+	 * The slider is bounded by [minTroopsToMove, attackingRegion.troops - 1]
+	 * to enforce server-mandated minimums while keeping at least 1 troop behind.
+	 */
 	import type { ConquerPhaseState, Region } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { conquer } from '$lib/api/moves';
@@ -20,7 +26,7 @@
 	const defendingRegion = $derived(regionMap.get(conquerState.defendingRegionId));
 	const maxTroops = $derived((attackingRegion?.troops ?? 1) - 1);
 
-	// Initialize troops to minimum on mount
+	// Ensure the slider starts at the server-mandated minimum (e.g., attackingTroops count)
 	$effect(() => {
 		if (interaction.troops < conquerState.minTroopsToMove) {
 			moveState.setConquerTroops(conquerState.minTroopsToMove);
@@ -29,6 +35,7 @@
 
 	const action = useAction();
 
+	/** Submits the conquer move with the chosen troop count. */
 	async function handleConquer() {
 		await action.run(async () => {
 			await conquer(gameId, { troops: interaction.troops });

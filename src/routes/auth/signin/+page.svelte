@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Sign-in page with email/password authentication. Redirects already-authenticated
+	 * users to the home page. On successful sign-in, navigates to the lobby hub.
+	 */
 	import { goto } from '$app/navigation';
 	import { getAuth } from '$lib/state/auth.svelte';
 
@@ -9,6 +13,7 @@
 	let error = $state('');
 	let submitting = $state(false);
 
+	// Already authenticated users get redirected to home
 	$effect(() => {
 		if (!auth.loading && auth.isAuthenticated) {
 			goto('/');

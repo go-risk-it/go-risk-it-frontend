@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Groups Region components under a continent SVG <g> element.
+	 * Resolves each layer's game state (owner color, selection, valid target status)
+	 * and passes it down to the Region component for rendering.
+	 */
 	import type { Region as RegionType } from '$lib/types/game';
 	import type { MapLayer, Continent as ContinentType } from '$lib/types/map';
 	import Region from './Region.svelte';
