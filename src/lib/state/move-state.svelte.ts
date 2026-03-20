@@ -1,7 +1,23 @@
+/**
+ * UI interaction state machine for player moves. Tracks what the user is currently
+ * doing (selecting regions, adjusting troops, picking cards) as a discriminated union
+ * keyed by game phase. Each phase has dedicated setter functions that enforce the
+ * correct state shape via runtime guards.
+ */
+
 import type { PhaseType } from '$lib/types/game';
 import type { CardCombination } from '$lib/types/moves';
 
-// Discriminated union for the interaction state machine
+/**
+ * Discriminated union representing the user's in-progress move interaction.
+ * The `phase` field determines which properties are available:
+ * - `idle`: No interaction in progress.
+ * - `deploy`: Region and troop count for deployment.
+ * - `attack`: Source/target regions and attacking troop count.
+ * - `conquer`: Troop count to move into a conquered territory.
+ * - `reinforce`: Source/target regions and moving troop count.
+ * - `cards`: Selected card IDs and committed combinations to play.
+ */
 export type MoveInteraction =
 	| { phase: 'idle' }
 	| { phase: 'deploy'; regionId: string | null; troops: number }
@@ -24,13 +40,22 @@ export type MoveInteraction =
 			combinations: CardCombination[];
 	  };
 
+/**
+ * Create a reactive move interaction state machine.
+ * @returns The current interaction state, phase transition methods, and per-phase setters.
+ */
 export function createMoveState() {
 	let interaction = $state<MoveInteraction>({ phase: 'idle' });
 
+	/** Return to idle state, discarding any in-progress interaction. */
 	function reset() {
 		interaction = { phase: 'idle' };
 	}
 
+	/**
+	 * Transition to a new phase with default (empty) interaction values.
+	 * @param phaseType - The game phase to enter.
+	 */
 	function startPhase(phaseType: PhaseType) {
 		switch (phaseType) {
 			case 'deploy':
@@ -61,7 +86,9 @@ export function createMoveState() {
 		}
 	}
 
-	// Deploy actions
+	// --- Deploy setters ---
+
+	/** @param regionId - Region to deploy troops to. */
 	function setDeployRegion(regionId: string) {
 		if (interaction.phase === 'deploy') {
 			interaction = { ...interaction, regionId };
@@ -74,7 +101,9 @@ export function createMoveState() {
 		}
 	}
 
-	// Attack actions
+	// --- Attack setters ---
+
+	/** Set the attacking source region. Resets target and troop count. */
 	function setAttackSource(regionId: string) {
 		if (interaction.phase === 'attack') {
 			interaction = {
@@ -98,14 +127,17 @@ export function createMoveState() {
 		}
 	}
 
-	// Conquer actions
+	// --- Conquer setters ---
+
 	function setConquerTroops(troops: number) {
 		if (interaction.phase === 'conquer') {
 			interaction = { ...interaction, troops };
 		}
 	}
 
-	// Reinforce actions
+	// --- Reinforce setters ---
+
+	/** Set the reinforcement source. Resets target and troop count. */
 	function setReinforceSource(regionId: string) {
 		if (interaction.phase === 'reinforce') {
 			interaction = {
@@ -129,7 +161,12 @@ export function createMoveState() {
 		}
 	}
 
-	// Card actions
+	// --- Card setters ---
+
+	/**
+	 * Commit the currently selected cards as a combination and clear the selection.
+	 * @param cardIds - Card IDs forming a valid combination.
+	 */
 	function addCardCombination(cardIds: number[]) {
 		if (interaction.phase === 'cards') {
 			interaction = {
@@ -140,6 +177,7 @@ export function createMoveState() {
 		}
 	}
 
+	/** Remove a previously committed card combination by its index. */
 	function removeCardCombination(index: number) {
 		if (interaction.phase === 'cards') {
 			const newCombinations = [...interaction.combinations];
@@ -148,6 +186,7 @@ export function createMoveState() {
 		}
 	}
 
+	/** Update the set of card IDs currently highlighted (before committing a combination). */
 	function setSelectedCards(cardIds: number[]) {
 		if (interaction.phase === 'cards') {
 			interaction = { ...interaction, selectedCardIds: cardIds };

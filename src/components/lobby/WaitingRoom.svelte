@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Lobby waiting room shown after a player creates or joins a lobby. Maintains a live
+	 * WebSocket connection to receive real-time participant updates. The lobby owner can
+	 * start the game once at least 3 players have joined; all players can copy an invite
+	 * link or leave the lobby.
+	 */
 	import { goto } from '$app/navigation';
 	import { createLobbyWebSocket } from '$lib/state/lobby-state.svelte';
 	import { startLobby, getGames } from '$lib/api/lobby';
@@ -28,6 +34,7 @@
 	const participants = $derived(lobbyWs.lobbyState?.participants ?? []);
 	const canStart = $derived(isOwner && participants.length >= 3);
 
+	/** Copies a joinable lobby URL to the clipboard with a brief "Copied!" confirmation. */
 	async function copyInviteLink() {
 		const url = window.location.origin + `/?join=${lobbyId}`;
 		try {
@@ -39,12 +46,15 @@
 		}
 	}
 
+	/**
+	 * Starts the game by calling the start API, then fetches the newly created game ID
+	 * from the games list (since the start endpoint returns no body) and navigates to it.
+	 */
 	async function handleStart() {
 		error = '';
 		starting = true;
 		try {
 			await startLobby(lobbyId);
-			// Start returns no body — fetch the game ID from games summary
 			const games = await getGames();
 			if (games && games.length > 0) {
 				goto(`/game/${games[0].id}`);

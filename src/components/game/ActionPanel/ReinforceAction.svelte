@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Reinforce phase action panel with a 3-step flow: (1) select source region,
+	 * (2) select a connected friendly target, (3) choose troop count and execute.
+	 * Also provides an "End Turn" button that advances past the reinforce phase.
+	 * Target must be reachable through a connected chain of owned territories.
+	 */
 	import type { Region, GameState } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { reinforce, advance } from '$lib/api/moves';
@@ -29,6 +35,7 @@
 	);
 	const maxMovingTroops = $derived((sourceRegion?.troops ?? 1) - 1);
 
+	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm reinforce
 	const currentStep = $derived.by(() => {
 		if (!interaction.sourceRegionId) return 1;
 		if (!interaction.targetRegionId) return 2;
@@ -37,6 +44,10 @@
 
 	const action = useAction();
 
+	/**
+	 * Submits the reinforce move with current troop counts for both regions
+	 * as optimistic concurrency guards. Resets source selection on success.
+	 */
 	async function handleReinforce() {
 		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
 			return;
@@ -52,6 +63,7 @@
 		}, 'Reinforce failed');
 	}
 
+	/** Ends the turn by advancing past the reinforce phase. */
 	async function handleAdvance() {
 		await action.run(async () => {
 			await advance(gameState.id, { currentPhase: 'reinforce' });

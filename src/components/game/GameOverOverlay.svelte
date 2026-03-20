@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Full-screen modal overlay displayed when the game ends. Shows a victory or
+	 * defeat message with staggered fade-in animations, optional end-game stats
+	 * (territories, troops, cards, turns), and a link back to the lobby.
+	 * Implements a focus trap to keep keyboard navigation within the overlay.
+	 */
 	import { fade, scale } from 'svelte/transition';
 
 	interface GameStats {
@@ -18,14 +24,14 @@
 
 	let lobbyLink = $state<HTMLAnchorElement | null>(null);
 
-	// Focus trap: move focus to the Back to Lobby link when overlay appears
+	// Auto-focus the lobby link on mount so the player can press Enter to exit
 	$effect(() => {
 		if (lobbyLink) {
 			lobbyLink.focus();
 		}
 	});
 
-	// Trap keyboard focus within overlay
+	/** Trap Tab key to keep focus within the overlay (single focusable element). */
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Tab') {
 			// Only one focusable element, keep focus here

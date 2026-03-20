@@ -1,9 +1,20 @@
+/**
+ * Game-specific WebSocket wrapper built on top of {@link createBaseWebSocket}.
+ * Parses incoming messages into typed {@link WebSocketMessage} objects and
+ * delegates them to a registered handler. One instance per active game.
+ */
+
 import type { WebSocketMessage } from '$lib/types/game';
 import { parseWebSocketMessage } from '$lib/types/game';
 import { createBaseWebSocket } from '$lib/state/base-websocket.svelte';
 
 type MessageHandler = (msg: WebSocketMessage) => void;
 
+/**
+ * Create a WebSocket connection for a specific game.
+ * @param gameId - The game identifier used in the WS URL query parameter.
+ * @returns Reactive connection state, lifecycle controls, and an onMessage registration method.
+ */
 export function createWebSocket(gameId: string | number) {
 	let handler: MessageHandler | null = null;
 
@@ -19,6 +30,10 @@ export function createWebSocket(gameId: string | number) {
 		label: 'WebSocket'
 	});
 
+	/**
+	 * Register a callback invoked for every parsed game message.
+	 * @param fn - Handler receiving the typed WebSocketMessage.
+	 */
 	function onMessage(fn: MessageHandler) {
 		handler = fn;
 	}

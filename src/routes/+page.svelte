@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Home page and main lobby hub. Authenticated users see a tabbed view of available
+	 * lobbies and their active games. Handles lobby creation, joining (including via
+	 * invite link), and transitions into the WaitingRoom when a lobby is entered.
+	 * Unauthenticated users are redirected to the sign-in page.
+	 */
 	import { goto } from '$app/navigation';
 	import { getAuth } from '$lib/state/auth.svelte';
 	import { getLobbies, getGames, createLobby, joinLobby } from '$lib/api/lobby';
@@ -22,18 +28,21 @@
 	let playerName = $state('');
 	let showCreateForm = $state(false);
 
+	// Auth guard: redirect to sign-in if not authenticated
 	$effect(() => {
 		if (!auth.loading && !auth.isAuthenticated) {
 			goto('/auth/signin');
 		}
 	});
 
+	// Load lobbies and games once auth is confirmed
 	$effect(() => {
 		if (auth.isAuthenticated) {
 			loadData();
 		}
 	});
 
+	/** Fetches both lobby and game lists in parallel and updates reactive state. */
 	async function loadData() {
 		loading = true;
 		error = '';
@@ -63,6 +72,10 @@
 		}
 	}
 
+	/**
+	 * Joins an existing lobby. If the player name is empty, focuses the name input with
+	 * a red ring highlight instead of proceeding.
+	 */
 	async function handleJoinLobby(lobbyId: string) {
 		if (!playerName.trim()) {
 			showCreateForm = true;

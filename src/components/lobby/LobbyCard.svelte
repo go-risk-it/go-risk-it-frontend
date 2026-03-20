@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * Displays a single lobby as a card showing the owner's name, current participant list,
+	 * and a join button. Used within LobbyList to represent each available game lobby.
+	 */
 	import type { LobbySummary } from '$lib/types/lobby';
 
 	interface Props {

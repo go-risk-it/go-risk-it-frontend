@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Displays the list of players with their color indicator, card count, and
+	 * connection status. The current player (whose turn it is) is highlighted
+	 * with a glass background and bold name; dead players are struck through and dimmed.
+	 */
 	import type { PlayerState } from '$lib/types/game';
 	import { getPlayerHexColor } from '$lib/utils/colors';
 
@@ -10,6 +15,7 @@
 
 	let { players, currentTurn, myUserId }: Props = $props();
 
+	// Derive whose turn it is by cycling through player indices
 	const currentPlayerIndex = $derived(currentTurn % players.length);
 </script>
 

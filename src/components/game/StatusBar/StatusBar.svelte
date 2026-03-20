@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * Status bar showing the player list and mission progress. Renders as a
+	 * left sidebar on desktop (md+) and a fixed bottom bar with expandable
+	 * drawer on mobile. Mission display is anchored to the bottom of the sidebar.
+	 */
 	import type { PlayerState, MissionState, BoardState } from '$lib/types/game';
 	import type { MapLayer, Continent } from '$lib/types/map';
 	import PlayerList from './PlayerList.svelte';

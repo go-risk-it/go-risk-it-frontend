@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Horizontal phase timeline indicator showing the five game phases
+	 * (Cards, Deploy, Attack, Conquer, Reinforce). The active phase is
+	 * highlighted with accent color and a glow animation when it is the
+	 * player's own turn; shown in accent-light when observing another player.
+	 */
 	import type { PhaseType } from '$lib/types/game';
 
 	interface Props {

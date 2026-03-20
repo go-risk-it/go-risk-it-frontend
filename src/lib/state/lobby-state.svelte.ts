@@ -1,6 +1,17 @@
+/**
+ * Lobby-specific WebSocket state built on {@link createBaseWebSocket}.
+ * Maintains reactive lobby state (players joined, game readiness) by
+ * listening for lobbyState messages over the WebSocket connection.
+ */
+
 import type { LobbyState, LobbyWebSocketMessage } from '$lib/types/lobby';
 import { createBaseWebSocket } from '$lib/state/base-websocket.svelte';
 
+/**
+ * Create a WebSocket connection for a lobby.
+ * @param lobbyId - The lobby identifier used in the WS URL query parameter.
+ * @returns Reactive lobby state and connection controls.
+ */
 export function createLobbyWebSocket(lobbyId: string) {
 	let lobbyState = $state<LobbyState | null>(null);
 

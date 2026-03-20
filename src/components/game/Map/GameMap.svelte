@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * Interactive SVG game map with touch pan/zoom and mouse wheel zoom support.
+	 * Groups map layers by continent and delegates region rendering to Continent components.
+	 * Scale is clamped to [0.5, 4] to prevent over-zoom; a reset button appears when
+	 * the view is transformed.
+	 */
 	import type { Region } from '$lib/types/game';
 	import type { MapLayer, Continent as ContinentType } from '$lib/types/map';
 	import Continent from './Continent.svelte';
@@ -48,6 +54,7 @@
 	let lastTouch = $state<{ x: number; y: number } | null>(null);
 	let lastPinchDist = $state(0);
 
+	/** Handles single-finger pan and two-finger pinch-to-zoom. */
 	function handleTouchStart(e: TouchEvent) {
 		if (e.touches.length === 1) {
 			isPanning = true;
@@ -70,6 +77,7 @@
 			lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 			e.preventDefault();
 		} else if (e.touches.length === 2) {
+			// Pinch zoom: ratio of current to previous finger distance
 			const dist = Math.hypot(
 				e.touches[0].clientX - e.touches[1].clientX,
 				e.touches[0].clientY - e.touches[1].clientY

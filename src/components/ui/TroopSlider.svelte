@@ -1,11 +1,23 @@
 <script lang="ts">
+	/**
+	 * Range slider for selecting troop counts during deploy, attack, and reinforce phases.
+	 * Displays a label, the current value, and a "Max" shortcut button. The parent controls
+	 * the value via onchange/onmax callbacks (uncontrolled slider pattern).
+	 */
 	interface Props {
+		/** HTML id for the input element and its label association. */
 		id: string;
+		/** Descriptive label shown above the slider. */
 		label: string;
+		/** Minimum selectable troop count. */
 		min: number;
+		/** Maximum selectable troop count. */
 		max: number;
+		/** Current slider value (controlled by parent). */
 		value: number;
+		/** Called with the new value when the slider is dragged. */
 		onchange: (value: number) => void;
+		/** Called when the "Max" button is clicked. */
 		onmax: () => void;
 	}
 
