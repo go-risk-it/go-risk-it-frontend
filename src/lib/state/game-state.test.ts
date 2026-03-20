@@ -95,7 +95,7 @@ describe('createGameState', () => {
 			};
 			state.handleMessage(msg);
 			expect(state.gameState).toEqual({ id: 42, turn: 5, phaseType: 'deploy' });
-			expect(state.phaseState).toEqual({ deployableTroops: 7 });
+			expect(state.phase).toEqual({ type: 'deploy', state: { deployableTroops: 7 } });
 		});
 	});
 
@@ -171,7 +171,7 @@ describe('createGameState', () => {
 			setupPlayers();
 			const msg: WebSocketMessage = {
 				type: 'gameState',
-				data: { id: 1, turn: 0, phase: { type: 'deploy', state: {} } }
+				data: { id: 1, turn: 0, phase: { type: 'deploy', state: { deployableTroops: 0 } } }
 			};
 			state.handleMessage(msg);
 			expect(state.isMyTurn).toBe(true);
@@ -181,7 +181,7 @@ describe('createGameState', () => {
 			setupPlayers();
 			const msg: WebSocketMessage = {
 				type: 'gameState',
-				data: { id: 1, turn: 4, phase: { type: 'deploy', state: {} } }
+				data: { id: 1, turn: 4, phase: { type: 'deploy', state: { deployableTroops: 0 } } }
 			};
 			state.handleMessage(msg);
 			// turn 4 % 2 players = 0 = user1's index
@@ -192,7 +192,7 @@ describe('createGameState', () => {
 			setupPlayers();
 			const msg: WebSocketMessage = {
 				type: 'gameState',
-				data: { id: 1, turn: 1, phase: { type: 'deploy', state: {} } }
+				data: { id: 1, turn: 1, phase: { type: 'deploy', state: { deployableTroops: 0 } } }
 			};
 			state.handleMessage(msg);
 			expect(state.isMyTurn).toBe(false);
@@ -212,7 +212,7 @@ describe('createGameState', () => {
 		it('returns 0 in non-deploy phase', () => {
 			const msg: WebSocketMessage = {
 				type: 'gameState',
-				data: { id: 1, turn: 0, phase: { type: 'attack', state: {} } }
+				data: { id: 1, turn: 0, phase: { type: 'attack', state: {} as Record<string, never> } }
 			};
 			state.handleMessage(msg);
 			expect(state.deployableTroops).toBe(0);

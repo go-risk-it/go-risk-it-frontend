@@ -1,8 +1,18 @@
 import { api } from './client';
 import type { LobbySummary, GameSummary, GamesSummaryResponse } from '$lib/types/lobby';
 
+function isLobbySummaryArray(data: unknown): data is LobbySummary[] {
+	return Array.isArray(data) && data.every((d) =>
+		typeof d === 'object' && d !== null && 'id' in d && 'participants' in d
+	);
+}
+
+function isGamesSummaryResponse(data: unknown): data is GamesSummaryResponse {
+	return typeof data === 'object' && data !== null && 'games' in data && Array.isArray((data as GamesSummaryResponse).games);
+}
+
 export function getLobbies(): Promise<LobbySummary[]> {
-	return api.get<LobbySummary[]>('/lobbies/summary');
+	return api.get<LobbySummary[]>('/lobbies/summary', isLobbySummaryArray);
 }
 
 export function createLobby(ownerName: string) {
@@ -18,6 +28,6 @@ export function startLobby(lobbyId: string) {
 }
 
 export async function getGames(): Promise<GameSummary[]> {
-	const data = await api.get<GamesSummaryResponse>('/games/summary');
+	const data = await api.get<GamesSummaryResponse>('/games/summary', isGamesSummaryResponse);
 	return data.games ?? [];
 }
