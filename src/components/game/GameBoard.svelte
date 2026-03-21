@@ -288,17 +288,6 @@
 		return game.playersState.players[idx]?.name ?? '';
 	});
 
-	// Prevent accidental navigation away from active game
-	$effect(() => {
-		function handler(e: BeforeUnloadEvent) {
-			if (game.gameState && !gameOver) {
-				e.preventDefault();
-			}
-		}
-		window.addEventListener('beforeunload', handler);
-		return () => window.removeEventListener('beforeunload', handler);
-	});
-
 	// Escape key to cancel region selection
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') moveState.reset();
