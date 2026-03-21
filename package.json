@@ -13,6 +13,10 @@
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
+		"e2e:up": "./scripts/e2e-stack.sh up",
+		"e2e:down": "./scripts/e2e-stack.sh down",
+		"e2e:reset": "./scripts/e2e-stack.sh reset",
+		"dev:play": "./scripts/dev-play.sh",
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."

@@ -1,5 +1,26 @@
 # Testing
 
+## Playing Locally
+
+Spin up the full stack and get an active 3-player game you can play in the browser:
+
+```bash
+npm run dev:play
+```
+
+This starts the backend (Docker), the frontend dev server, creates 3 players, and starts a game. It prints the game URL and credentials:
+
+```
+  URL:  http://localhost:5173/game/1
+
+  Players:
+    Alice    player1@dev.local  /  play_test_123
+    Bob      player2@dev.local  /  play_test_123
+    Charlie  player3@dev.local  /  play_test_123
+```
+
+Open 3 browser windows (or incognito tabs), sign in as each player, and navigate to the URL. Press `Ctrl+C` to stop.
+
 ## E2E Tests
 
 The e2e tests use [Playwright](https://playwright.dev/) to test full user flows against a real backend stack.
