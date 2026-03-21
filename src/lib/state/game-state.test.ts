@@ -219,6 +219,52 @@ describe('createGameState', () => {
 		});
 	});
 
+	describe('onNextBoardState', () => {
+		it('resolves when boardState message arrives', async () => {
+			const promise = state.onNextBoardState();
+			const msg: WebSocketMessage = {
+				type: 'boardState',
+				data: { regions: [{ id: 'r1', ownerId: 'user1', troops: 1 }] }
+			};
+			state.handleMessage(msg);
+			await expect(promise).resolves.toBeUndefined();
+		});
+
+		it('resolves multiple listeners', async () => {
+			const p1 = state.onNextBoardState();
+			const p2 = state.onNextBoardState();
+			const msg: WebSocketMessage = {
+				type: 'boardState',
+				data: { regions: [{ id: 'r1', ownerId: 'user1', troops: 1 }] }
+			};
+			state.handleMessage(msg);
+			await expect(p1).resolves.toBeUndefined();
+			await expect(p2).resolves.toBeUndefined();
+		});
+
+		it('listeners are one-shot', async () => {
+			const p1 = state.onNextBoardState();
+			const msg: WebSocketMessage = {
+				type: 'boardState',
+				data: { regions: [{ id: 'r1', ownerId: 'user1', troops: 1 }] }
+			};
+			state.handleMessage(msg);
+			await p1;
+
+			// Register a new listener after the first resolved
+			const p2 = state.onNextBoardState();
+			let resolved = false;
+			p2.then(() => {
+				resolved = true;
+			});
+
+			// Send another boardState — only p2 should resolve, not p1 again
+			state.handleMessage(msg);
+			await p2;
+			expect(resolved).toBe(true);
+		});
+	});
+
 	describe('derived: conquerState', () => {
 		it('returns state in conquer phase', () => {
 			const msg: WebSocketMessage = {
