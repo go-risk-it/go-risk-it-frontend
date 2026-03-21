@@ -1,8 +1,36 @@
 # GO Risk-It Frontend
 
+[![CI](https://github.com/go-risk-it/go-risk-it-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/go-risk-it/go-risk-it-frontend/actions/workflows/ci.yml)
+
 The web frontend for [go-risk-it](https://github.com/go-risk-it/go-risk-it) — a multiplayer online Risk board game. Built with Svelte 5 and SvelteKit.
 
-**[Backend Repository](https://github.com/go-risk-it/go-risk-it)** | **[Architecture Docs](https://github.com/go-risk-it/go-risk-it/blob/main/docs/architecture.md)** | **[Game Rules](https://github.com/go-risk-it/go-risk-it/blob/main/docs/game-rules.md)**
+**[Backend Repository](https://github.com/go-risk-it/go-risk-it)** | **[Frontend Architecture](docs/architecture.md)** | **[Backend Architecture](https://github.com/go-risk-it/go-risk-it/blob/main/docs/architecture.md)** | **[Game Rules](https://github.com/go-risk-it/go-risk-it/blob/main/docs/game-rules.md)**
+
+## Architecture at a Glance
+
+```mermaid
+graph LR
+    subgraph Browser
+        UI["Svelte 5 Components"]
+        STATE["State Modules\n(runes)"]
+        WS["WebSocket Client"]
+    end
+
+    subgraph Backend
+        API["REST API\n:8080"]
+        WSS["WebSocket Server"]
+        AUTH["Supabase Auth\n(via Kong)"]
+    end
+
+    UI -->|"user actions"| STATE
+    STATE -->|"$derived"| UI
+    STATE -->|"API calls"| API
+    WS -->|"game state\nupdates"| STATE
+    WSS -->|"push"| WS
+    UI -->|"sign-in"| AUTH
+```
+
+See [Frontend Architecture](docs/architecture.md) for state management details, WebSocket reconnection strategy, component data flow, and more.
 
 ## Prerequisites
 
@@ -22,6 +50,24 @@ The app is available at `http://localhost:5173`. The Vite dev server proxies API
 |---------------|----------------|
 | `/api/*` | `http://localhost:8080` |
 | `/ws/*` | `ws://localhost:8080` |
+
+## Running with Backend
+
+The frontend needs the backend running to function. Full stack setup:
+
+1. **Start backend** (in the [backend repo](https://github.com/go-risk-it/go-risk-it)):
+   ```bash
+   make run
+   ```
+   This starts the Go server, PostgreSQL, Supabase auth, and Jaeger via Docker Compose.
+
+2. **Start frontend**:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. **Play** — Open `http://localhost:5173`. Sign up two accounts in separate browser windows to start a game.
 
 ## Scripts
 
