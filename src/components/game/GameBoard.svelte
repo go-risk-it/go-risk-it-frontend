@@ -18,7 +18,8 @@
 	import { getAuth } from '$lib/state/auth.svelte';
 	import { buildPlayerColorMap } from '$lib/utils/colors';
 	import { Graph } from '$lib/utils/graph';
-	import { playTurnStart, playConquer, playVictory, playDefeat, audio } from '$lib/audio/audio.svelte';
+	import { attack as attackApi } from '$lib/api/moves';
+	import { playTurnStart, playConquer, playAttack, playVictory, playDefeat, audio } from '$lib/audio/audio.svelte';
 
 	interface Props {
 		gameId: string;
@@ -71,7 +72,22 @@
 	// Sync move state with game phase changes
 	$effect(() => {
 		if (game.isMyTurn && game.gameState) {
-			moveState.startPhase(game.gameState.phaseType);
+			const phaseType = game.gameState.phaseType;
+			moveState.startPhase(phaseType);
+
+			// Track conquered territory for attack chaining
+			if (phaseType === 'conquer' && game.conquerState) {
+				moveState.setLastConqueredRegionId(game.conquerState.defendingRegionId);
+			}
+
+			// Auto-select conquered territory when returning to attack phase
+			if (phaseType === 'attack' && moveState.lastConqueredRegionId) {
+				const conqueredRegion = game.regionMap.get(moveState.lastConqueredRegionId);
+				if (conqueredRegion && conqueredRegion.ownerId === auth.user?.id && conqueredRegion.troops > 1) {
+					moveState.setAttackSource(moveState.lastConqueredRegionId);
+				}
+				moveState.clearLastConqueredRegionId();
+			}
 		} else {
 			moveState.reset();
 		}
@@ -152,6 +168,50 @@
 		return buildPlayerColorMap(game.playersState.players);
 	});
 
+	// Regions that border a different continent (for thicker stroke emphasis)
+	const continentBorderRegions = $derived.by(() => {
+		const borders = new Set<string>();
+		if (!graph || !mapData.loaded) return borders;
+		for (const layer of mapData.layers) {
+			const regionContinent = mapData.getContinentForRegion(layer.id);
+			if (!regionContinent) continue;
+			const neighbors = graph.getNeighbors(layer.id);
+			for (const nId of neighbors) {
+				const neighborContinent = mapData.getContinentForRegion(nId);
+				if (neighborContinent && neighborContinent !== regionContinent) {
+					borders.add(layer.id);
+					break;
+				}
+			}
+		}
+		return borders;
+	});
+
+	// Continent control: detect when one player owns all regions in a continent
+	const controlledContinents = $derived.by(() => {
+		const result = new Map<string, { ownerId: string; bonusTroops: number; continentName: string }>();
+		if (!game.boardState || !mapData.loaded) return result;
+		for (const continent of mapData.continents) {
+			const regionIds = mapData.getRegionsInContinent(continent.id);
+			if (regionIds.length === 0) continue;
+			const firstRegion = game.regionMap.get(regionIds[0]);
+			if (!firstRegion) continue;
+			const ownerId = firstRegion.ownerId;
+			const allOwned = regionIds.every((rId) => {
+				const r = game.regionMap.get(rId);
+				return r && r.ownerId === ownerId;
+			});
+			if (allOwned) {
+				result.set(continent.id, {
+					ownerId,
+					bonusTroops: continent.bonus_troops,
+					continentName: continent.name
+				});
+			}
+		}
+		return result;
+	});
+
 	/**
 	 * Computes the set of region IDs that are valid click targets for the current
 	 * move interaction. For attack: adjacent enemy regions. For reinforce: any
@@ -229,11 +289,39 @@
 	}
 
 	/**
+	 * Executes an instant attack with max troops (min(sourceTroops - 1, 3)).
+	 * Used by click-click-go when no Shift is held.
+	 */
+	async function executeInstantAttack(sourceRegionId: string, targetRegionId: string) {
+		const source = game.regionMap.get(sourceRegionId);
+		const target = game.regionMap.get(targetRegionId);
+		if (!source || !target || !game.gameState) return;
+
+		const attackingTroops = Math.min(source.troops - 1, 3);
+		try {
+			await attackApi(game.gameState.id, {
+				sourceRegionId,
+				targetRegionId,
+				troopsInSource: source.troops,
+				troopsInTarget: target.troops,
+				attackingTroops
+			});
+			playAttack();
+			// Keep source selected for chaining
+			moveState.setAttackSource(sourceRegionId);
+		} catch {
+			// Errors are handled by the action panel if user retries manually
+		}
+	}
+
+	/**
 	 * Handles map region clicks by dispatching to the appropriate move-state
 	 * action based on the current phase. In attack/reinforce, implements a
 	 * two-step source-then-target selection with re-selection support.
+	 * In attack phase, clicking a valid target instantly attacks with max troops
+	 * unless Shift is held (which shows the troop slider).
 	 */
-	function handleRegionClick(regionId: string) {
+	function handleRegionClick(regionId: string, event: MouseEvent | KeyboardEvent) {
 		if (!game.isMyTurn || !game.boardState) return;
 		const region = game.regionMap.get(regionId);
 		if (!region) return;
@@ -254,8 +342,14 @@
 						moveState.setAttackSource(regionId);
 					}
 				} else if (validTargetIds.has(regionId)) {
-					// Select target
-					moveState.setAttackTarget(regionId);
+					// Valid target clicked
+					if (event.shiftKey) {
+						// Shift+click: show slider for custom troop count
+						moveState.setAttackTarget(regionId);
+					} else {
+						// Instant attack with max troops
+						executeInstantAttack(interaction.sourceRegionId, regionId);
+					}
 				} else if (region.ownerId === auth.user?.id && region.troops > 1) {
 					// Re-select source
 					moveState.setAttackSource(regionId);
@@ -367,10 +461,16 @@
 					viewBox={mapData.viewBox}
 					continents={mapData.continents}
 					layers={mapData.layers}
+					links={mapData.links}
 					regionMap={game.regionMap}
 					{playerColors}
 					{selectedRegionId}
 					{validTargetIds}
+					{continentBorderRegions}
+					{controlledContinents}
+					currentPhase={game.gameState?.phaseType ?? null}
+					sourceRegionId={moveState.interaction.phase === 'attack' ? moveState.interaction.sourceRegionId : moveState.interaction.phase === 'reinforce' ? moveState.interaction.sourceRegionId : null}
+					targetRegionId={moveState.interaction.phase === 'reinforce' && 'targetRegionId' in moveState.interaction ? moveState.interaction.targetRegionId : null}
 					myUserId={auth.user?.id ?? null}
 					onRegionClick={handleRegionClick}
 				/>
@@ -387,6 +487,7 @@
 					deployableTroops={game.deployableTroops}
 					conquerState={game.conquerState}
 					{moveState}
+					onNextBoardState={game.onNextBoardState}
 				/>
 			{/if}
 		</div>

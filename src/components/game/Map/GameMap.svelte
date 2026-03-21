@@ -6,29 +6,42 @@
 	 * the view is transformed.
 	 */
 	import type { Region } from '$lib/types/game';
-	import type { MapLayer, Continent as ContinentType } from '$lib/types/map';
+	import type { PhaseType } from '$lib/types/game';
+	import type { MapLayer, MapLink, Continent as ContinentType } from '$lib/types/map';
 	import Continent from './Continent.svelte';
 
 	interface Props {
 		viewBox: string;
 		continents: ContinentType[];
 		layers: MapLayer[];
+		links: MapLink[];
 		regionMap: Map<string, Region>;
 		playerColors: Map<string, string>;
 		selectedRegionId: string | null;
 		validTargetIds: Set<string>;
+		continentBorderRegions: Set<string>;
+		controlledContinents: Map<string, { ownerId: string; bonusTroops: number; continentName: string }>;
+		currentPhase: PhaseType | null;
+		sourceRegionId: string | null;
+		targetRegionId: string | null;
 		myUserId: string | null;
-		onRegionClick: (regionId: string) => void;
+		onRegionClick: (regionId: string, event: MouseEvent | KeyboardEvent) => void;
 	}
 
 	let {
 		viewBox,
 		continents,
 		layers,
+		links,
 		regionMap,
 		playerColors,
 		selectedRegionId,
 		validTargetIds,
+		continentBorderRegions,
+		controlledContinents,
+		currentPhase,
+		sourceRegionId,
+		targetRegionId,
 		myUserId,
 		onRegionClick
 	}: Props = $props();
@@ -43,6 +56,62 @@
 			map.get(layer.continent)?.push(layer);
 		}
 		return map;
+	});
+
+	// Compute region centers from SVG path bounding boxes after mount
+	let svgEl = $state<SVGSVGElement | null>(null);
+	let regionCenters = $state(new Map<string, { x: number; y: number }>());
+
+	$effect(() => {
+		if (!svgEl) return;
+		// Wait one frame for paths to be rendered
+		requestAnimationFrame(() => {
+			const centers = new Map<string, { x: number; y: number }>();
+			const paths = svgEl!.querySelectorAll<SVGPathElement>('path[d]');
+			for (const path of paths) {
+				const regionGroup = path.closest('[data-testid]');
+				if (!regionGroup) continue;
+				const testId = regionGroup.getAttribute('data-testid') ?? '';
+				const regionId = testId.replace('region-', '');
+				if (regionId) {
+					const bbox = path.getBBox();
+					centers.set(regionId, { x: bbox.x + bbox.width / 2, y: bbox.y + bbox.height / 2 });
+				}
+			}
+			regionCenters = centers;
+		});
+	});
+
+	// Cross-ocean links: links where region centers are far apart
+	const DISTANCE_THRESHOLD = 200;
+	const longDistanceLinks = $derived.by(() => {
+		if (regionCenters.size === 0) return [];
+		return links.filter((link) => {
+			const a = regionCenters.get(link.source);
+			const b = regionCenters.get(link.target);
+			if (!a || !b) return false;
+			const dist = Math.hypot(a.x - b.x, a.y - b.y);
+			return dist > DISTANCE_THRESHOLD;
+		});
+	});
+
+	// Reinforce connection path: line between source and target during reinforce
+	const reinforcePath = $derived.by(() => {
+		if (currentPhase !== 'reinforce' || !sourceRegionId || !targetRegionId) return null;
+		const from = regionCenters.get(sourceRegionId);
+		const to = regionCenters.get(targetRegionId);
+		if (!from || !to) return null;
+		// Compute arrow head
+		const dx = to.x - from.x;
+		const dy = to.y - from.y;
+		const len = Math.hypot(dx, dy);
+		if (len === 0) return null;
+		const ux = dx / len;
+		const uy = dy / len;
+		const ax = to.x - ux * 8;
+		const ay = to.y - uy * 8;
+		const arrowPoints = `${to.x},${to.y} ${ax - uy * 4},${ay + ux * 4} ${ax + uy * 4},${ay - ux * 4}`;
+		return { from, to, arrowPoints };
 	});
 
 	// Touch pan/zoom state
@@ -121,12 +190,32 @@
 	onwheel={handleWheel}
 >
 	<svg
+		bind:this={svgEl}
 		{viewBox}
 		class="h-full w-full"
 		preserveAspectRatio="xMidYMid meet"
 		xmlns="http://www.w3.org/2000/svg"
 		style="transform: translate({translateX}px, {translateY}px) scale({scale}); transform-origin: center;"
 	>
+		<!-- Cross-ocean connection lines (below regions) -->
+		<g class="connection-lines" pointer-events="none">
+			{#each longDistanceLinks as link (link.source + '-' + link.target)}
+				{@const a = regionCenters.get(link.source)}
+				{@const b = regionCenters.get(link.target)}
+				{#if a && b}
+					<line
+						x1={a.x}
+						y1={a.y}
+						x2={b.x}
+						y2={b.y}
+						stroke="rgba(255,255,255,0.25)"
+						stroke-width="1"
+						stroke-dasharray="4,4"
+					/>
+				{/if}
+			{/each}
+		</g>
+
 		{#each continents as continent (continent.id)}
 			<Continent
 				{continent}
@@ -135,10 +224,44 @@
 				{playerColors}
 				{selectedRegionId}
 				{validTargetIds}
+				{continentBorderRegions}
+				controlledBy={controlledContinents.get(continent.id) ?? null}
+				{currentPhase}
+				{sourceRegionId}
 				{myUserId}
 				{onRegionClick}
 			/>
 		{/each}
+
+		<!-- Reinforce connection path (above regions) -->
+		{#if reinforcePath}
+			<g class="reinforce-path" pointer-events="none">
+				<line
+					x1={reinforcePath.from.x}
+					y1={reinforcePath.from.y}
+					x2={reinforcePath.to.x}
+					y2={reinforcePath.to.y}
+					stroke="#4ade80"
+					stroke-width="2"
+					stroke-dasharray="6,4"
+					stroke-linecap="round"
+					opacity="0.7"
+				>
+					<animate
+						attributeName="stroke-dashoffset"
+						from="0"
+						to="-20"
+						dur="1s"
+						repeatCount="indefinite"
+					/>
+				</line>
+				<polygon
+					points={reinforcePath.arrowPoints}
+					fill="#4ade80"
+					opacity="0.7"
+				/>
+			</g>
+		{/if}
 	</svg>
 
 	<!-- Zoom controls -->
