@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { createUser, authenticateContext, type UserInfo } from './helpers/auth';
-import { resetState, joinLobbyApi, startLobbyApi, getGamesSummaryApi } from './helpers/api';
+import {
+	resetState,
+	joinLobbyApi,
+	startLobbyApi,
+	getGamesSummaryApi,
+	getLobbySummaryApi
+} from './helpers/api';
+import { TEST_PASSWORD } from './helpers/config';
 
 test.describe('Lobby', () => {
 	let player1: UserInfo;
@@ -12,9 +19,9 @@ test.describe('Lobby', () => {
 		await resetState(adminJwt);
 
 		const ts = Date.now();
-		player1 = await createUser(`lobby-p1-${ts}@test.com`, 'test_password_123');
-		player2 = await createUser(`lobby-p2-${ts}@test.com`, 'test_password_123');
-		player3 = await createUser(`lobby-p3-${ts}@test.com`, 'test_password_123');
+		player1 = await createUser(`lobby-p1-${ts}@test.com`, TEST_PASSWORD);
+		player2 = await createUser(`lobby-p2-${ts}@test.com`, TEST_PASSWORD);
+		player3 = await createUser(`lobby-p3-${ts}@test.com`, TEST_PASSWORD);
 	});
 
 	test('create lobby via UI, join players via API, start game', async ({ browser }) => {
@@ -23,7 +30,7 @@ test.describe('Lobby', () => {
 
 		try {
 			// Player 1 signs in and creates a lobby via UI
-			await authenticateContext(page1, player1.email, 'test_password_123');
+			await authenticateContext(page1, player1.email, TEST_PASSWORD);
 			await page1.locator('[data-testid="player-name-input"]').fill('Player1');
 			await page1.locator('[data-testid="create-game-btn"]').click();
 
@@ -32,10 +39,7 @@ test.describe('Lobby', () => {
 			await expect(page1.locator('[data-testid="start-game-btn"]')).toBeVisible();
 
 			// Get the lobby ID from the API
-			const lobbyRes = await fetch('http://localhost:8080/api/v1/lobbies/summary', {
-				headers: { Authorization: `Bearer ${player1.jwt}` }
-			});
-			const lobbyData = await lobbyRes.json();
+			const lobbyData = await getLobbySummaryApi(player1.jwt);
 			const lobbyId = lobbyData.owned[0].id;
 
 			// Join players 2 and 3 via API, then start the game via API

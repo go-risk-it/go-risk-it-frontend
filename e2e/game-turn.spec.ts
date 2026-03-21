@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createUser, authenticateContext, type UserInfo } from './helpers/auth';
+import { createUser, type UserInfo } from './helpers/auth';
 import {
 	resetState,
 	createLobbyApi,
@@ -7,7 +7,15 @@ import {
 	startLobbyApi,
 	getGamesSummaryApi
 } from './helpers/api';
-import { waitForGameLoaded, waitForPhase, skipAttack, skipCards, endTurn } from './helpers/game';
+import { TEST_PASSWORD } from './helpers/config';
+import {
+	waitForPhase,
+	skipAttack,
+	skipCards,
+	endTurn,
+	findActivePlayer
+} from './helpers/game';
+import { withGameSession } from './helpers/game-session';
 
 test.describe('Game Turn', () => {
 	let player1: UserInfo;
@@ -20,9 +28,9 @@ test.describe('Game Turn', () => {
 		await resetState(adminJwt);
 
 		const ts = Date.now();
-		player1 = await createUser(`game-p1-${ts}@test.com`, 'test_password_123');
-		player2 = await createUser(`game-p2-${ts}@test.com`, 'test_password_123');
-		player3 = await createUser(`game-p3-${ts}@test.com`, 'test_password_123');
+		player1 = await createUser(`game-p1-${ts}@test.com`, TEST_PASSWORD);
+		player2 = await createUser(`game-p2-${ts}@test.com`, TEST_PASSWORD);
+		player3 = await createUser(`game-p3-${ts}@test.com`, TEST_PASSWORD);
 
 		// Create game via API: lobby → join → start
 		const lobby = await createLobbyApi(player1.jwt, 'Player1');
@@ -37,28 +45,14 @@ test.describe('Game Turn', () => {
 	});
 
 	test('all players can load the game board', async ({ browser }) => {
-		const ctx1 = await browser.newContext();
-		const ctx2 = await browser.newContext();
-		const ctx3 = await browser.newContext();
+		const credentials = [
+			{ email: player1.email, password: TEST_PASSWORD },
+			{ email: player2.email, password: TEST_PASSWORD },
+			{ email: player3.email, password: TEST_PASSWORD }
+		];
 
-		const page1 = await ctx1.newPage();
-		const page2 = await ctx2.newPage();
-		const page3 = await ctx3.newPage();
-
-		try {
-			// All players sign in and navigate to the game
-			await authenticateContext(page1, player1.email, 'test_password_123');
-			await authenticateContext(page2, player2.email, 'test_password_123');
-			await authenticateContext(page3, player3.email, 'test_password_123');
-
-			await page1.goto(`/game/${gameId}`);
-			await page2.goto(`/game/${gameId}`);
-			await page3.goto(`/game/${gameId}`);
-
-			// All should see the game board loaded
-			await waitForGameLoaded(page1);
-			await waitForGameLoaded(page2);
-			await waitForGameLoaded(page3);
+		await withGameSession(browser, credentials, gameId, async (pages) => {
+			const [page1, page2, page3] = pages;
 
 			// Phase bar should be visible for all
 			await expect(page1.locator('[data-testid="phase-deploy"]')).toBeVisible();
@@ -66,81 +60,35 @@ test.describe('Game Turn', () => {
 			await expect(page3.locator('[data-testid="phase-deploy"]')).toBeVisible();
 
 			// Exactly one player should see "Your turn"
-			const pages = [page1, page2, page3];
-			let activePlayerPage: typeof page1 | null = null;
-			const waitingPages: typeof pages = [];
+			const playerEntries = pages.map((page) => ({ page }));
+			const { active, others } = await findActivePlayer(playerEntries);
 
-			for (const p of pages) {
-				const indicator = p.locator('[data-testid="turn-indicator"]');
-				const text = await indicator.textContent({ timeout: 5_000 });
-				if (text?.includes('Your turn')) {
-					activePlayerPage = p;
-				} else {
-					waitingPages.push(p);
-				}
-			}
-
-			expect(activePlayerPage).not.toBeNull();
-			expect(waitingPages.length).toBe(2);
+			expect(active).toBeDefined();
+			expect(others.length).toBe(2);
 
 			// Waiting players should see "Waiting for"
-			for (const p of waitingPages) {
-				await expect(p.locator('[data-testid="turn-indicator"]')).toContainText('Waiting for');
+			for (const p of others) {
+				await expect(p.page.locator('[data-testid="turn-indicator"]')).toContainText(
+					'Waiting for'
+				);
 			}
-		} finally {
-			await ctx1.close();
-			await ctx2.close();
-			await ctx3.close();
-		}
+		});
 	});
 
 	test('active player can complete a full deploy → skip attack → end turn cycle', async ({
 		browser
 	}) => {
-		const ctx1 = await browser.newContext();
-		const ctx2 = await browser.newContext();
-		const ctx3 = await browser.newContext();
+		const credentials = [
+			{ email: player1.email, password: TEST_PASSWORD },
+			{ email: player2.email, password: TEST_PASSWORD },
+			{ email: player3.email, password: TEST_PASSWORD }
+		];
 
-		const page1 = await ctx1.newPage();
-		const page2 = await ctx2.newPage();
-		const page3 = await ctx3.newPage();
-
-		try {
-			// Sign in all players
-			await authenticateContext(page1, player1.email, 'test_password_123');
-			await authenticateContext(page2, player2.email, 'test_password_123');
-			await authenticateContext(page3, player3.email, 'test_password_123');
-
-			// Navigate to game
-			await page1.goto(`/game/${gameId}`);
-			await page2.goto(`/game/${gameId}`);
-			await page3.goto(`/game/${gameId}`);
-
-			await waitForGameLoaded(page1);
-			await waitForGameLoaded(page2);
-			await waitForGameLoaded(page3);
-
+		await withGameSession(browser, credentials, gameId, async (pages) => {
 			// Find which player has the turn
-			const players = [
-				{ page: page1, info: player1 },
-				{ page: page2, info: player2 },
-				{ page: page3, info: player3 }
-			];
-
-			let activePlayer: (typeof players)[0] | null = null;
-
-			for (const p of players) {
-				const text = await p.page
-					.locator('[data-testid="turn-indicator"]')
-					.textContent({ timeout: 5_000 });
-				if (text?.includes('Your turn')) {
-					activePlayer = p;
-					break;
-				}
-			}
-
-			expect(activePlayer).not.toBeNull();
-			const activePage = activePlayer!.page;
+			const playerEntries = pages.map((page) => ({ page }));
+			const { active: activePlayer, others } = await findActivePlayer(playerEntries);
+			const activePage = activePlayer.page;
 
 			// Check if we're in cards phase (skip it if so)
 			const cardsBtn = activePage.locator('[data-testid="skip-cards-btn"]');
@@ -152,7 +100,6 @@ test.describe('Game Turn', () => {
 			await waitForPhase(activePage, 'deploy');
 
 			// Find an owned region (has the "clickable" class during deploy phase)
-			// Click the path element inside it to ensure we hit the right area
 			const ownedRegions = activePage.locator('g.region.clickable');
 			await ownedRegions.first().waitFor({ timeout: 5_000 });
 			const ownedCount = await ownedRegions.count();
@@ -172,7 +119,6 @@ test.describe('Game Turn', () => {
 			await deployBtn.click();
 
 			// Wait for deploy to complete and phase to advance
-			// After deploying all troops, the phase should auto-advance to attack
 			await expect(activePage.locator('[data-testid="skip-attack-btn"]').first()).toBeVisible({
 				timeout: 10_000
 			});
@@ -185,17 +131,15 @@ test.describe('Game Turn', () => {
 			await endTurn(activePage);
 
 			// After ending turn, another player should now have their turn
-			// The active player should see "Waiting for"
 			await expect(activePage.locator('[data-testid="turn-indicator"]')).toContainText(
 				'Waiting for',
 				{ timeout: 10_000 }
 			);
 
 			// One of the other players should see "Your turn"
-			const otherPages = players.filter((p) => p !== activePlayer).map((p) => p.page);
 			let newActiveFound = false;
-			for (const p of otherPages) {
-				const text = await p
+			for (const p of others) {
+				const text = await p.page
 					.locator('[data-testid="turn-indicator"]')
 					.textContent({ timeout: 5_000 });
 				if (text?.includes('Your turn')) {
@@ -204,10 +148,6 @@ test.describe('Game Turn', () => {
 				}
 			}
 			expect(newActiveFound).toBe(true);
-		} finally {
-			await ctx1.close();
-			await ctx2.close();
-			await ctx3.close();
-		}
+		});
 	});
 });

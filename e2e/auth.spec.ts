@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { createUser, authenticateContext } from './helpers/auth';
 import { resetState } from './helpers/api';
+import { TEST_PASSWORD } from './helpers/config';
 
 test.describe('Authentication', () => {
 	test.beforeEach(async () => {
@@ -19,11 +20,10 @@ test.describe('Authentication', () => {
 	test('sign in with valid credentials redirects to lobby', async ({ page }) => {
 		// Create user via API first
 		const email = `auth-test-${Date.now()}@test.com`;
-		const password = 'test_password_123';
-		await createUser(email, password);
+		await createUser(email, TEST_PASSWORD);
 
 		// Sign in via UI
-		await authenticateContext(page, email, password);
+		await authenticateContext(page, email, TEST_PASSWORD);
 
 		// Should be on lobby page
 		await expect(page).toHaveURL('/');
@@ -42,9 +42,8 @@ test.describe('Authentication', () => {
 	test('sign out redirects to sign in page', async ({ page }) => {
 		// Create and sign in
 		const email = `signout-test-${Date.now()}@test.com`;
-		const password = 'test_password_123';
-		await createUser(email, password);
-		await authenticateContext(page, email, password);
+		await createUser(email, TEST_PASSWORD);
+		await authenticateContext(page, email, TEST_PASSWORD);
 
 		// Sign out
 		await page.locator('[data-testid="signout-btn"]').click();

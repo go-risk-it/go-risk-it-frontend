@@ -41,11 +41,11 @@ export async function deployTroops(page: Page, regionId: string, troops: number)
 	await clickRegion(page, regionId);
 
 	// Set slider value
-	const slider = page.locator('[data-testid="deploy-slider"]');
+	const slider = page.locator('[data-testid="deploy-slider"]').first();
 	await slider.waitFor({ timeout: 5_000 });
 	await slider.fill(String(troops));
 
-	await page.locator('[data-testid="deploy-btn"]').click();
+	await page.locator('[data-testid="deploy-btn"]').first().click();
 }
 
 /**
@@ -64,22 +64,22 @@ export async function attackRegion(
 	await clickRegion(page, targetRegionId);
 
 	// Set attacking troops
-	const slider = page.locator('[data-testid="attack-slider"]');
+	const slider = page.locator('[data-testid="attack-slider"]').first();
 	await slider.waitFor({ timeout: 5_000 });
 	await slider.fill(String(troops));
 
-	await page.locator('[data-testid="attack-btn"]').click();
+	await page.locator('[data-testid="attack-btn"]').first().click();
 }
 
 /**
  * Move troops after conquering a region.
  */
 export async function conquerRegion(page: Page, troops: number): Promise<void> {
-	const slider = page.locator('[data-testid="conquer-slider"]');
+	const slider = page.locator('[data-testid="conquer-slider"]').first();
 	await slider.waitFor({ timeout: 5_000 });
 	await slider.fill(String(troops));
 
-	await page.locator('[data-testid="conquer-btn"]').click();
+	await page.locator('[data-testid="conquer-btn"]').first().click();
 }
 
 /**
@@ -108,4 +108,22 @@ export async function skipCards(page: Page): Promise<void> {
  */
 export async function waitForGameOver(page: Page): Promise<void> {
 	await page.locator('[data-testid="game-over-result"]').waitFor({ timeout: 30_000 });
+}
+
+/**
+ * Find which player has the active turn by checking the turn indicator.
+ * Returns the active player and the remaining others.
+ */
+export async function findActivePlayer<T extends { page: Page }>(
+	players: T[]
+): Promise<{ active: T; others: T[] }> {
+	for (const p of players) {
+		const text = await p.page
+			.locator('[data-testid="turn-indicator"]')
+			.textContent({ timeout: 10_000 });
+		if (text?.includes('Your turn')) {
+			return { active: p, others: players.filter((o) => o !== p) };
+		}
+	}
+	throw new Error('No active player found');
 }

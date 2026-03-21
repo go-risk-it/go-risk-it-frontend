@@ -72,3 +72,13 @@ export async function setupNearWinApi(jwt: string, gameId: number): Promise<void
 		body: JSON.stringify({ gameId })
 	});
 }
+
+/**
+ * Get lobby summary for the authenticated user.
+ */
+export async function getLobbySummaryApi(
+	jwt: string
+): Promise<{ owned: { id: number }[]; joined: { id: number }[] }> {
+	const res = await apiFetch(jwt, '/lobbies/summary');
+	return res.json();
+}
