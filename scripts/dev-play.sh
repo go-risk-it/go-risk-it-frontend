@@ -20,22 +20,25 @@ die() { echo -e "${RED}Error: $1${NC}" >&2; exit 1; }
 info() { echo -e "${GREEN}$1${NC}"; }
 warn() { echo -e "${YELLOW}$1${NC}"; }
 
-cleanup() {
-    if [[ -n "${DEV_PID:-}" ]]; then
-        kill "$DEV_PID" 2>/dev/null || true
-    fi
-}
-trap cleanup EXIT
+# ── 0. Clean teardown ──────────────────────────────────────────────
+
+info "Cleaning up previous state..."
+
+# Kill any running frontend dev server
+if lsof -ti:5173 > /dev/null 2>&1; then
+    warn "Killing existing frontend dev server on port 5173..."
+    lsof -ti:5173 | xargs kill 2>/dev/null || true
+    sleep 1
+fi
+
+# Tear down backend stack (recreates Supabase DB, clearing stale auth)
+"$SCRIPT_DIR/e2e-stack.sh" down 2>/dev/null || true
 
 # ── 1. Start backend stack ──────────────────────────────────────────
 
 start_backend() {
-    if curl -sf "$BACKEND_URL/status" > /dev/null 2>&1; then
-        info "Backend already running."
-    else
-        info "Starting backend stack..."
-        "$SCRIPT_DIR/e2e-stack.sh" up
-    fi
+    info "Starting backend stack..."
+    "$SCRIPT_DIR/e2e-stack.sh" up
 }
 
 # ── 2. Start frontend dev server ────────────────────────────────────
@@ -48,8 +51,9 @@ start_frontend() {
 
     info "Starting frontend dev server..."
     cd "$FRONTEND_DIR"
-    npm run dev -- --host 2>/dev/null &
+    npm run dev -- --host > /dev/null 2>&1 &
     DEV_PID=$!
+    disown "$DEV_PID"
 
     printf "Waiting for frontend"
     for i in $(seq 1 30); do
@@ -142,24 +146,18 @@ echo -e "${BOLD}═════════════════════�
 echo -e "${BOLD}  Game ready!${NC}"
 echo -e "${BOLD}════════════════════════════════════════════════════${NC}"
 echo ""
-echo -e "  ${CYAN}URL:${NC}  http://localhost:5173/game/$GAME_ID"
+echo -e "  ${CYAN}How to play:${NC}"
+echo -e "    1. Open 3 incognito windows"
+echo -e "    2. In each, go to: ${BOLD}http://localhost:5173/auth/signin${NC}"
+echo -e "    3. Sign in as Alice / Bob / Charlie (credentials below)"
+echo -e "    4. Navigate to: ${BOLD}http://localhost:5173/game/$GAME_ID${NC}"
 echo ""
 echo -e "  ${CYAN}Players:${NC}"
 echo -e "    Alice    ${PLAYER1_EMAIL}  /  ${PASSWORD}"
 echo -e "    Bob      ${PLAYER2_EMAIL}  /  ${PASSWORD}"
 echo -e "    Charlie  ${PLAYER3_EMAIL}  /  ${PASSWORD}"
 echo ""
+echo -e "  ${CYAN}To stop:${NC}"
+echo -e "    npm run e2e:down && kill ${DEV_PID:-<frontend-pid>} 2>/dev/null"
+echo ""
 echo -e "${BOLD}════════════════════════════════════════════════════${NC}"
-echo ""
-echo -e "  Open 3 browser windows (or incognito tabs),"
-echo -e "  sign in as each player, and navigate to the URL above."
-echo ""
-echo -e "  Press ${BOLD}Ctrl+C${NC} to stop the dev server."
-echo ""
-
-# Keep alive until Ctrl+C
-if [[ -n "${DEV_PID:-}" ]]; then
-    wait "$DEV_PID"
-else
-    info "Dev server was already running — script complete."
-fi
