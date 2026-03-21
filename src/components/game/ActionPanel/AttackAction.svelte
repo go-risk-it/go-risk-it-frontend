@@ -133,22 +133,20 @@
 				}
 
 				// Check if we entered conquer phase (territory was captured)
-				if (gameState.phaseType === 'conquer') {
+				if (conquerState) {
 					// Auto-conquer with minimum troops
-					if (conquerState) {
-						try {
-							await conquerApi(gameState.id, { troops: conquerState.minTroopsToMove });
-						} catch {
-							break;
-						}
-						// Wait for board state to reflect the conquer
-						await onNextBoardState();
-
-						// After conquer, we may return to attack phase.
-						// Wait for the game state to settle — another board state update may come
-						// The conquered territory is now ours; check if we should continue
-						await onNextBoardState();
+					try {
+						await conquerApi(gameState.id, { troops: conquerState.minTroopsToMove });
+					} catch {
+						break;
 					}
+					// Wait for board state to reflect the conquer
+					await onNextBoardState();
+
+					// After conquer, we may return to attack phase.
+					// Wait for the game state to settle — another board state update may come
+					// The conquered territory is now ours; check if we should continue
+					await onNextBoardState();
 					break; // Stop blitz after conquest — territory is taken
 				}
 			}
@@ -183,7 +181,9 @@
 		<!-- Blitz in progress -->
 		<div class="space-y-3">
 			<div class="flex items-center gap-2">
-				<div class="h-3 w-3 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+				<div
+					class="h-3 w-3 animate-spin rounded-full border-2 border-red-400 border-t-transparent"
+				></div>
 				<span class="text-sm font-semibold text-red-400">Blitz in progress...</span>
 			</div>
 			<div class="flex gap-4 text-xs">
@@ -212,9 +212,7 @@
 			<p class="text-sm text-gray-500">
 				<span class="text-xs text-gray-400">Step 2:</span> Click enemy to attack
 			</p>
-			<p class="text-xs text-gray-600">
-				Hold Shift for custom troop count
-			</p>
+			<p class="text-xs text-gray-600">Hold Shift for custom troop count</p>
 			<button
 				onclick={() => moveState.setAttackSource('')}
 				class="cursor-pointer text-xs text-gray-500 underline hover:text-gray-300"

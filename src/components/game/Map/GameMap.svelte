@@ -20,7 +20,10 @@
 		selectedRegionId: string | null;
 		validTargetIds: Set<string>;
 		continentBorderRegions: Set<string>;
-		controlledContinents: Map<string, { ownerId: string; bonusTroops: number; continentName: string }>;
+		controlledContinents: Map<
+			string,
+			{ ownerId: string; bonusTroops: number; continentName: string }
+		>;
 		currentPhase: PhaseType | null;
 		sourceRegionId: string | null;
 		targetRegionId: string | null;
@@ -255,11 +258,7 @@
 						repeatCount="indefinite"
 					/>
 				</line>
-				<polygon
-					points={reinforcePath.arrowPoints}
-					fill="#4ade80"
-					opacity="0.7"
-				/>
+				<polygon points={reinforcePath.arrowPoints} fill="#4ade80" opacity="0.7" />
 			</g>
 		{/if}
 	</svg>
