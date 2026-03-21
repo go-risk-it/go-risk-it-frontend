@@ -61,7 +61,7 @@ export function createMoveState() {
 	function startPhase(phaseType: PhaseType) {
 		switch (phaseType) {
 			case 'deploy':
-				interaction = { phase: 'deploy', regionId: null, troops: 0 };
+				interaction = { phase: 'deploy', regionId: null, troops: 1 };
 				break;
 			case 'attack':
 				interaction = {
@@ -80,7 +80,7 @@ export function createMoveState() {
 					phase: 'reinforce',
 					sourceRegionId: null,
 					targetRegionId: null,
-					movingTroops: 0
+					movingTroops: 1
 				};
 				break;
 			case 'cards':
@@ -161,7 +161,7 @@ export function createMoveState() {
 				...interaction,
 				sourceRegionId: regionId,
 				targetRegionId: null,
-				movingTroops: 0
+				movingTroops: 1
 			};
 		}
 	}

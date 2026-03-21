@@ -5,6 +5,7 @@
 	 * notifications, sound, phase transitions, and game-over detection. Delegates rendering
 	 * to GameMap, StatusBar, ActionPanel, and overlay components.
 	 */
+	import { untrack } from 'svelte';
 	import GameMap from './Map/GameMap.svelte';
 	import PhaseBar from './PhaseBar.svelte';
 	import StatusBar from './StatusBar/StatusBar.svelte';
@@ -85,17 +86,23 @@
 				moveState.setLastConqueredRegionId(game.conquerState.defendingRegionId);
 			}
 
-			// Auto-select conquered territory when returning to attack phase
-			if (phaseType === 'attack' && moveState.lastConqueredRegionId) {
-				const conqueredRegion = game.regionMap.get(moveState.lastConqueredRegionId);
-				if (
-					conqueredRegion &&
-					conqueredRegion.ownerId === auth.user?.id &&
-					conqueredRegion.troops > 1
-				) {
-					moveState.setAttackSource(moveState.lastConqueredRegionId);
+			// Auto-select conquered territory when returning to attack phase.
+			// Use untrack to avoid re-subscribing: clearing lastConqueredRegionId
+			// would otherwise re-trigger the effect and call startPhase again,
+			// wiping the source we just set.
+			if (phaseType === 'attack') {
+				const lastConquered = untrack(() => moveState.lastConqueredRegionId);
+				if (lastConquered) {
+					const conqueredRegion = game.regionMap.get(lastConquered);
+					if (
+						conqueredRegion &&
+						conqueredRegion.ownerId === auth.user?.id &&
+						conqueredRegion.troops > 1
+					) {
+						moveState.setAttackSource(lastConquered);
+					}
+					moveState.clearLastConqueredRegionId();
 				}
-				moveState.clearLastConqueredRegionId();
 			}
 		} else {
 			moveState.reset();
@@ -309,6 +316,7 @@
 			case 'deploy':
 				if (region.ownerId === auth.user?.id) {
 					moveState.setDeployRegion(regionId);
+					moveState.setDeployTroops(game.deployableTroops);
 				}
 				break;
 
@@ -324,8 +332,12 @@
 						// Shift+click: start blitz immediately
 						moveState.requestBlitz(regionId);
 					} else {
-						// Normal click: select target and show attack panel
+						// Normal click: select target and default to max troops
 						moveState.setAttackTarget(regionId);
+						const src = game.regionMap.get(interaction.sourceRegionId!);
+						if (src) {
+							moveState.setAttackingTroops(Math.min(src.troops - 1, 3));
+						}
 					}
 				} else if (region.ownerId === auth.user?.id && region.troops > 1) {
 					// Re-select source
@@ -341,6 +353,10 @@
 					}
 				} else if (validTargetIds.has(regionId)) {
 					moveState.setReinforceTarget(regionId);
+					const src = game.regionMap.get(interaction.sourceRegionId!);
+					if (src) {
+						moveState.setReinforceTroops(src.troops - 1);
+					}
 				} else if (region.ownerId === auth.user?.id && region.troops > 1) {
 					moveState.setReinforceSource(regionId);
 				}

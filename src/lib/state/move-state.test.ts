@@ -11,7 +11,7 @@ describe('createMoveState', () => {
 		it('deploy: sets correct initial values', () => {
 			const state = createMoveState();
 			state.startPhase('deploy');
-			expect(state.interaction).toEqual({ phase: 'deploy', regionId: null, troops: 0 });
+			expect(state.interaction).toEqual({ phase: 'deploy', regionId: null, troops: 1 });
 		});
 
 		it('attack: sets correct initial values', () => {
@@ -39,7 +39,7 @@ describe('createMoveState', () => {
 				phase: 'reinforce',
 				sourceRegionId: null,
 				targetRegionId: null,
-				movingTroops: 0
+				movingTroops: 1
 			});
 		});
 
@@ -93,7 +93,7 @@ describe('createMoveState', () => {
 			const state = createMoveState();
 			state.startPhase('deploy');
 			state.setDeployRegion('r1');
-			expect(state.interaction).toEqual({ phase: 'deploy', regionId: 'r1', troops: 0 });
+			expect(state.interaction).toEqual({ phase: 'deploy', regionId: 'r1', troops: 1 });
 		});
 
 		it('setDeployTroops updates troops', () => {
@@ -160,7 +160,7 @@ describe('createMoveState', () => {
 				phase: 'reinforce',
 				sourceRegionId: 'r3',
 				targetRegionId: null,
-				movingTroops: 0
+				movingTroops: 1
 			});
 		});
 
