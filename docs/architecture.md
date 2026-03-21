@@ -205,6 +205,17 @@ Sound effects are synthesized at runtime using the **Web Audio API** — no audi
 - **Events**: Different game events (attack, conquer, deploy, card trade, victory) trigger distinct tone patterns
 - **Lightweight**: Zero audio assets in the bundle — all sounds are generated programmatically
 
+## Move History Encoding
+
+Move history payloads from the backend arrive with `move` and `result` fields encoded as **base64 JSON strings**. The `game-state` module decodes these before storing:
+
+```
+Backend sends:  { "move": "eyJyZWdpb25JZCI6InIxIn0=", "result": "eyJzdWNjZXNzIjp0cnVlfQ==" }
+Frontend stores: { "move": { "regionId": "r1" }, "result": { "success": true } }
+```
+
+This encoding is a backend contract — the raw `move` and `result` values are opaque base64 strings on the wire. Malformed payloads are logged and skipped rather than crashing the message handler.
+
 ## Auth Flow
 
 Authentication uses [Supabase](https://supabase.com/) (GoTrue) with JWT tokens:

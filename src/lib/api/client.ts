@@ -102,7 +102,7 @@ async function request<T>(
 		if (err instanceof DOMException && err.name === 'AbortError') {
 			throw new ApiError(0, 'Request timed out');
 		}
-		throw err;
+		throw new ApiError(0, err instanceof Error ? err.message : 'Unknown error');
 	} finally {
 		clearTimeout(timeoutId);
 	}

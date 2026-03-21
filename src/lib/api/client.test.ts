@@ -181,9 +181,11 @@ describe('api client', () => {
 		});
 	});
 
-	it('re-throws non-ApiError exceptions', async () => {
-		const original = new TypeError('Failed to fetch');
-		globalThis.fetch = vi.fn().mockRejectedValue(original);
-		await expect(api.get('/test')).rejects.toBe(original);
+	it('wraps non-ApiError exceptions into ApiError', async () => {
+		globalThis.fetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));
+		await expect(api.get('/test')).rejects.toMatchObject({
+			status: 0,
+			message: 'Failed to fetch'
+		});
 	});
 });

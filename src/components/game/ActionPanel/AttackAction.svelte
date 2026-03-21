@@ -127,7 +127,11 @@
 				}
 
 				// Wait for board state update from WebSocket
-				await onNextBoardState();
+				try {
+					await onNextBoardState();
+				} catch {
+					break; // Timed out waiting for board state, stop blitz
+				}
 
 				// Read updated state and compute casualties
 				const newSrc = regionMap.get(srcId);
@@ -150,12 +154,20 @@
 						break;
 					}
 					// Wait for board state to reflect the conquer
-					await onNextBoardState();
+					try {
+						await onNextBoardState();
+					} catch {
+						break;
+					}
 
 					// After conquer, we may return to attack phase.
 					// Wait for the game state to settle — another board state update may come
 					// The conquered territory is now ours; check if we should continue
-					await onNextBoardState();
+					try {
+						await onNextBoardState();
+					} catch {
+						break;
+					}
 					break; // Stop blitz after conquest — territory is taken
 				}
 			}

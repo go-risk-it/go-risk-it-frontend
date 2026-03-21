@@ -115,11 +115,18 @@ export function createGameState() {
 			case 'moveHistory': {
 				const data = msg.data;
 				// Move payloads arrive base64-encoded JSON; decode before storing
-				const decoded: MovePerformed[] = data.moves.map((m) => ({
-					...m,
-					move: JSON.parse(atob(m.move)),
-					result: JSON.parse(atob(m.result))
-				}));
+				const decoded: MovePerformed[] = [];
+				for (const m of data.moves) {
+					try {
+						decoded.push({
+							...m,
+							move: JSON.parse(atob(m.move)),
+							result: JSON.parse(atob(m.result))
+						});
+					} catch (err) {
+						console.error('Failed to decode move payload, skipping:', err);
+					}
+				}
 				// Dedup by created timestamp to handle reconnect resends
 				const existing = new Set(moveHistory.moves.map((m) => m.created));
 				const newMoves = decoded.filter((m) => !existing.has(m.created));
@@ -132,10 +139,21 @@ export function createGameState() {
 	/**
 	 * Returns a promise that resolves on the next board state WebSocket update.
 	 * Used by blitz mode to synchronize attacks with server state.
+	 * Rejects after timeoutMs to prevent hanging if the WebSocket disconnects.
 	 */
-	function onNextBoardState(): Promise<void> {
-		return new Promise((resolve) => {
-			boardStateListeners.push(resolve);
+	function onNextBoardState(timeoutMs = 10_000): Promise<void> {
+		return new Promise((resolve, reject) => {
+			const timer = setTimeout(() => {
+				// Remove this listener since we're rejecting
+				boardStateListeners = boardStateListeners.filter((cb) => cb !== listener);
+				reject(new Error('Timed out waiting for board state update'));
+			}, timeoutMs);
+
+			const listener = () => {
+				clearTimeout(timer);
+				resolve();
+			};
+			boardStateListeners.push(listener);
 		});
 	}
 
