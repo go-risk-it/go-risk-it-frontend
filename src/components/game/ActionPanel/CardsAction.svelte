@@ -251,7 +251,7 @@
 								+{reward} troops
 							</span>
 						{/if}
-						{#each bonuses as regionId}
+						{#each bonuses as regionId (regionId)}
 							<span class="rounded bg-green-900/30 px-1.5 py-0.5 text-xs text-green-400">
 								+2 to {formatRegionName(regionId)}
 							</span>
