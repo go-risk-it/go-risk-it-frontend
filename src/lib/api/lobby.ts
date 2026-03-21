@@ -4,13 +4,19 @@
  * validated at runtime with type guard functions before being returned.
  */
 import { api } from './client';
-import type { LobbySummary, GameSummary, GamesSummaryResponse } from '$lib/types/lobby';
+import type { LobbiesSummaryResponse, GameSummary, GamesSummaryResponse } from '$lib/types/lobby';
 
-/** Runtime type guard ensuring the response is an array of lobby summaries. */
-function isLobbySummaryArray(data: unknown): data is LobbySummary[] {
+/** Runtime type guard ensuring the response has owned/joined/joinable arrays. */
+function isLobbiesSummaryResponse(data: unknown): data is LobbiesSummaryResponse {
 	return (
-		Array.isArray(data) &&
-		data.every((d) => typeof d === 'object' && d !== null && 'id' in d && 'participants' in d)
+		typeof data === 'object' &&
+		data !== null &&
+		'owned' in data &&
+		'joined' in data &&
+		'joinable' in data &&
+		Array.isArray((data as LobbiesSummaryResponse).owned) &&
+		Array.isArray((data as LobbiesSummaryResponse).joined) &&
+		Array.isArray((data as LobbiesSummaryResponse).joinable)
 	);
 }
 
@@ -29,8 +35,8 @@ function isGamesSummaryResponse(data: unknown): data is GamesSummaryResponse {
  * each entry has at minimum an `id` and `participants` field.
  * @throws {ApiError} On network/auth/server errors
  */
-export function getLobbies(): Promise<LobbySummary[]> {
-	return api.get<LobbySummary[]>('/lobbies/summary', isLobbySummaryArray);
+export function getLobbies(): Promise<LobbiesSummaryResponse> {
+	return api.get<LobbiesSummaryResponse>('/lobbies/summary', isLobbiesSummaryResponse);
 }
 
 /**
