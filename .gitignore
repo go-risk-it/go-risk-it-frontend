@@ -140,6 +140,7 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+build/
 
 ### react ###
 .DS_*
@@ -510,3 +511,7 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/react,node,vs
 
 .idea
+
+# Playwright
+test-results/
+playwright-report/

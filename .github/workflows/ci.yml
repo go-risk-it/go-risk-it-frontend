@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_SUPABASE_URL: http://localhost:8000
+      PUBLIC_SUPABASE_ANON_KEY: dummy
+      PUBLIC_API_URL: http://localhost:8080/api/v1
+      PUBLIC_WS_URL: ws://localhost:8080/ws
+      PUBLIC_GOOGLE_OAUTH_CLIENT_ID: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check
+      - run: npm run format:check
+      - run: npm run test
+      - run: npm run build
