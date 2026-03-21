@@ -127,8 +127,8 @@ test.describe('Game Complete', () => {
 			await waitForPhase(activePage, 'attack');
 
 			// Attack eastern_australia from western_australia repeatedly until conquer.
-			// The board-improvements branch uses instant click-to-attack:
-			// click source, then click enemy target to attack immediately (no slider/button).
+			// Normal click selects the target and shows the attack panel;
+			// then click the Attack button to execute the attack.
 			const MAX_ATTACK_ATTEMPTS = 20;
 			let conquered = false;
 
@@ -145,8 +145,13 @@ test.describe('Game Complete', () => {
 					.catch(() => false);
 				if (!hasTargets) break;
 
-				// Click target: triggers instant attack (no Shift = max troops)
+				// Click target: selects it and shows attack panel
 				await clickRegion(activePage, 'eastern_australia');
+
+				// Click the Attack button to execute the attack
+				const attackBtn = activePage.locator('[data-testid="attack-btn"]');
+				await attackBtn.waitFor({ timeout: 3_000 });
+				await attackBtn.click();
 
 				// Wait for result — either conquer panel or game over or still in attack
 				const conquerSlider = activePage.locator('[data-testid="conquer-slider"]').first();

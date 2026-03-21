@@ -26,6 +26,7 @@ export type MoveInteraction =
 			sourceRegionId: string | null;
 			targetRegionId: string | null;
 			attackingTroops: number;
+			blitzRequested: boolean;
 	  }
 	| { phase: 'conquer'; troops: number }
 	| {
@@ -67,7 +68,8 @@ export function createMoveState() {
 					phase: 'attack',
 					sourceRegionId: null,
 					targetRegionId: null,
-					attackingTroops: 1
+					attackingTroops: 1,
+					blitzRequested: false
 				};
 				break;
 			case 'conquer':
@@ -111,14 +113,28 @@ export function createMoveState() {
 				...interaction,
 				sourceRegionId: regionId,
 				targetRegionId: null,
-				attackingTroops: 1
+				attackingTroops: 1,
+				blitzRequested: false
 			};
 		}
 	}
 
 	function setAttackTarget(regionId: string) {
 		if (interaction.phase === 'attack') {
-			interaction = { ...interaction, targetRegionId: regionId };
+			interaction = { ...interaction, targetRegionId: regionId, blitzRequested: false };
+		}
+	}
+
+	/** Set the attack target and request an immediate blitz. */
+	function requestBlitz(regionId: string) {
+		if (interaction.phase === 'attack') {
+			interaction = { ...interaction, targetRegionId: regionId, blitzRequested: true };
+		}
+	}
+
+	function clearBlitzRequested() {
+		if (interaction.phase === 'attack') {
+			interaction = { ...interaction, blitzRequested: false };
 		}
 	}
 
@@ -213,6 +229,8 @@ export function createMoveState() {
 		setDeployTroops,
 		setAttackSource,
 		setAttackTarget,
+		requestBlitz,
+		clearBlitzRequested,
 		setAttackingTroops,
 		setConquerTroops,
 		setReinforceSource,

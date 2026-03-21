@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isValidCombination, isCardSelectable } from './cards';
+import { isValidCombination, isCardSelectable, getCombinationReward, getRegionBonuses } from './cards';
 import type { Card } from '$lib/types/game';
 
 function card(id: number, type: Card['type']): Card {
@@ -110,5 +110,68 @@ describe('isCardSelectable', () => {
 		// Cards 1,2,3 are in existing combo, only card 4 (infantry) left + new card
 		const cardsWithExtra = [...allCards, card(6, 'infantry'), card(7, 'infantry')];
 		expect(isCardSelectable(card(4, 'infantry'), [], cardsWithExtra, [1, 2, 3])).toBe(true);
+	});
+});
+
+describe('getCombinationReward', () => {
+	it('returns 4 for 3 artillery', () => {
+		expect(
+			getCombinationReward([card(1, 'artillery'), card(2, 'artillery'), card(3, 'artillery')])
+		).toBe(4);
+	});
+
+	it('returns 6 for 3 infantry', () => {
+		expect(
+			getCombinationReward([card(1, 'infantry'), card(2, 'infantry'), card(3, 'infantry')])
+		).toBe(6);
+	});
+
+	it('returns 8 for 3 cavalry', () => {
+		expect(
+			getCombinationReward([card(1, 'cavalry'), card(2, 'cavalry'), card(3, 'cavalry')])
+		).toBe(8);
+	});
+
+	it('returns 10 for 1 of each', () => {
+		expect(
+			getCombinationReward([card(1, 'artillery'), card(2, 'infantry'), card(3, 'cavalry')])
+		).toBe(10);
+	});
+
+	it('returns 12 for jolly + 2 same', () => {
+		expect(
+			getCombinationReward([card(1, 'jolly'), card(2, 'cavalry'), card(3, 'cavalry')])
+		).toBe(12);
+	});
+
+	it('returns null for invalid combination', () => {
+		expect(
+			getCombinationReward([card(1, 'artillery'), card(2, 'artillery'), card(3, 'infantry')])
+		).toBeNull();
+	});
+
+	it('returns null for wrong card count', () => {
+		expect(getCombinationReward([card(1, 'artillery'), card(2, 'artillery')])).toBeNull();
+	});
+});
+
+describe('getRegionBonuses', () => {
+	it('returns regions owned by the player', () => {
+		const cards = [card(1, 'artillery'), card(2, 'infantry'), card(3, 'cavalry')];
+		const owned = new Set(['r1', 'r3']);
+		expect(getRegionBonuses(cards, owned)).toEqual(['r1', 'r3']);
+	});
+
+	it('returns empty when no regions are owned', () => {
+		const cards = [card(1, 'artillery'), card(2, 'infantry'), card(3, 'cavalry')];
+		const owned = new Set(['r99']);
+		expect(getRegionBonuses(cards, owned)).toEqual([]);
+	});
+
+	it('skips jolly cards (empty region)', () => {
+		const jolly: Card = { id: 10, type: 'jolly', region: '' };
+		const cards = [jolly, card(2, 'infantry'), card(3, 'cavalry')];
+		const owned = new Set(['', 'r2', 'r3']);
+		expect(getRegionBonuses(cards, owned)).toEqual(['r2', 'r3']);
 	});
 });

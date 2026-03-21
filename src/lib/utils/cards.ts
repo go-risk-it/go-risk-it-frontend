@@ -125,3 +125,42 @@ export function isValidCombination(cards: Card[]): boolean {
 	const total = cards.reduce((sum, c) => sum + getCardValue(c), 0);
 	return VALID_COMBINATIONS.includes(total);
 }
+
+/**
+ * Reward lookup: maps a valid 3-card combination to its troop bonus.
+ * Returns null if the cards don't form a valid combination.
+ */
+export function getCombinationReward(cards: Card[]): number | null {
+	if (cards.length !== 3) return null;
+	const total = cards.reduce((sum, c) => sum + getCardValue(c), 0);
+
+	switch (total) {
+		case 3 * CARD_VALUES.artillery:
+			return 4; // 3 artillery
+		case 3 * CARD_VALUES.infantry:
+			return 6; // 3 infantry
+		case 3 * CARD_VALUES.cavalry:
+			return 8; // 3 cavalry
+		case CARD_VALUES.artillery + CARD_VALUES.infantry + CARD_VALUES.cavalry:
+			return 10; // 1 of each
+		case CARD_VALUES.jolly + 2 * CARD_VALUES.artillery:
+		case CARD_VALUES.jolly + 2 * CARD_VALUES.infantry:
+		case CARD_VALUES.jolly + 2 * CARD_VALUES.cavalry:
+			return 12; // jolly + 2 same
+		default:
+			return null;
+	}
+}
+
+/**
+ * Identify region bonuses for a card combination: +2 troops for each card
+ * depicting a region owned by the player.
+ * @param cards - The 3 cards in the combination
+ * @param ownedRegionIds - Set of region IDs owned by the current player
+ * @returns Array of region names that grant a +2 bonus
+ */
+export function getRegionBonuses(cards: Card[], ownedRegionIds: Set<string>): string[] {
+	return cards
+		.filter((c) => c.region && ownedRegionIds.has(c.region))
+		.map((c) => c.region);
+}

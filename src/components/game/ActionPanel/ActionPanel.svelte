@@ -20,6 +20,7 @@
 		regionMap: Map<string, Region>;
 		deployableTroops: number;
 		conquerState: ConquerPhaseState | null;
+		myUserId: string | null;
 		moveState: ReturnType<typeof createMoveState>;
 		onNextBoardState: () => Promise<void>;
 	}
@@ -31,6 +32,7 @@
 		regionMap,
 		deployableTroops,
 		conquerState,
+		myUserId,
 		moveState,
 		onNextBoardState
 	}: Props = $props();
@@ -56,6 +58,7 @@
 				sourceRegionId: string | null;
 				targetRegionId: string | null;
 				attackingTroops: number;
+				blitzRequested: boolean;
 			}}
 			{moveState}
 			{conquerState}
@@ -85,6 +88,8 @@
 		<CardsAction
 			{cardState}
 			{gameState}
+			{regionMap}
+			{myUserId}
 			interaction={interaction as {
 				phase: 'cards';
 				selectedCardIds: number[];

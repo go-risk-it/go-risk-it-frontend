@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
-	 * Attack phase action panel with instant click-to-attack and optional blitz mode.
-	 * Step 1: select source, Step 2: click enemy to attack (or Shift+click for slider).
+	 * Attack phase action panel with deliberate 3-step flow: pick source, pick target, confirm.
+	 * Shift+click on the map triggers an immediate blitz via the blitzRequested flag.
 	 * Blitz mode repeats attacks until one side is depleted, handling conquests mid-blitz.
 	 */
 	import type { Region, GameState, ConquerPhaseState } from '$lib/types/game';
@@ -21,6 +21,7 @@
 			sourceRegionId: string | null;
 			targetRegionId: string | null;
 			attackingTroops: number;
+			blitzRequested: boolean;
 		};
 		moveState: ReturnType<typeof createMoveState>;
 		conquerState: ConquerPhaseState | null;
@@ -40,7 +41,7 @@
 	);
 	const maxAttackingTroops = $derived(Math.min((sourceRegion?.troops ?? 1) - 1, 3));
 
-	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm attack (Shift+click)
+	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm attack
 	const currentStep = $derived.by(() => {
 		if (!interaction.sourceRegionId) return 1;
 		if (!interaction.targetRegionId) return 2;
@@ -50,6 +51,14 @@
 	// Blitz state
 	let blitzActive = $state(false);
 	let blitzCasualties = $state({ attacker: 0, defender: 0 });
+
+	// Auto-trigger blitz when requested from GameBoard (Shift+click)
+	$effect(() => {
+		if (interaction.blitzRequested && interaction.sourceRegionId && interaction.targetRegionId) {
+			moveState.clearBlitzRequested();
+			handleBlitz();
+		}
+	});
 
 	/**
 	 * Submits the attack move. Keeps source selected for chaining.
@@ -210,9 +219,9 @@
 				>
 			</div>
 			<p class="text-sm text-gray-500">
-				<span class="text-xs text-gray-400">Step 2:</span> Click enemy to attack
+				<span class="text-xs text-gray-400">Step 2:</span> Click enemy to select target
 			</p>
-			<p class="text-xs text-gray-600">Hold Shift for custom troop count</p>
+			<p class="text-xs text-gray-600">Shift+Click to blitz</p>
 			<button
 				onclick={() => moveState.setAttackSource('')}
 				class="cursor-pointer text-xs text-gray-500 underline hover:text-gray-300"

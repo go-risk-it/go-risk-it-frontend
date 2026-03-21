@@ -18,11 +18,9 @@
 	import { getAuth } from '$lib/state/auth.svelte';
 	import { buildPlayerColorMap } from '$lib/utils/colors';
 	import { Graph } from '$lib/utils/graph';
-	import { attack as attackApi } from '$lib/api/moves';
 	import {
 		playTurnStart,
 		playConquer,
-		playAttack,
 		playVictory,
 		playDefeat,
 		audio
@@ -294,37 +292,11 @@
 	}
 
 	/**
-	 * Executes an instant attack with max troops (min(sourceTroops - 1, 3)).
-	 * Used by click-click-go when no Shift is held.
-	 */
-	async function executeInstantAttack(sourceRegionId: string, targetRegionId: string) {
-		const source = game.regionMap.get(sourceRegionId);
-		const target = game.regionMap.get(targetRegionId);
-		if (!source || !target || !game.gameState) return;
-
-		const attackingTroops = Math.min(source.troops - 1, 3);
-		try {
-			await attackApi(game.gameState.id, {
-				sourceRegionId,
-				targetRegionId,
-				troopsInSource: source.troops,
-				troopsInTarget: target.troops,
-				attackingTroops
-			});
-			playAttack();
-			// Keep source selected for chaining
-			moveState.setAttackSource(sourceRegionId);
-		} catch {
-			// Errors are handled by the action panel if user retries manually
-		}
-	}
-
-	/**
 	 * Handles map region clicks by dispatching to the appropriate move-state
 	 * action based on the current phase. In attack/reinforce, implements a
 	 * two-step source-then-target selection with re-selection support.
-	 * In attack phase, clicking a valid target instantly attacks with max troops
-	 * unless Shift is held (which shows the troop slider).
+	 * Normal click on a valid target selects it and shows the attack panel.
+	 * Shift+click on a valid target triggers an immediate blitz.
 	 */
 	function handleRegionClick(regionId: string, event: MouseEvent | KeyboardEvent) {
 		if (!game.isMyTurn || !game.boardState) return;
@@ -349,11 +321,11 @@
 				} else if (validTargetIds.has(regionId)) {
 					// Valid target clicked
 					if (event.shiftKey) {
-						// Shift+click: show slider for custom troop count
-						moveState.setAttackTarget(regionId);
+						// Shift+click: start blitz immediately
+						moveState.requestBlitz(regionId);
 					} else {
-						// Instant attack with max troops
-						executeInstantAttack(interaction.sourceRegionId, regionId);
+						// Normal click: select target and show attack panel
+						moveState.setAttackTarget(regionId);
 					}
 				} else if (region.ownerId === auth.user?.id && region.troops > 1) {
 					// Re-select source
@@ -501,6 +473,7 @@
 					regionMap={game.regionMap}
 					deployableTroops={game.deployableTroops}
 					conquerState={game.conquerState}
+					myUserId={auth.user?.id ?? null}
 					{moveState}
 					onNextBoardState={game.onNextBoardState}
 				/>

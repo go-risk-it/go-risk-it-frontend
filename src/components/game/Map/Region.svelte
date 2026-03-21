@@ -160,29 +160,29 @@
 	{#if hovered && center.x !== 0}
 		<g class="tooltip" pointer-events="none">
 			{#if showComparison}
-				<!-- Troop comparison tooltip for attack targets -->
+				<!-- Attack target tooltip: action hint + troop comparison -->
 				<rect
 					x={center.x - 55}
-					y={center.y - 34}
+					y={center.y - 42}
 					width="110"
-					height="28"
+					height="36"
 					rx="4"
 					fill="rgba(0,0,0,0.9)"
 				/>
 				<text
 					x={center.x}
-					y={center.y - 25}
+					y={center.y - 33}
 					text-anchor="middle"
 					dominant-baseline="central"
 					fill="white"
 					font-size="7"
 					font-family="Inter, sans-serif"
 				>
-					{regionName}
+					Click to attack · Shift to blitz
 				</text>
 				<text
 					x={center.x}
-					y={center.y - 14}
+					y={center.y - 22}
 					text-anchor="middle"
 					dominant-baseline="central"
 					fill="#fbbf24"

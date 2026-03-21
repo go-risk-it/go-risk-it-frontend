@@ -21,7 +21,8 @@ describe('createMoveState', () => {
 				phase: 'attack',
 				sourceRegionId: null,
 				targetRegionId: null,
-				attackingTroops: 1
+				attackingTroops: 1,
+				blitzRequested: false
 			});
 		});
 
@@ -116,7 +117,8 @@ describe('createMoveState', () => {
 				phase: 'attack',
 				sourceRegionId: 'r3',
 				targetRegionId: null,
-				attackingTroops: 1
+				attackingTroops: 1,
+				blitzRequested: false
 			});
 		});
 
