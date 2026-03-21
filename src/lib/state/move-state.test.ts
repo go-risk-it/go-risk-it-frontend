@@ -219,6 +219,40 @@ describe('createMoveState', () => {
 		});
 	});
 
+	describe('lastConqueredRegionId', () => {
+		it('starts null', () => {
+			const state = createMoveState();
+			expect(state.lastConqueredRegionId).toBeNull();
+		});
+
+		it('setLastConqueredRegionId stores the value', () => {
+			const state = createMoveState();
+			state.setLastConqueredRegionId('r5');
+			expect(state.lastConqueredRegionId).toBe('r5');
+		});
+
+		it('clearLastConqueredRegionId resets to null', () => {
+			const state = createMoveState();
+			state.setLastConqueredRegionId('r5');
+			state.clearLastConqueredRegionId();
+			expect(state.lastConqueredRegionId).toBeNull();
+		});
+
+		it('persists across phase changes', () => {
+			const state = createMoveState();
+			state.setLastConqueredRegionId('r5');
+			state.startPhase('attack');
+			expect(state.lastConqueredRegionId).toBe('r5');
+		});
+
+		it('reset() does not clear it', () => {
+			const state = createMoveState();
+			state.setLastConqueredRegionId('r5');
+			state.reset();
+			expect(state.lastConqueredRegionId).toBe('r5');
+		});
+	});
+
 	describe('reset', () => {
 		it('returns to idle from deploy', () => {
 			const state = createMoveState();
