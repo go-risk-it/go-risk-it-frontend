@@ -89,14 +89,10 @@
 	const dimmed = $derived(hasActiveSource && !selected && !validTarget && !isMyRegion);
 
 	// Phase-aware valid-target stroke color
-	const targetStrokeColor = $derived(
-		currentPhase === 'reinforce' ? '#4ade80' : '#f97316'
-	);
+	const targetStrokeColor = $derived(currentPhase === 'reinforce' ? '#4ade80' : '#f97316');
 
 	// Troop comparison tooltip for attack targets
-	const sourceRegion = $derived(
-		sourceRegionId ? regionMap.get(sourceRegionId) : null
-	);
+	const sourceRegion = $derived(sourceRegionId ? regionMap.get(sourceRegionId) : null);
 	const showComparison = $derived(
 		hovered && validTarget && currentPhase === 'attack' && sourceRegion && region
 	);
@@ -124,7 +120,13 @@
 		d={layer.d}
 		fill={playerColor}
 		fill-opacity={selected ? 0.9 : dimmed ? 0.25 : 0.6}
-		stroke={selected ? '#fff' : validTarget ? targetStrokeColor : hasContinentBorder ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'}
+		stroke={selected
+			? '#fff'
+			: validTarget
+				? targetStrokeColor
+				: hasContinentBorder
+					? 'rgba(255,255,255,0.35)'
+					: 'rgba(255,255,255,0.15)'}
 		stroke-width={selected ? 1.5 : validTarget ? 1.5 : hasContinentBorder ? 1.5 : 0.5}
 	/>
 
