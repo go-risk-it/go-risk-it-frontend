@@ -127,7 +127,9 @@ test.describe('Game Complete', () => {
 			// === ATTACK PHASE ===
 			await waitForPhase(activePage, 'attack');
 
-			// Attack eastern_australia from western_australia repeatedly until conquer
+			// Attack eastern_australia from western_australia repeatedly until conquer.
+			// The board-improvements branch uses instant click-to-attack:
+			// click source, then click enemy target to attack immediately (no slider/button).
 			const MAX_ATTACK_ATTEMPTS = 20;
 			let conquered = false;
 
@@ -144,22 +146,10 @@ test.describe('Game Complete', () => {
 					.catch(() => false);
 				if (!hasTargets) break;
 
-				// Select target: eastern_australia
+				// Click target: triggers instant attack (no Shift = max troops)
 				await clickRegion(activePage, 'eastern_australia');
 
-				// Set max attacking troops
-				const attackSlider = activePage.locator('[data-testid="attack-slider"]').first();
-				const attackSliderVisible = await attackSlider
-					.isVisible({ timeout: 3_000 })
-					.catch(() => false);
-				if (attackSliderVisible) {
-					const maxAttack = await attackSlider.getAttribute('max');
-					if (maxAttack) await attackSlider.fill(maxAttack);
-				}
-
-				await activePage.locator('[data-testid="attack-btn"]').first().click();
-
-				// Wait for result — either conquer slider or game over or still in attack
+				// Wait for result — either conquer panel or game over or still in attack
 				const conquerSlider = activePage.locator('[data-testid="conquer-slider"]').first();
 				const gameOverResult = activePage.locator('[data-testid="game-over-result"]');
 
