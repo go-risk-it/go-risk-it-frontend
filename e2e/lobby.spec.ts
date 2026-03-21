@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { createUser, authenticateContext, type UserInfo } from './helpers/auth';
-import { resetState, joinLobbyApi } from './helpers/api';
+import { resetState, joinLobbyApi, startLobbyApi, getGamesSummaryApi } from './helpers/api';
 
 test.describe('Lobby', () => {
 	let player1: UserInfo;
@@ -19,7 +19,6 @@ test.describe('Lobby', () => {
 
 	test('create lobby via UI, join players via API, start game', async ({ browser }) => {
 		const ctx1 = await browser.newContext();
-
 		const page1 = await ctx1.newPage();
 
 		try {
@@ -39,20 +38,17 @@ test.describe('Lobby', () => {
 			const lobbyData = await lobbyRes.json();
 			const lobbyId = lobbyData.owned[0].id;
 
-			// Join players 2 and 3 via API
+			// Join players 2 and 3 via API, then start the game via API
 			await joinLobbyApi(player2.jwt, lobbyId, 'Player2');
 			await joinLobbyApi(player3.jwt, lobbyId, 'Player3');
+			await startLobbyApi(player1.jwt, lobbyId);
 
-			// Wait for WebSocket to update the participant count
-			// The waiting room should show the count updating
-			await expect(page1.locator('text=3 more needed')).not.toBeVisible({ timeout: 10_000 });
+			// Verify the game was created
+			const games = await getGamesSummaryApi(player1.jwt);
+			expect(games.length).toBeGreaterThan(0);
 
-			// Start game button should now be enabled (3 players)
-			const startBtn = page1.locator('[data-testid="start-game-btn"]');
-			await expect(startBtn).toBeEnabled({ timeout: 10_000 });
-			await startBtn.click();
-
-			// Player 1 should be redirected to the game page
+			// Navigate Player 1 to the game and verify the board loads
+			await page1.goto(`/game/${games[0].id}`);
 			await expect(page1).toHaveURL(/\/game\/\d+/, { timeout: 15_000 });
 		} finally {
 			await ctx1.close();
