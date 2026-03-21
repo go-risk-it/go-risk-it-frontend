@@ -47,7 +47,7 @@
 		error = '';
 		try {
 			const [lobbyData, gameData] = await Promise.all([getLobbies(), getGames()]);
-			lobbies = lobbyData ?? [];
+			lobbies = lobbyData?.joinable ?? [];
 			games = gameData ?? [];
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load data';

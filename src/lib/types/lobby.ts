@@ -25,6 +25,13 @@ export interface GameSummary {
 	numberOfParticipants: number;
 }
 
+/** Response wrapper for the lobbies summary API endpoint. */
+export interface LobbiesSummaryResponse {
+	owned: LobbySummary[];
+	joined: LobbySummary[];
+	joinable: LobbySummary[];
+}
+
 /** Response wrapper for the list-games API endpoint. */
 export interface GamesSummaryResponse {
 	games: GameSummary[];
