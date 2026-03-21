@@ -19,7 +19,14 @@
 	import { buildPlayerColorMap } from '$lib/utils/colors';
 	import { Graph } from '$lib/utils/graph';
 	import { attack as attackApi } from '$lib/api/moves';
-	import { playTurnStart, playConquer, playAttack, playVictory, playDefeat, audio } from '$lib/audio/audio.svelte';
+	import {
+		playTurnStart,
+		playConquer,
+		playAttack,
+		playVictory,
+		playDefeat,
+		audio
+	} from '$lib/audio/audio.svelte';
 
 	interface Props {
 		gameId: string;
@@ -59,11 +66,11 @@
 		return () => ws.disconnect();
 	});
 
-	// Reconnect WebSocket when auth token refreshes
+	// Reconnect WebSocket when auth token refreshes (covers both connected and retry-backoff states)
 	let prevToken = $state(auth.accessToken);
 	$effect(() => {
 		const token = auth.accessToken;
-		if (prevToken && token && token !== prevToken && ws.connected) {
+		if (prevToken && token && token !== prevToken && (ws.connected || ws.reconnecting)) {
 			ws.reconnectWithNewToken();
 		}
 		prevToken = token;
@@ -71,8 +78,8 @@
 
 	// Sync move state with game phase changes
 	$effect(() => {
-		if (game.isMyTurn && game.gameState) {
-			const phaseType = game.gameState.phaseType;
+		if (game.isMyTurn && game.phase) {
+			const phaseType = game.phase.type;
 			moveState.startPhase(phaseType);
 
 			// Track conquered territory for attack chaining
@@ -83,7 +90,11 @@
 			// Auto-select conquered territory when returning to attack phase
 			if (phaseType === 'attack' && moveState.lastConqueredRegionId) {
 				const conqueredRegion = game.regionMap.get(moveState.lastConqueredRegionId);
-				if (conqueredRegion && conqueredRegion.ownerId === auth.user?.id && conqueredRegion.troops > 1) {
+				if (
+					conqueredRegion &&
+					conqueredRegion.ownerId === auth.user?.id &&
+					conqueredRegion.troops > 1
+				) {
 					moveState.setAttackSource(moveState.lastConqueredRegionId);
 				}
 				moveState.clearLastConqueredRegionId();
@@ -119,7 +130,7 @@
 
 	// Conquer phase sound
 	$effect(() => {
-		if (game.gameState?.phaseType === 'conquer' && game.isMyTurn) {
+		if (game.phase?.type === 'conquer' && game.isMyTurn) {
 			playConquer();
 		}
 	});
@@ -147,7 +158,9 @@
 		if (!gameOver || !game.boardState || !auth.user || !game.gameState) return null;
 		const myRegions = game.boardState.regions.filter((r) => r.ownerId === auth.user!.id);
 		const totalTroops = myRegions.reduce((sum, r) => sum + r.troops, 0);
-		const turnsPlayed = Math.ceil((game.gameState.turn + 1) / (game.playersState?.players.length ?? 1));
+		const turnsPlayed = Math.ceil(
+			(game.gameState.turn + 1) / (game.playersState?.players.length ?? 1)
+		);
 		return {
 			territories: myRegions.length,
 			totalTroops,
@@ -189,7 +202,10 @@
 
 	// Continent control: detect when one player owns all regions in a continent
 	const controlledContinents = $derived.by(() => {
-		const result = new Map<string, { ownerId: string; bonusTroops: number; continentName: string }>();
+		const result = new Map<
+			string,
+			{ ownerId: string; bonusTroops: number; continentName: string }
+		>();
 		if (!game.boardState || !mapData.loaded) return result;
 		for (const continent of mapData.continents) {
 			const regionIds = mapData.getRegionsInContinent(continent.id);
@@ -380,7 +396,10 @@
 				<p class="mb-4 text-sm text-gray-500">This could be a connection issue.</p>
 				<div class="flex justify-center gap-3">
 					<button
-						onclick={() => { loadTimedOut = false; ws.manualReconnect(); }}
+						onclick={() => {
+							loadTimedOut = false;
+							ws.manualReconnect();
+						}}
 						class="inline-block rounded-lg bg-accent px-4 py-2 text-sm font-semibold transition-colors hover:bg-accent-light"
 					>
 						Retry
@@ -404,13 +423,14 @@
 	<ConnectionBanner
 		reconnecting={ws.reconnecting}
 		retriesExhausted={ws.retriesExhausted}
+		parseError={ws.parseError}
 		onReconnect={() => ws.manualReconnect()}
 	/>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="flex h-dvh flex-col overflow-hidden" onkeydown={handleKeydown}>
 		<!-- Top bar: phase timeline + controls -->
 		<header class="flex items-center justify-between px-4 py-2">
-			<PhaseBar currentPhase={game.gameState?.phaseType ?? null} isMyTurn={game.isMyTurn} />
+			<PhaseBar currentPhase={game.phase?.type ?? null} isMyTurn={game.isMyTurn} />
 			<div class="flex items-center gap-3">
 				<div class="text-sm text-gray-400" data-testid="turn-indicator">
 					{#if game.isMyTurn}
@@ -468,9 +488,16 @@
 					{validTargetIds}
 					{continentBorderRegions}
 					{controlledContinents}
-					currentPhase={game.gameState?.phaseType ?? null}
-					sourceRegionId={moveState.interaction.phase === 'attack' ? moveState.interaction.sourceRegionId : moveState.interaction.phase === 'reinforce' ? moveState.interaction.sourceRegionId : null}
-					targetRegionId={moveState.interaction.phase === 'reinforce' && 'targetRegionId' in moveState.interaction ? moveState.interaction.targetRegionId : null}
+					currentPhase={game.phase?.type ?? null}
+					sourceRegionId={moveState.interaction.phase === 'attack'
+						? moveState.interaction.sourceRegionId
+						: moveState.interaction.phase === 'reinforce'
+							? moveState.interaction.sourceRegionId
+							: null}
+					targetRegionId={moveState.interaction.phase === 'reinforce' &&
+					'targetRegionId' in moveState.interaction
+						? moveState.interaction.targetRegionId
+						: null}
 					myUserId={auth.user?.id ?? null}
 					onRegionClick={handleRegionClick}
 				/>
@@ -481,7 +508,6 @@
 				<ActionPanel
 					interaction={moveState.interaction}
 					gameState={game.gameState}
-					boardState={game.boardState}
 					cardState={game.cardState}
 					regionMap={game.regionMap}
 					deployableTroops={game.deployableTroops}

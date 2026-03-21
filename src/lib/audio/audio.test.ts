@@ -45,10 +45,13 @@ describe('audio system', () => {
 
 	it('play functions do nothing when disabled', () => {
 		audioModule.audio.toggle(); // disable
-		const callCount = (globalThis.AudioContext as unknown as ReturnType<typeof vi.fn>).mock.calls.length;
+		const callCount = (globalThis.AudioContext as unknown as ReturnType<typeof vi.fn>).mock.calls
+			.length;
 		audioModule.playDeploy();
 		// AudioContext should not be called again
-		expect((globalThis.AudioContext as unknown as ReturnType<typeof vi.fn>).mock.calls.length).toBe(callCount);
+		expect((globalThis.AudioContext as unknown as ReturnType<typeof vi.fn>).mock.calls.length).toBe(
+			callCount
+		);
 	});
 
 	it('all play functions execute without error', () => {

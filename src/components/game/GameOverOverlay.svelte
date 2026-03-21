@@ -41,7 +41,6 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	class="fixed inset-0 z-50 flex items-center justify-center"
 	transition:fade={{ duration: 300 }}
@@ -55,12 +54,26 @@
 	<div class="relative text-center">
 		{#if won}
 			<div class="mb-4 text-6xl" in:scale={{ duration: 400, start: 0.5 }}>&#127942;</div>
-			<h2 data-testid="game-over-result" class="mb-2 text-4xl font-bold text-green-400" in:fade={{ delay: 200 }}>Victory!</h2>
+			<h2
+				data-testid="game-over-result"
+				class="mb-2 text-4xl font-bold text-green-400"
+				in:fade={{ delay: 200 }}
+			>
+				Victory!
+			</h2>
 			<p class="text-lg text-gray-300" in:fade={{ delay: 300 }}>You conquered the world!</p>
 		{:else}
 			<div class="mb-4 text-6xl" in:scale={{ duration: 400, start: 0.5 }}>&#128128;</div>
-			<h2 data-testid="game-over-result" class="mb-2 text-4xl font-bold text-red-400" in:fade={{ delay: 200 }}>Defeated</h2>
-			<p class="text-lg text-gray-300" in:fade={{ delay: 300 }}><span class="font-semibold">{playerName}</span> won the game</p>
+			<h2
+				data-testid="game-over-result"
+				class="mb-2 text-4xl font-bold text-red-400"
+				in:fade={{ delay: 200 }}
+			>
+				Defeated
+			</h2>
+			<p class="text-lg text-gray-300" in:fade={{ delay: 300 }}>
+				<span class="font-semibold">{playerName}</span> won the game
+			</p>
 		{/if}
 
 		{#if stats}

@@ -7,13 +7,7 @@ import {
 	startLobbyApi,
 	getGamesSummaryApi
 } from './helpers/api';
-import {
-	waitForGameLoaded,
-	waitForPhase,
-	skipAttack,
-	skipCards,
-	endTurn
-} from './helpers/game';
+import { waitForGameLoaded, waitForPhase, skipAttack, skipCards, endTurn } from './helpers/game';
 
 test.describe('Game Turn', () => {
 	let player1: UserInfo;
@@ -74,7 +68,7 @@ test.describe('Game Turn', () => {
 			// Exactly one player should see "Your turn"
 			const pages = [page1, page2, page3];
 			let activePlayerPage: typeof page1 | null = null;
-			let waitingPages: typeof pages = [];
+			const waitingPages: typeof pages = [];
 
 			for (const p of pages) {
 				const indicator = p.locator('[data-testid="turn-indicator"]');

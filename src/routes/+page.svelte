@@ -26,7 +26,6 @@
 
 	// Create lobby state
 	let playerName = $state('');
-	let showCreateForm = $state(false);
 
 	// Auth guard: redirect to sign-in if not authenticated
 	$effect(() => {
@@ -65,7 +64,6 @@
 			if (result?.lobbyId) {
 				inLobbyId = String(result.lobbyId);
 				isLobbyOwner = true;
-				showCreateForm = false;
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to create lobby';
@@ -78,13 +76,14 @@
 	 */
 	async function handleJoinLobby(lobbyId: string) {
 		if (!playerName.trim()) {
-			showCreateForm = true;
 			error = 'Enter your name first';
 			const input = document.querySelector<HTMLInputElement>('[data-testid="player-name-input"]');
 			if (input) {
 				input.focus();
 				input.classList.add('ring-2', 'ring-red-400');
-				input.addEventListener('input', () => input.classList.remove('ring-2', 'ring-red-400'), { once: true });
+				input.addEventListener('input', () => input.classList.remove('ring-2', 'ring-red-400'), {
+					once: true
+				});
 			}
 			return;
 		}
@@ -107,8 +106,9 @@
 
 {#if auth.loading}
 	<div class="flex min-h-dvh items-center justify-center">
-		<div class="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent">
-		</div>
+		<div
+			class="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent"
+		></div>
 	</div>
 {:else if !auth.isAuthenticated}
 	<!-- Will redirect -->
@@ -116,7 +116,10 @@
 	<div class="flex min-h-dvh flex-col">
 		<header class="glass flex items-center justify-between px-6 py-3">
 			<h1 class="text-xl font-bold tracking-tight">
-				<button onclick={handleLeaveLobby} class="cursor-pointer hover:text-accent-light transition-colors">Risk</button>
+				<button
+					onclick={handleLeaveLobby}
+					class="cursor-pointer hover:text-accent-light transition-colors">Risk</button
+				>
 			</h1>
 			<div class="flex items-center gap-4">
 				<span class="text-sm text-gray-400">{auth.user?.email}</span>
@@ -161,7 +164,8 @@
 				<input
 					type="text"
 					bind:value={playerName}
-					placeholder="Your player name" maxlength="20"
+					placeholder="Your player name"
+					maxlength="20"
 					data-testid="player-name-input"
 					class="flex-1 rounded-lg bg-surface-700 px-4 py-2.5 text-gray-100 outline-none transition-colors focus:ring-2 focus:ring-accent"
 				/>
@@ -206,29 +210,33 @@
 						></div>
 					</div>
 				{:else if tab === 'lobbies'}
-					<LobbyList {lobbies} onJoin={handleJoinLobby} onCreate={() => {
-						const input = document.querySelector<HTMLInputElement>('[data-testid="player-name-input"]');
-						if (input) input.focus();
-					}} />
+					<LobbyList
+						{lobbies}
+						onJoin={handleJoinLobby}
+						onCreate={() => {
+							const input = document.querySelector<HTMLInputElement>(
+								'[data-testid="player-name-input"]'
+							);
+							if (input) input.focus();
+						}}
+					/>
+				{:else if games.length === 0}
+					<div class="py-12 text-center text-gray-500">
+						<p class="mb-2 text-lg">No active games</p>
+						<p class="text-sm">Join or create a lobby to start playing!</p>
+					</div>
 				{:else}
-					{#if games.length === 0}
-						<div class="py-12 text-center text-gray-500">
-							<p class="mb-2 text-lg">No active games</p>
-							<p class="text-sm">Join or create a lobby to start playing!</p>
-						</div>
-					{:else}
-						<div class="grid gap-3 sm:grid-cols-2">
-							{#each games as game (game.id)}
-								<button
-									onclick={() => goto(`/game/${game.id}`)}
-									class="glass cursor-pointer rounded-xl p-4 text-left transition-all hover:border-accent/30"
-								>
-									<div class="font-semibold">Game #{game.id}</div>
-									<div class="text-sm text-gray-400">Click to rejoin</div>
-								</button>
-							{/each}
-						</div>
-					{/if}
+					<div class="grid gap-3 sm:grid-cols-2">
+						{#each games as game (game.id)}
+							<button
+								onclick={() => goto(`/game/${game.id}`)}
+								class="glass cursor-pointer rounded-xl p-4 text-left transition-all hover:border-accent/30"
+							>
+								<div class="font-semibold">Game #{game.id}</div>
+								<div class="text-sm text-gray-400">Click to rejoin</div>
+							</button>
+						{/each}
+					</div>
 				{/if}
 			</div>
 		</main>

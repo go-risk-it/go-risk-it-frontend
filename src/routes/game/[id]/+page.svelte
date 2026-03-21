@@ -29,8 +29,9 @@
 
 {#if auth.loading}
 	<div class="flex min-h-dvh items-center justify-center">
-		<div class="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent">
-		</div>
+		<div
+			class="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent"
+		></div>
 	</div>
 {:else if auth.isAuthenticated && gameId}
 	<GameBoard {gameId} />

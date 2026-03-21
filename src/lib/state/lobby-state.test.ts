@@ -51,9 +51,7 @@ describe('createLobbyWebSocket', () => {
 			const ws = createLobbyWebSocket('lobby-1');
 			const lobbyData = { id: 'lobby-1', owner: 'user1', participants: [] };
 
-			capturedOptions.onMessage(
-				JSON.stringify({ type: 'lobbyState', data: lobbyData })
-			);
+			capturedOptions.onMessage(JSON.stringify({ type: 'lobbyState', data: lobbyData }));
 
 			expect(ws.lobbyState).toEqual(lobbyData);
 		});

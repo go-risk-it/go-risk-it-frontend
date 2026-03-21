@@ -59,10 +59,12 @@
 		const names: string[] = [];
 		for (const cId of targetContinentIds) {
 			const regionIds = continentRegions.get(cId) ?? [];
-			const allOwned = regionIds.length > 0 && regionIds.every((rId) => {
-				const region = boardState!.regions.find((r) => r.id === rId);
-				return region && region.ownerId === myUserId;
-			});
+			const allOwned =
+				regionIds.length > 0 &&
+				regionIds.every((rId) => {
+					const region = boardState!.regions.find((r) => r.id === rId);
+					return region && region.ownerId === myUserId;
+				});
 			const continent = continents.find((c) => c.id === cId);
 			names.push(continent?.name ?? cId);
 			if (allOwned) owned++;
@@ -151,7 +153,9 @@
 		<div class="mt-2">
 			<div class="mb-1 flex items-center justify-between text-xs">
 				<span class="text-gray-400">Progress</span>
-				<span class="font-semibold" class:text-green-400={progressPercent >= 100}>{progressText}</span>
+				<span class="font-semibold" class:text-green-400={progressPercent >= 100}
+					>{progressText}</span
+				>
 			</div>
 			<div class="h-1.5 overflow-hidden rounded-full bg-surface-600">
 				<div

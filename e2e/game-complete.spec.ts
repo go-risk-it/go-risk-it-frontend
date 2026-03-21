@@ -10,7 +10,6 @@ import {
 } from './helpers/api';
 import {
 	waitForGameLoaded,
-	waitForMyTurn,
 	waitForPhase,
 	clickRegion,
 	skipCards,
@@ -154,12 +153,8 @@ test.describe('Game Complete', () => {
 				const gameOverResult = activePage.locator('[data-testid="game-over-result"]');
 
 				const result = await Promise.race([
-					conquerSlider
-						.waitFor({ timeout: 10_000 })
-						.then(() => 'conquer' as const),
-					gameOverResult
-						.waitFor({ timeout: 10_000 })
-						.then(() => 'gameover' as const)
+					conquerSlider.waitFor({ timeout: 10_000 }).then(() => 'conquer' as const),
+					gameOverResult.waitFor({ timeout: 10_000 }).then(() => 'gameover' as const)
 				]).catch(() => 'continue' as const);
 
 				if (result === 'gameover') {
@@ -188,23 +183,19 @@ test.describe('Game Complete', () => {
 			await waitForGameOver(activePage);
 
 			// Winner should see "Victory!"
-			await expect(
-				activePage.locator('[data-testid="game-over-result"]')
-			).toContainText('Victory!');
+			await expect(activePage.locator('[data-testid="game-over-result"]')).toContainText(
+				'Victory!'
+			);
 
 			// Other players should see "Defeated"
 			for (const p of otherPlayers) {
 				await waitForGameOver(p.page);
-				await expect(
-					p.page.locator('[data-testid="game-over-result"]')
-				).toContainText('Defeated');
+				await expect(p.page.locator('[data-testid="game-over-result"]')).toContainText('Defeated');
 			}
 
 			// All players should see "Back to Lobby"
 			for (const p of players) {
-				await expect(
-					p.page.locator('[data-testid="back-to-lobby"]')
-				).toBeVisible();
+				await expect(p.page.locator('[data-testid="back-to-lobby"]')).toBeVisible();
 			}
 		} finally {
 			await ctx1.close();

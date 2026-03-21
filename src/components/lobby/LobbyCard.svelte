@@ -22,7 +22,7 @@
 	</div>
 
 	<div class="mb-3 flex flex-wrap gap-1">
-		{#each lobby.participants as participant}
+		{#each lobby.participants as participant (participant.name)}
 			<span class="rounded bg-surface-700 px-2 py-0.5 text-xs text-gray-300">
 				{participant.name}
 			</span>

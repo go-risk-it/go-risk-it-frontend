@@ -26,7 +26,6 @@
 		interaction.regionId ? regionMap.get(interaction.regionId) : null
 	);
 	const currentTroops = $derived(selectedRegion?.troops ?? 0);
-	const maxTroops = $derived(currentTroops + deployableTroops);
 
 	const action = useAction();
 

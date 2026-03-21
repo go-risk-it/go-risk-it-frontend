@@ -46,22 +46,25 @@ npm run dev
 
 The app is available at `http://localhost:5173`. The Vite dev server proxies API and WebSocket requests to the backend:
 
-| Frontend Path | Backend Target |
-|---------------|----------------|
-| `/api/*` | `http://localhost:8080` |
-| `/ws/*` | `ws://localhost:8080` |
+| Frontend Path | Backend Target          |
+| ------------- | ----------------------- |
+| `/api/*`      | `http://localhost:8080` |
+| `/ws/*`       | `ws://localhost:8080`   |
 
 ## Running with Backend
 
 The frontend needs the backend running to function. Full stack setup:
 
 1. **Start backend** (in the [backend repo](https://github.com/go-risk-it/go-risk-it)):
+
    ```bash
    make run
    ```
+
    This starts the Go server, PostgreSQL, Supabase auth, and Jaeger via Docker Compose.
 
 2. **Start frontend**:
+
    ```bash
    npm install
    npm run dev
@@ -71,17 +74,17 @@ The frontend needs the backend running to function. Full stack setup:
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build (static adapter) |
-| `npm run preview` | Preview production build |
-| `npm run check` | Type check with svelte-check |
-| `npm run check:watch` | Type check in watch mode |
-| `npm run test` | Run unit tests (Vitest) |
-| `npm run test:watch` | Run unit tests in watch mode |
-| `npm run test:e2e` | Run E2E tests (Playwright) |
-| `npm run test:e2e:ui` | Run E2E tests with Playwright UI |
+| Command               | Description                       |
+| --------------------- | --------------------------------- |
+| `npm run dev`         | Start dev server                  |
+| `npm run build`       | Production build (static adapter) |
+| `npm run preview`     | Preview production build          |
+| `npm run check`       | Type check with svelte-check      |
+| `npm run check:watch` | Type check in watch mode          |
+| `npm run test`        | Run unit tests (Vitest)           |
+| `npm run test:watch`  | Run unit tests in watch mode      |
+| `npm run test:e2e`    | Run E2E tests (Playwright)        |
+| `npm run test:e2e:ui` | Run E2E tests with Playwright UI  |
 
 ## Testing Strategy
 
@@ -200,15 +203,15 @@ graph TD
 
 State is managed entirely with **Svelte 5 runes** (`$state`, `$derived`, `$effect`) — no external store library.
 
-| State Module | Responsibility |
-|-------------|----------------|
-| `auth` | Supabase session, JWT, sign-in/out |
-| `game-state` | Board regions, players, phase, cards, missions, move history |
-| `move-state` | User interaction FSM (idle → deploy/attack/conquer/reinforce/cards) |
-| `websocket` | Game WebSocket with exponential backoff reconnection |
-| `lobby-state` | Lobby WebSocket state |
-| `map-data` | Map geometry loaded from `risk.json` with precomputed lookups |
-| `toast` | Notification queue (max 3 visible, auto-dismiss) |
+| State Module  | Responsibility                                                      |
+| ------------- | ------------------------------------------------------------------- |
+| `auth`        | Supabase session, JWT, sign-in/out                                  |
+| `game-state`  | Board regions, players, phase, cards, missions, move history        |
+| `move-state`  | User interaction FSM (idle → deploy/attack/conquer/reinforce/cards) |
+| `websocket`   | Game WebSocket with exponential backoff reconnection                |
+| `lobby-state` | Lobby WebSocket state                                               |
+| `map-data`    | Map geometry loaded from `risk.json` with precomputed lookups       |
+| `toast`       | Notification queue (max 3 visible, auto-dismiss)                    |
 
 ### Reactive Data Flow
 
@@ -221,22 +224,22 @@ User interaction → move-state mutation → $derived (validTargets, selectedReg
 
 Set via `.env` file or build-time injection. All are prefixed `PUBLIC_` for client-side access.
 
-| Variable | Description | Default (dev) |
-|----------|-------------|---------------|
-| `PUBLIC_SUPABASE_URL` | Supabase API URL | `http://localhost:8000` |
-| `PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | (local dev key) |
-| `PUBLIC_API_URL` | Backend REST API base URL | `http://localhost:8080/api/v1` |
-| `PUBLIC_WS_URL` | Backend WebSocket base URL | `ws://localhost:8080/ws` |
-| `PUBLIC_GOOGLE_OAUTH_CLIENT_ID` | Google OAuth client ID | (configured) |
+| Variable                        | Description                | Default (dev)                  |
+| ------------------------------- | -------------------------- | ------------------------------ |
+| `PUBLIC_SUPABASE_URL`           | Supabase API URL           | `http://localhost:8000`        |
+| `PUBLIC_SUPABASE_ANON_KEY`      | Supabase anonymous key     | (local dev key)                |
+| `PUBLIC_API_URL`                | Backend REST API base URL  | `http://localhost:8080/api/v1` |
+| `PUBLIC_WS_URL`                 | Backend WebSocket base URL | `ws://localhost:8080/ws`       |
+| `PUBLIC_GOOGLE_OAUTH_CLIENT_ID` | Google OAuth client ID     | (configured)                   |
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Framework | [SvelteKit](https://kit.svelte.dev/) 2.x + [Svelte 5](https://svelte.dev/) |
-| Language | TypeScript 5.7 |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) 4.x |
-| Auth | [Supabase JS](https://supabase.com/docs/reference/javascript/) (JWT) |
-| Build | [Vite](https://vitejs.dev/) 6.x + static adapter |
-| Unit tests | [Vitest](https://vitest.dev/) + @testing-library/svelte |
-| E2E tests | [Playwright](https://playwright.dev/) |
+| Component  | Technology                                                                 |
+| ---------- | -------------------------------------------------------------------------- |
+| Framework  | [SvelteKit](https://kit.svelte.dev/) 2.x + [Svelte 5](https://svelte.dev/) |
+| Language   | TypeScript 5.7                                                             |
+| Styling    | [Tailwind CSS](https://tailwindcss.com/) 4.x                               |
+| Auth       | [Supabase JS](https://supabase.com/docs/reference/javascript/) (JWT)       |
+| Build      | [Vite](https://vitejs.dev/) 6.x + static adapter                           |
+| Unit tests | [Vitest](https://vitest.dev/) + @testing-library/svelte                    |
+| E2E tests  | [Playwright](https://playwright.dev/)                                      |

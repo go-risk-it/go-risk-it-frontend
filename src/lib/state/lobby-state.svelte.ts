@@ -23,7 +23,7 @@ export function createLobbyWebSocket(lobbyId: string) {
 		onMessage: (data) => {
 			const msg = JSON.parse(data) as LobbyWebSocketMessage;
 			if (msg.type === 'lobbyState') {
-				lobbyState = msg.data as LobbyState;
+				lobbyState = msg.data;
 			}
 		},
 		label: 'Lobby WebSocket'
