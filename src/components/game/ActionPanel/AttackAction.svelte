@@ -55,7 +55,12 @@
 	 * Submits the attack move. Keeps source selected for chaining.
 	 */
 	async function handleAttack() {
-		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
+		if (
+			!interaction.sourceRegionId ||
+			!interaction.targetRegionId ||
+			!sourceRegion ||
+			!targetRegion
+		)
 			return;
 		const sourceId = interaction.sourceRegionId;
 		await action.run(async () => {

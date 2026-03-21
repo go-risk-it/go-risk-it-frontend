@@ -35,6 +35,8 @@ export function createBaseWebSocket(options: BaseWebSocketOptions) {
 	let connected = $state(false);
 	let reconnecting = $state(false);
 	let retriesExhausted = $state(false);
+	/** True when the last received message failed to parse. Cleared on next successful message. */
+	let parseError = $state(false);
 	let retryCount = 0;
 	let retryTimeoutId: ReturnType<typeof setTimeout> | undefined;
 	/** When true, onclose will not trigger auto-reconnect (set during intentional teardown). */
@@ -70,9 +72,9 @@ export function createBaseWebSocket(options: BaseWebSocketOptions) {
 				reconnecting = true;
 				// Two-tier strategy: fast retries first, then exponential backoff
 				const delay =
-				retryCount < FAST_RETRIES
-					? FAST_RETRY_DELAY
-					: INITIAL_RETRY_DELAY * Math.pow(2, retryCount - FAST_RETRIES);
+					retryCount < FAST_RETRIES
+						? FAST_RETRY_DELAY
+						: INITIAL_RETRY_DELAY * Math.pow(2, retryCount - FAST_RETRIES);
 				retryTimeoutId = setTimeout(() => {
 					retryCount++;
 					connect();
@@ -86,8 +88,10 @@ export function createBaseWebSocket(options: BaseWebSocketOptions) {
 		socket.onmessage = (event: MessageEvent) => {
 			try {
 				options.onMessage(event.data);
+				parseError = false;
 			} catch {
 				console.error(`Failed to parse ${label} message:`, event.data);
+				parseError = true;
 			}
 		};
 
@@ -155,6 +159,9 @@ export function createBaseWebSocket(options: BaseWebSocketOptions) {
 		},
 		get retriesExhausted() {
 			return retriesExhausted;
+		},
+		get parseError() {
+			return parseError;
 		},
 		connect,
 		disconnect,

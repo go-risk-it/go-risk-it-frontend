@@ -38,10 +38,8 @@ export interface LobbyState {
 	participants: LobbyParticipant[];
 }
 
-/** WebSocket message envelope for lobby-scoped events. */
-export interface LobbyWebSocketMessage {
-	/** Event type identifier (e.g. "lobbyState", "gameStarted"). */
-	type: string;
-	/** Payload whose shape depends on the message type. */
-	data: unknown;
-}
+/**
+ * WebSocket message envelope for lobby-scoped events — discriminated union on `type`.
+ * Extend this union when new lobby message types are added to the backend.
+ */
+export type LobbyWebSocketMessage = { type: 'lobbyState'; data: LobbyState };

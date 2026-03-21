@@ -69,8 +69,22 @@ describe('createGameState', () => {
 				type: 'playerState',
 				data: {
 					players: [
-						{ userId: 'user1', name: 'Alice', index: 0, cardCount: 0, status: 'alive', connectionStatus: 'connected' },
-						{ userId: 'user2', name: 'Bob', index: 1, cardCount: 0, status: 'alive', connectionStatus: 'connected' }
+						{
+							userId: 'user1',
+							name: 'Alice',
+							index: 0,
+							cardCount: 0,
+							status: 'alive',
+							connectionStatus: 'connected'
+						},
+						{
+							userId: 'user2',
+							name: 'Bob',
+							index: 1,
+							cardCount: 0,
+							status: 'alive',
+							connectionStatus: 'connected'
+						}
 					]
 				}
 			};
@@ -94,7 +108,7 @@ describe('createGameState', () => {
 				}
 			};
 			state.handleMessage(msg);
-			expect(state.gameState).toEqual({ id: 42, turn: 5, phaseType: 'deploy' });
+			expect(state.gameState).toEqual({ id: 42, turn: 5 });
 			expect(state.phase).toEqual({ type: 'deploy', state: { deployableTroops: 7 } });
 		});
 	});
@@ -138,18 +152,91 @@ describe('createGameState', () => {
 			const msg1: WebSocketMessage = {
 				type: 'moveHistory',
 				data: {
-					moves: [{ userId: 'u1', phase: 'deploy', move: btoa('{}'), result: btoa('{}'), created: '' }]
+					moves: [
+						{
+							userId: 'u1',
+							phase: 'deploy',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:00:00Z'
+						}
+					]
 				}
 			};
 			const msg2: WebSocketMessage = {
 				type: 'moveHistory',
 				data: {
-					moves: [{ userId: 'u2', phase: 'attack', move: btoa('{}'), result: btoa('{}'), created: '' }]
+					moves: [
+						{
+							userId: 'u2',
+							phase: 'attack',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:01:00Z'
+						}
+					]
 				}
 			};
 			state.handleMessage(msg1);
 			state.handleMessage(msg2);
 			expect(state.moveHistory.moves).toHaveLength(2);
+		});
+
+		it('deduplicates moves on reconnect resend', () => {
+			const msg: WebSocketMessage = {
+				type: 'moveHistory',
+				data: {
+					moves: [
+						{
+							userId: 'u1',
+							phase: 'deploy',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:00:00Z'
+						},
+						{
+							userId: 'u2',
+							phase: 'attack',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:01:00Z'
+						}
+					]
+				}
+			};
+			state.handleMessage(msg);
+			expect(state.moveHistory.moves).toHaveLength(2);
+			// Simulate reconnect: server resends full history + one new move
+			const resend: WebSocketMessage = {
+				type: 'moveHistory',
+				data: {
+					moves: [
+						{
+							userId: 'u1',
+							phase: 'deploy',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:00:00Z'
+						},
+						{
+							userId: 'u2',
+							phase: 'attack',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:01:00Z'
+						},
+						{
+							userId: 'u1',
+							phase: 'reinforce',
+							move: btoa('{}'),
+							result: btoa('{}'),
+							created: '2024-01-01T00:02:00Z'
+						}
+					]
+				}
+			};
+			state.handleMessage(resend);
+			expect(state.moveHistory.moves).toHaveLength(3);
 		});
 	});
 
@@ -159,8 +246,22 @@ describe('createGameState', () => {
 				type: 'playerState',
 				data: {
 					players: [
-						{ userId: 'user1', name: 'Alice', index: 0, cardCount: 0, status: 'alive', connectionStatus: 'connected' },
-						{ userId: 'user2', name: 'Bob', index: 1, cardCount: 0, status: 'alive', connectionStatus: 'connected' }
+						{
+							userId: 'user1',
+							name: 'Alice',
+							index: 0,
+							cardCount: 0,
+							status: 'alive',
+							connectionStatus: 'connected'
+						},
+						{
+							userId: 'user2',
+							name: 'Bob',
+							index: 1,
+							cardCount: 0,
+							status: 'alive',
+							connectionStatus: 'connected'
+						}
 					]
 				}
 			};

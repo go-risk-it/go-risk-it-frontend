@@ -102,8 +102,7 @@ export function createGameState() {
 				const data = msg.data;
 				gameState = {
 					id: data.id,
-					turn: data.turn,
-					phaseType: data.phase.type
+					turn: data.turn
 				};
 				phase = data.phase;
 				break;
@@ -121,7 +120,10 @@ export function createGameState() {
 					move: JSON.parse(atob(m.move)),
 					result: JSON.parse(atob(m.result))
 				}));
-				moveHistory = { moves: [...moveHistory.moves, ...decoded] };
+				// Dedup by created timestamp to handle reconnect resends
+				const existing = new Set(moveHistory.moves.map((m) => m.created));
+				const newMoves = decoded.filter((m) => !existing.has(m.created));
+				moveHistory = { moves: [...moveHistory.moves, ...newMoves] };
 				break;
 			}
 		}

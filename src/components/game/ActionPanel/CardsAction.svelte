@@ -66,7 +66,12 @@
 	function canSelectCard(card: Card): boolean {
 		if (interaction.selectedCardIds.includes(card.id)) return true;
 		if (interaction.selectedCardIds.length >= 3) return false;
-		return isCardSelectable(card, interaction.selectedCardIds, availableCards, existingCombinationCardIds);
+		return isCardSelectable(
+			card,
+			interaction.selectedCardIds,
+			availableCards,
+			existingCombinationCardIds
+		);
 	}
 
 	/** Submits all queued combinations in one API call, then resets card selection state. */
@@ -138,7 +143,7 @@
 	{#if interaction.combinations.length > 0}
 		<div class="space-y-1">
 			<div class="text-xs text-gray-400">Combinations to play:</div>
-			{#each interaction.combinations as combo, i}
+			{#each interaction.combinations as combo, i (i)}
 				<div class="flex items-center justify-between rounded bg-surface-700 px-2 py-1 text-xs">
 					<span>Set {i + 1}: {combo.cardIDs.join(', ')}</span>
 					<button

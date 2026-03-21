@@ -48,6 +48,9 @@ export function createWebSocket(gameId: string | number) {
 		get retriesExhausted() {
 			return base.retriesExhausted;
 		},
+		get parseError() {
+			return base.parseError;
+		},
 		connect: base.connect,
 		disconnect: base.disconnect,
 		manualReconnect: base.manualReconnect,

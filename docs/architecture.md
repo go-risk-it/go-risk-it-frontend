@@ -27,15 +27,15 @@ graph TD
 
 ### Module Responsibilities
 
-| Module | File | Responsibility |
-|--------|------|----------------|
-| **auth** | `auth.svelte.ts` | Supabase session management, JWT access, sign-in/out, token refresh |
-| **websocket** | `websocket.svelte.ts` + `base-websocket.svelte.ts` | Game WebSocket connection with reconnection logic |
-| **lobby-state** | `lobby-state.svelte.ts` | Lobby WebSocket, participant tracking |
-| **game-state** | `game-state.svelte.ts` | All game data: board regions, players, current phase, cards, missions, move history |
-| **move-state** | `move-state.svelte.ts` | User interaction state machine — tracks selected regions, valid targets, troop counts |
-| **map-data** | `map-data.svelte.ts` | Static map geometry loaded from `risk.json`, precomputed adjacency lookups |
-| **toast** | `toast.svelte.ts` | Notification queue (max 3 visible, auto-dismiss with configurable duration) |
+| Module          | File                                               | Responsibility                                                                        |
+| --------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **auth**        | `auth.svelte.ts`                                   | Supabase session management, JWT access, sign-in/out, token refresh                   |
+| **websocket**   | `websocket.svelte.ts` + `base-websocket.svelte.ts` | Game WebSocket connection with reconnection logic                                     |
+| **lobby-state** | `lobby-state.svelte.ts`                            | Lobby WebSocket, participant tracking                                                 |
+| **game-state**  | `game-state.svelte.ts`                             | All game data: board regions, players, current phase, cards, missions, move history   |
+| **move-state**  | `move-state.svelte.ts`                             | User interaction state machine — tracks selected regions, valid targets, troop counts |
+| **map-data**    | `map-data.svelte.ts`                               | Static map geometry loaded from `risk.json`, precomputed adjacency lookups            |
+| **toast**       | `toast.svelte.ts`                                  | Notification queue (max 3 visible, auto-dismiss with configurable duration)           |
 
 ## WebSocket Reconnection Strategy
 
@@ -67,13 +67,13 @@ stateDiagram-v2
 
 ### Retry Timing
 
-| Attempt | Tier | Delay |
-|---------|------|-------|
-| 0-1 | Fast retry | 200ms |
-| 2 | Exponential backoff | 1,000ms |
-| 3 | Exponential backoff | 2,000ms |
-| 4 | Exponential backoff | 4,000ms |
-| 5+ | Exhausted | Manual reconnect required |
+| Attempt | Tier                | Delay                     |
+| ------- | ------------------- | ------------------------- |
+| 0-1     | Fast retry          | 200ms                     |
+| 2       | Exponential backoff | 1,000ms                   |
+| 3       | Exponential backoff | 2,000ms                   |
+| 4       | Exponential backoff | 4,000ms                   |
+| 5+      | Exhausted           | Manual reconnect required |
 
 ### Reconnection Triggers
 
@@ -172,6 +172,7 @@ How a user action flows through the system, using an attack as an example:
 2. **Select target** — User clicks an adjacent enemy region. `move-state` records it as the defending region. The `ActionPanel` shows troop selection controls.
 
 3. **Submit** — User confirms the attack. The `ActionPanel` calls the API client:
+
    ```
    POST /api/v1/games/{id}/moves/attacks
    { "sourceRegionId": "...", "targetRegionId": "...", "troopsInSource": N }

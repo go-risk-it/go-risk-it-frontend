@@ -7,6 +7,8 @@ import { getAuth } from '$lib/state/auth.svelte';
 import { PUBLIC_API_URL } from '$env/static/public';
 
 const REQUEST_TIMEOUT_MS = 30_000;
+const RETRY_MAX_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 500;
 
 /**
  * Structured error thrown by all API requests. Carries the HTTP status code
@@ -68,11 +70,15 @@ async function request<T>(
 		if (!res.ok) {
 			const body = await res.text().catch(() => '');
 			const friendly =
-				res.status === 400 ? 'Invalid move — check your selection' :
-				res.status === 401 ? 'Session expired — please sign in again' :
-				res.status === 409 ? 'Game state changed — try again' :
-				res.status >= 500 ? 'Server error — try again shortly' :
-				body || `Request failed: ${res.status}`;
+				res.status === 400
+					? 'Invalid move — check your selection'
+					: res.status === 401
+						? 'Session expired — please sign in again'
+						: res.status === 409
+							? 'Game state changed — try again'
+							: res.status >= 500
+								? 'Server error — try again shortly'
+								: body || `Request failed: ${res.status}`;
 			throw new ApiError(res.status, friendly);
 		}
 
@@ -102,15 +108,48 @@ async function request<T>(
 	}
 }
 
+/** Returns true for errors that are safe to retry (server errors and network failures). */
+function isRetryable(err: unknown): boolean {
+	if (err instanceof ApiError) return err.status >= 500 || err.status === 0;
+	return true; // Network errors (TypeError from fetch) are retryable
+}
+
+/**
+ * Retry wrapper with exponential backoff for transient failures.
+ * Only retries server errors (5xx) and timeouts (status 0). Client errors (4xx) fail immediately.
+ */
+async function requestWithRetry<T>(
+	path: string,
+	options: RequestInit = {},
+	validate?: Validator<T>
+): Promise<T> {
+	let lastErr: unknown;
+	for (let attempt = 0; attempt < RETRY_MAX_ATTEMPTS; attempt++) {
+		try {
+			return await request<T>(path, options, validate);
+		} catch (err) {
+			lastErr = err;
+			if (!isRetryable(err) || attempt === RETRY_MAX_ATTEMPTS - 1) throw err;
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * Math.pow(2, attempt)));
+		}
+	}
+	throw lastErr; // unreachable, but satisfies TS
+}
+
 /**
  * Public API interface exposing GET and POST methods. Both delegate to {@link request}
  * and inherit its authentication, timeout, and error handling behavior.
+ * POST uses retry with backoff for transient failures (5xx, timeouts).
  */
 export const api = {
 	get: <T>(path: string, validate?: Validator<T>) => request<T>(path, {}, validate),
 	post: <T>(path: string, body?: unknown, validate?: Validator<T>) =>
-		request<T>(path, {
-			method: 'POST',
-			body: body ? JSON.stringify(body) : undefined
-		}, validate)
+		requestWithRetry<T>(
+			path,
+			{
+				method: 'POST',
+				body: body ? JSON.stringify(body) : undefined
+			},
+			validate
+		)
 };

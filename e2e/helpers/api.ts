@@ -25,10 +25,7 @@ export async function resetState(jwt: string): Promise<void> {
 /**
  * Create a lobby via the API. Returns the lobby ID (int64).
  */
-export async function createLobbyApi(
-	jwt: string,
-	ownerName: string
-): Promise<{ lobbyId: number }> {
+export async function createLobbyApi(jwt: string, ownerName: string): Promise<{ lobbyId: number }> {
 	const res = await apiFetch(jwt, '/lobbies', {
 		method: 'POST',
 		body: JSON.stringify({ ownerName })

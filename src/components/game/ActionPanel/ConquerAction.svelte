@@ -44,7 +44,9 @@
 </script>
 
 <div class="space-y-4">
-	<h3 class="text-sm font-bold uppercase tracking-wider text-green-400">Move Troops to Conquered Territory</h3>
+	<h3 class="text-sm font-bold uppercase tracking-wider text-green-400">
+		Move Troops to Conquered Territory
+	</h3>
 
 	<div class="space-y-2">
 		<div class="text-sm">

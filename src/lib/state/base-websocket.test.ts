@@ -93,10 +93,10 @@ describe('createBaseWebSocket', () => {
 		it('creates WebSocket with correct url and protocols', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
-			expect(MockWebSocket).toHaveBeenCalledWith(
-				'ws://localhost:8080/ws?token=test-token',
-				['protocol', 'test-token']
-			);
+			expect(MockWebSocket).toHaveBeenCalledWith('ws://localhost:8080/ws?token=test-token', [
+				'protocol',
+				'test-token'
+			]);
 		});
 
 		it('sets connected=true on open', () => {

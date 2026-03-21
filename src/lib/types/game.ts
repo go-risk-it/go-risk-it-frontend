@@ -81,11 +81,10 @@ export interface GameStateAPI {
 	phase: Phase;
 }
 
-/** Flattened game state used by UI stores (phase union is collapsed to a simple type tag). */
+/** Core game metadata used by UI stores. Phase type is read from the phase union directly. */
 export interface GameState {
 	id: number;
 	turn: number;
-	phaseType: PhaseType;
 }
 
 /** The four Risk card types. Jolly is the wildcard. */

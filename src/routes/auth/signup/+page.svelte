@@ -75,7 +75,7 @@
 					minlength="6"
 					class="w-full rounded-lg bg-surface-700 px-4 py-2.5 text-gray-100 outline-none transition-colors focus:ring-2 focus:ring-accent"
 				/>
-			<p class="mt-1 text-xs text-gray-500">At least 6 characters</p>
+				<p class="mt-1 text-xs text-gray-500">At least 6 characters</p>
 			</div>
 			<div>
 				<label for="confirmPassword" class="mb-1 block text-sm text-gray-400"

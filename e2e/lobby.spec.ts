@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { createUser, authenticateContext, type UserInfo } from './helpers/auth';
-import { resetState, createLobbyApi, joinLobbyApi, startLobbyApi } from './helpers/api';
+import { resetState, joinLobbyApi } from './helpers/api';
 
 test.describe('Lobby', () => {
 	let player1: UserInfo;

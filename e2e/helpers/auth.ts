@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { BrowserContext, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -14,7 +14,7 @@ export interface UserInfo {
  * Create a Supabase user via the auth API and return their info + JWT.
  */
 export async function createUser(email: string, password: string): Promise<UserInfo> {
-	const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+	const { error: signUpError } = await supabase.auth.signUp({
 		email,
 		password
 	});

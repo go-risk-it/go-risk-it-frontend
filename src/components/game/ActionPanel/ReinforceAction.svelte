@@ -49,7 +49,12 @@
 	 * as optimistic concurrency guards. Resets source selection on success.
 	 */
 	async function handleReinforce() {
-		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
+		if (
+			!interaction.sourceRegionId ||
+			!interaction.targetRegionId ||
+			!sourceRegion ||
+			!targetRegion
+		)
 			return;
 		await action.run(async () => {
 			await reinforce(gameState.id, {

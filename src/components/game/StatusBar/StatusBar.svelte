@@ -20,7 +20,16 @@
 		continents: Continent[];
 	}
 
-	let { players, currentTurn, myUserId, mission, connected, boardState, mapLayers, continents }: Props = $props();
+	let {
+		players,
+		currentTurn,
+		myUserId,
+		mission,
+		connected,
+		boardState,
+		mapLayers,
+		continents
+	}: Props = $props();
 
 	let mobileExpanded = $state(false);
 </script>

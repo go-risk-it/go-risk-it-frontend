@@ -22,6 +22,8 @@ interface ToastItem {
 
 let toasts = $state<ToastItem[]>([]);
 let nextId = 0;
+/** Active auto-dismiss timers keyed by toast ID. Cleared on dismiss to prevent stale mutations. */
+const timers = new Map<number, ReturnType<typeof setTimeout>>();
 
 /**
  * Returns a reactive toast manager. Module-scoped state ensures a single
@@ -46,15 +48,23 @@ export function getToasts() {
 			toasts = [...toasts, { id, message, type, createdAt: Date.now() }];
 			// Cap the internal array to prevent unbounded growth
 			if (toasts.length > 20) toasts = toasts.slice(-20);
-			setTimeout(() => {
+			const timerId = setTimeout(() => {
+				timers.delete(id);
 				toasts = toasts.filter((t) => t.id !== id);
 			}, effectiveDuration);
+			timers.set(id, timerId);
 		},
 		/**
 		 * Immediately remove a toast by ID (user-initiated dismiss).
+		 * Clears the auto-dismiss timer to prevent stale mutations.
 		 * @param id - The toast's unique identifier.
 		 */
 		dismiss(id: number) {
+			const timerId = timers.get(id);
+			if (timerId) {
+				clearTimeout(timerId);
+				timers.delete(id);
+			}
 			toasts = toasts.filter((t) => t.id !== id);
 		}
 	};

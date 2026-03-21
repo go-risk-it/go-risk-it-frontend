@@ -19,7 +19,11 @@
 		<div
 			transition:fly={{ x: 100, duration: 200 }}
 			class="pointer-events-auto max-w-sm rounded-lg px-4 py-3 text-sm shadow-lg
-				{toast.type === 'error' ? 'toast-error' : toast.type === 'success' ? 'toast-success' : 'toast-info'}"
+				{toast.type === 'error'
+				? 'toast-error'
+				: toast.type === 'success'
+					? 'toast-success'
+					: 'toast-info'}"
 			role="alert"
 		>
 			<div class="flex items-center justify-between gap-3">

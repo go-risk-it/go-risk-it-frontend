@@ -5,13 +5,7 @@
 	 * Renders as a right-side panel on desktop (md+) and a collapsible bottom sheet on mobile.
 	 */
 	import { fly, slide } from 'svelte/transition';
-	import type {
-		BoardState,
-		CardState,
-		ConquerPhaseState,
-		GameState,
-		Region
-	} from '$lib/types/game';
+	import type { CardState, ConquerPhaseState, GameState, Region } from '$lib/types/game';
 	import type { MoveInteraction, createMoveState } from '$lib/state/move-state.svelte';
 	import DeployAction from './DeployAction.svelte';
 	import AttackAction from './AttackAction.svelte';
@@ -22,7 +16,6 @@
 	interface Props {
 		interaction: MoveInteraction;
 		gameState: GameState;
-		boardState: BoardState;
 		cardState: CardState;
 		regionMap: Map<string, Region>;
 		deployableTroops: number;
@@ -34,7 +27,6 @@
 	let {
 		interaction,
 		gameState,
-		boardState,
 		cardState,
 		regionMap,
 		deployableTroops,

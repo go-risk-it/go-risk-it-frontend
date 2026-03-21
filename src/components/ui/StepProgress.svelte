@@ -13,7 +13,7 @@
 </script>
 
 <div class="flex gap-1">
-	{#each Array.from({ length: total }, (_, i) => i + 1) as step}
+	{#each Array.from({ length: total }, (_, i) => i + 1) as step (step)}
 		<div
 			class="h-1.5 w-4 rounded-full transition-colors"
 			class:bg-accent={step <= current}

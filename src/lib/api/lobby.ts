@@ -8,14 +8,20 @@ import type { LobbySummary, GameSummary, GamesSummaryResponse } from '$lib/types
 
 /** Runtime type guard ensuring the response is an array of lobby summaries. */
 function isLobbySummaryArray(data: unknown): data is LobbySummary[] {
-	return Array.isArray(data) && data.every((d) =>
-		typeof d === 'object' && d !== null && 'id' in d && 'participants' in d
+	return (
+		Array.isArray(data) &&
+		data.every((d) => typeof d === 'object' && d !== null && 'id' in d && 'participants' in d)
 	);
 }
 
 /** Runtime type guard ensuring the response wraps a games array. */
 function isGamesSummaryResponse(data: unknown): data is GamesSummaryResponse {
-	return typeof data === 'object' && data !== null && 'games' in data && Array.isArray((data as GamesSummaryResponse).games);
+	return (
+		typeof data === 'object' &&
+		data !== null &&
+		'games' in data &&
+		Array.isArray((data as GamesSummaryResponse).games)
+	);
 }
 
 /**

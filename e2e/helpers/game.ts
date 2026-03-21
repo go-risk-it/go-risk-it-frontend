@@ -14,9 +14,9 @@ export async function waitForPhase(page: Page, phase: string): Promise<void> {
  * Wait for "Your turn" to appear in the turn indicator.
  */
 export async function waitForMyTurn(page: Page): Promise<void> {
-	await expect(
-		page.locator('[data-testid="turn-indicator"]')
-	).toContainText('Your turn', { timeout: 30_000 });
+	await expect(page.locator('[data-testid="turn-indicator"]')).toContainText('Your turn', {
+		timeout: 30_000
+	});
 }
 
 /**
@@ -37,11 +37,7 @@ export async function clickRegion(page: Page, regionId: string): Promise<void> {
 /**
  * Deploy troops to a region. Assumes deploy phase and the player's turn.
  */
-export async function deployTroops(
-	page: Page,
-	regionId: string,
-	troops: number
-): Promise<void> {
+export async function deployTroops(page: Page, regionId: string, troops: number): Promise<void> {
 	await clickRegion(page, regionId);
 
 	// Set slider value

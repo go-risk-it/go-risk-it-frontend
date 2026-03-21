@@ -88,7 +88,7 @@
 	</div>
 
 	<div class="mb-6 space-y-2">
-		{#each participants as participant, i}
+		{#each participants as participant, i (participant.name)}
 			<div
 				class="flex items-center gap-3 rounded-lg bg-surface-700/50 px-4 py-2.5"
 				data-testid="participant-{participant.name}"
@@ -106,7 +106,9 @@
 		{/each}
 
 		{#if participants.length < 3}
-			<div class="rounded-lg border border-dashed border-gray-600 px-4 py-2.5 text-center text-sm text-gray-500">
+			<div
+				class="rounded-lg border border-dashed border-gray-600 px-4 py-2.5 text-center text-sm text-gray-500"
+			>
 				Waiting for players... ({3 - participants.length} more needed)
 			</div>
 		{/if}

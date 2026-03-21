@@ -8,31 +8,45 @@ function card(id: number, type: Card['type']): Card {
 
 describe('isValidCombination', () => {
 	it('accepts 3 artillery', () => {
-		expect(isValidCombination([card(1, 'artillery'), card(2, 'artillery'), card(3, 'artillery')])).toBe(true);
+		expect(
+			isValidCombination([card(1, 'artillery'), card(2, 'artillery'), card(3, 'artillery')])
+		).toBe(true);
 	});
 
 	it('accepts 3 infantry', () => {
-		expect(isValidCombination([card(1, 'infantry'), card(2, 'infantry'), card(3, 'infantry')])).toBe(true);
+		expect(
+			isValidCombination([card(1, 'infantry'), card(2, 'infantry'), card(3, 'infantry')])
+		).toBe(true);
 	});
 
 	it('accepts 3 cavalry', () => {
-		expect(isValidCombination([card(1, 'cavalry'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(true);
+		expect(isValidCombination([card(1, 'cavalry'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(
+			true
+		);
 	});
 
 	it('accepts one of each', () => {
-		expect(isValidCombination([card(1, 'artillery'), card(2, 'infantry'), card(3, 'cavalry')])).toBe(true);
+		expect(
+			isValidCombination([card(1, 'artillery'), card(2, 'infantry'), card(3, 'cavalry')])
+		).toBe(true);
 	});
 
 	it('accepts jolly + 2 artillery', () => {
-		expect(isValidCombination([card(1, 'jolly'), card(2, 'artillery'), card(3, 'artillery')])).toBe(true);
+		expect(isValidCombination([card(1, 'jolly'), card(2, 'artillery'), card(3, 'artillery')])).toBe(
+			true
+		);
 	});
 
 	it('accepts jolly + 2 infantry', () => {
-		expect(isValidCombination([card(1, 'jolly'), card(2, 'infantry'), card(3, 'infantry')])).toBe(true);
+		expect(isValidCombination([card(1, 'jolly'), card(2, 'infantry'), card(3, 'infantry')])).toBe(
+			true
+		);
 	});
 
 	it('accepts jolly + 2 cavalry', () => {
-		expect(isValidCombination([card(1, 'jolly'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(true);
+		expect(isValidCombination([card(1, 'jolly'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(
+			true
+		);
 	});
 
 	it('rejects wrong count (2 cards)', () => {
@@ -41,16 +55,25 @@ describe('isValidCombination', () => {
 
 	it('rejects wrong count (4 cards)', () => {
 		expect(
-			isValidCombination([card(1, 'artillery'), card(2, 'artillery'), card(3, 'artillery'), card(4, 'artillery')])
+			isValidCombination([
+				card(1, 'artillery'),
+				card(2, 'artillery'),
+				card(3, 'artillery'),
+				card(4, 'artillery')
+			])
 		).toBe(false);
 	});
 
 	it('rejects mixed pair (2 artillery + 1 infantry)', () => {
-		expect(isValidCombination([card(1, 'artillery'), card(2, 'artillery'), card(3, 'infantry')])).toBe(false);
+		expect(
+			isValidCombination([card(1, 'artillery'), card(2, 'artillery'), card(3, 'infantry')])
+		).toBe(false);
 	});
 
 	it('rejects jolly + mixed pair', () => {
-		expect(isValidCombination([card(1, 'jolly'), card(2, 'artillery'), card(3, 'infantry')])).toBe(false);
+		expect(isValidCombination([card(1, 'jolly'), card(2, 'artillery'), card(3, 'infantry')])).toBe(
+			false
+		);
 	});
 });
 
