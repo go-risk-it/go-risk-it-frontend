@@ -8,13 +8,7 @@ import {
 	getGamesSummaryApi
 } from './helpers/api';
 import { TEST_PASSWORD } from './helpers/config';
-import {
-	waitForPhase,
-	skipAttack,
-	skipCards,
-	endTurn,
-	findActivePlayer
-} from './helpers/game';
+import { waitForPhase, skipAttack, skipCards, endTurn, findActivePlayer } from './helpers/game';
 import { withGameSession } from './helpers/game-session';
 
 test.describe('Game Turn', () => {
@@ -68,9 +62,7 @@ test.describe('Game Turn', () => {
 
 			// Waiting players should see "Waiting for"
 			for (const p of others) {
-				await expect(p.page.locator('[data-testid="turn-indicator"]')).toContainText(
-					'Waiting for'
-				);
+				await expect(p.page.locator('[data-testid="turn-indicator"]')).toContainText('Waiting for');
 			}
 		});
 	});

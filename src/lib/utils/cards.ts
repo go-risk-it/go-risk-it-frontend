@@ -160,7 +160,5 @@ export function getCombinationReward(cards: Card[]): number | null {
  * @returns Array of region names that grant a +2 bonus
  */
 export function getRegionBonuses(cards: Card[], ownedRegionIds: Set<string>): string[] {
-	return cards
-		.filter((c) => c.region && ownedRegionIds.has(c.region))
-		.map((c) => c.region);
+	return cards.filter((c) => c.region && ownedRegionIds.has(c.region)).map((c) => c.region);
 }

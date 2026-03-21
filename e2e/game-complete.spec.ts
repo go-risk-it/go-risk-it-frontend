@@ -154,9 +154,7 @@ test.describe('Game Complete', () => {
 			// Other players should see "Defeated"
 			for (const p of otherPlayers) {
 				await waitForGameOver(p.page);
-				await expect(p.page.locator('[data-testid="game-over-result"]')).toContainText(
-					'Defeated'
-				);
+				await expect(p.page.locator('[data-testid="game-over-result"]')).toContainText('Defeated');
 			}
 
 			// All players should see "Back to Lobby"

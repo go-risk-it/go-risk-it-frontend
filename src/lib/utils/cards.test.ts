@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { isValidCombination, isCardSelectable, getCombinationReward, getRegionBonuses } from './cards';
+import {
+	isValidCombination,
+	isCardSelectable,
+	getCombinationReward,
+	getRegionBonuses
+} from './cards';
 import type { Card } from '$lib/types/game';
 
 function card(id: number, type: Card['type']): Card {
@@ -127,9 +132,9 @@ describe('getCombinationReward', () => {
 	});
 
 	it('returns 8 for 3 cavalry', () => {
-		expect(
-			getCombinationReward([card(1, 'cavalry'), card(2, 'cavalry'), card(3, 'cavalry')])
-		).toBe(8);
+		expect(getCombinationReward([card(1, 'cavalry'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(
+			8
+		);
 	});
 
 	it('returns 10 for 1 of each', () => {
@@ -139,9 +144,9 @@ describe('getCombinationReward', () => {
 	});
 
 	it('returns 12 for jolly + 2 same', () => {
-		expect(
-			getCombinationReward([card(1, 'jolly'), card(2, 'cavalry'), card(3, 'cavalry')])
-		).toBe(12);
+		expect(getCombinationReward([card(1, 'jolly'), card(2, 'cavalry'), card(3, 'cavalry')])).toBe(
+			12
+		);
 	});
 
 	it('returns null for invalid combination', () => {

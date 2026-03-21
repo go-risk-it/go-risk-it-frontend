@@ -9,7 +9,12 @@
 	import type { CardState, GameState, Card, Region } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
 	import { playCards, advance } from '$lib/api/moves';
-	import { isCardSelectable, isValidCombination, getCombinationReward, getRegionBonuses } from '$lib/utils/cards';
+	import {
+		isCardSelectable,
+		isValidCombination,
+		getCombinationReward,
+		getRegionBonuses
+	} from '$lib/utils/cards';
 	import { formatRegionName } from '$lib/utils/format';
 	import { playCardPlay } from '$lib/audio/audio.svelte';
 	import { useAction } from '$lib/state/use-action.svelte';
@@ -168,7 +173,9 @@
 
 	<!-- Auto-promote flash feedback -->
 	{#if flashCombo}
-		<div class="combo-flash rounded-lg border border-accent/50 bg-accent/10 px-3 py-2 text-center text-sm font-semibold text-accent-light">
+		<div
+			class="combo-flash rounded-lg border border-accent/50 bg-accent/10 px-3 py-2 text-center text-sm font-semibold text-accent-light"
+		>
 			Valid combination! +{flashCombo.reward} troops
 		</div>
 	{/if}
@@ -234,7 +241,10 @@
 								{#if j > 0}
 									<span class="text-gray-600">+</span>
 								{/if}
-								<span title={cardTypeName(c.type)} style="color: {CARD_TYPE_COLORS[c.type] ?? '#ccc'}">
+								<span
+									title={cardTypeName(c.type)}
+									style="color: {CARD_TYPE_COLORS[c.type] ?? '#ccc'}"
+								>
 									{cardTypeIcon(c.type)}
 								</span>
 								<span class="text-gray-300">{cardTypeName(c.type)}</span>
@@ -247,7 +257,9 @@
 					</div>
 					<div class="mt-1 flex flex-wrap gap-2">
 						{#if reward}
-							<span class="rounded bg-accent/20 px-1.5 py-0.5 text-xs font-semibold text-accent-light">
+							<span
+								class="rounded bg-accent/20 px-1.5 py-0.5 text-xs font-semibold text-accent-light"
+							>
 								+{reward} troops
 							</span>
 						{/if}
@@ -295,14 +307,25 @@
 		animation: suggest-pulse 1.5s ease-in-out infinite;
 	}
 	@keyframes suggest-pulse {
-		0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-		50% { box-shadow: 0 0 8px 2px rgba(245, 158, 11, 0.3); }
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+		}
+		50% {
+			box-shadow: 0 0 8px 2px rgba(245, 158, 11, 0.3);
+		}
 	}
 	.combo-flash {
 		animation: flash-in 0.3s ease-out;
 	}
 	@keyframes flash-in {
-		from { opacity: 0; transform: scale(0.95); }
-		to { opacity: 1; transform: scale(1); }
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 </style>
