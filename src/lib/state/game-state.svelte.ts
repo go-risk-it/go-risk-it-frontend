@@ -31,6 +31,9 @@ export function createGameState() {
 	let missionState = $state<MissionState | null>(null);
 	let moveHistory = $state<MoveHistory>({ moves: [] });
 
+	// One-shot listeners for board state changes (used by blitz mode)
+	let boardStateListeners: Array<() => void> = [];
+
 	const auth = getAuth();
 
 	/** The authenticated user's player record, or null if not found in the game. */
@@ -82,6 +85,9 @@ export function createGameState() {
 		switch (msg.type) {
 			case 'boardState':
 				boardState = msg.data;
+				// Notify one-shot listeners
+				for (const cb of boardStateListeners) cb();
+				boardStateListeners = [];
 				break;
 
 			case 'cardState':
@@ -119,6 +125,16 @@ export function createGameState() {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Returns a promise that resolves on the next board state WebSocket update.
+	 * Used by blitz mode to synchronize attacks with server state.
+	 */
+	function onNextBoardState(): Promise<void> {
+		return new Promise((resolve) => {
+			boardStateListeners.push(resolve);
+		});
 	}
 
 	return {
@@ -161,6 +177,7 @@ export function createGameState() {
 		get conquerState() {
 			return conquerState;
 		},
-		handleMessage
+		handleMessage,
+		onNextBoardState
 	};
 }

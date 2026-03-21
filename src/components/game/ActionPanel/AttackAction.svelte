@@ -1,13 +1,12 @@
 <script lang="ts">
 	/**
-	 * Attack phase action panel with a 3-step flow: (1) select source region,
-	 * (2) select adjacent enemy target, (3) choose troop count and execute.
-	 * Also provides a "Skip to Reinforce" button that advances the phase.
-	 * Max attacking troops is capped at min(source troops - 1, 3) per Risk rules.
+	 * Attack phase action panel with instant click-to-attack and optional blitz mode.
+	 * Step 1: select source, Step 2: click enemy to attack (or Shift+click for slider).
+	 * Blitz mode repeats attacks until one side is depleted, handling conquests mid-blitz.
 	 */
-	import type { Region, GameState } from '$lib/types/game';
+	import type { Region, GameState, ConquerPhaseState } from '$lib/types/game';
 	import type { createMoveState } from '$lib/state/move-state.svelte';
-	import { attack, advance } from '$lib/api/moves';
+	import { attack, advance, conquer as conquerApi } from '$lib/api/moves';
 	import { playAttack } from '$lib/audio/audio.svelte';
 	import { useAction } from '$lib/state/use-action.svelte';
 	import { formatRegionName } from '$lib/utils/format';
@@ -24,9 +23,12 @@
 			attackingTroops: number;
 		};
 		moveState: ReturnType<typeof createMoveState>;
+		conquerState: ConquerPhaseState | null;
+		onNextBoardState: () => Promise<void>;
 	}
 
-	let { regionMap, gameState, interaction, moveState }: Props = $props();
+	let { regionMap, gameState, interaction, moveState, conquerState, onNextBoardState }: Props =
+		$props();
 
 	const action = useAction();
 
@@ -38,21 +40,24 @@
 	);
 	const maxAttackingTroops = $derived(Math.min((sourceRegion?.troops ?? 1) - 1, 3));
 
-	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm attack
+	// Step progression: 1 = pick source, 2 = pick target, 3 = confirm attack (Shift+click)
 	const currentStep = $derived.by(() => {
 		if (!interaction.sourceRegionId) return 1;
 		if (!interaction.targetRegionId) return 2;
 		return 3;
 	});
 
+	// Blitz state
+	let blitzActive = $state(false);
+	let blitzCasualties = $state({ attacker: 0, defender: 0 });
+
 	/**
-	 * Submits the attack move with current troop counts for both regions as
-	 * optimistic concurrency guards. Resets source selection on success so
-	 * the player can immediately launch another attack.
+	 * Submits the attack move. Keeps source selected for chaining.
 	 */
 	async function handleAttack() {
 		if (!interaction.sourceRegionId || !interaction.targetRegionId || !sourceRegion || !targetRegion)
 			return;
+		const sourceId = interaction.sourceRegionId;
 		await action.run(async () => {
 			await attack(gameState.id, {
 				sourceRegionId: interaction.sourceRegionId!,
@@ -62,8 +67,97 @@
 				attackingTroops: interaction.attackingTroops
 			});
 			playAttack();
-			moveState.setAttackSource('');
+			moveState.setAttackSource(sourceId);
 		}, 'Attack failed');
+	}
+
+	/**
+	 * Blitz: repeatedly attack with max troops until one side is depleted.
+	 * Handles mid-blitz conquests by auto-conquering with minimum troops.
+	 */
+	async function handleBlitz() {
+		if (!interaction.sourceRegionId || !interaction.targetRegionId) return;
+		const srcId = interaction.sourceRegionId;
+		const tgtId = interaction.targetRegionId;
+
+		blitzActive = true;
+		blitzCasualties = { attacker: 0, defender: 0 };
+
+		try {
+			while (blitzActive) {
+				// Read fresh state
+				const src = regionMap.get(srcId);
+				const tgt = regionMap.get(tgtId);
+				if (!src || !tgt) break;
+				if (src.troops <= 1) break;
+				if (tgt.troops <= 0) break;
+
+				// Check if target is already ours (conquered)
+				if (src.ownerId === tgt.ownerId) break;
+
+				const troops = Math.min(src.troops - 1, 3);
+				const prevSrcTroops = src.troops;
+				const prevTgtTroops = tgt.troops;
+
+				try {
+					await attack(gameState.id, {
+						sourceRegionId: srcId,
+						targetRegionId: tgtId,
+						troopsInSource: src.troops,
+						troopsInTarget: tgt.troops,
+						attackingTroops: troops
+					});
+					playAttack();
+				} catch {
+					break; // Attack failed, stop blitz
+				}
+
+				// Wait for board state update from WebSocket
+				await onNextBoardState();
+
+				// Read updated state and compute casualties
+				const newSrc = regionMap.get(srcId);
+				const newTgt = regionMap.get(tgtId);
+				if (newSrc) {
+					const srcLoss = prevSrcTroops - newSrc.troops;
+					if (srcLoss > 0) blitzCasualties.attacker += srcLoss;
+				}
+				if (newTgt) {
+					const tgtLoss = prevTgtTroops - newTgt.troops;
+					if (tgtLoss > 0) blitzCasualties.defender += tgtLoss;
+				}
+
+				// Check if we entered conquer phase (territory was captured)
+				if (gameState.phaseType === 'conquer') {
+					// Auto-conquer with minimum troops
+					if (conquerState) {
+						try {
+							await conquerApi(gameState.id, { troops: conquerState.minTroopsToMove });
+						} catch {
+							break;
+						}
+						// Wait for board state to reflect the conquer
+						await onNextBoardState();
+
+						// After conquer, we may return to attack phase.
+						// Wait for the game state to settle — another board state update may come
+						// The conquered territory is now ours; check if we should continue
+						await onNextBoardState();
+					}
+					break; // Stop blitz after conquest — territory is taken
+				}
+			}
+		} finally {
+			blitzActive = false;
+			// Re-select source for chaining
+			if (regionMap.get(srcId)?.troops ?? 0 > 1) {
+				moveState.setAttackSource(srcId);
+			}
+		}
+	}
+
+	function cancelBlitz() {
+		blitzActive = false;
 	}
 
 	/** Advances past the attack phase without attacking (skip to reinforce). */
@@ -80,9 +174,27 @@
 		<StepProgress current={currentStep} total={3} />
 	</div>
 
-	{#if !interaction.sourceRegionId}
+	{#if blitzActive}
+		<!-- Blitz in progress -->
+		<div class="space-y-3">
+			<div class="flex items-center gap-2">
+				<div class="h-3 w-3 animate-spin rounded-full border-2 border-red-400 border-t-transparent"></div>
+				<span class="text-sm font-semibold text-red-400">Blitz in progress...</span>
+			</div>
+			<div class="flex gap-4 text-xs">
+				<span class="text-red-300">Your losses: {blitzCasualties.attacker}</span>
+				<span class="text-blue-300">Enemy losses: {blitzCasualties.defender}</span>
+			</div>
+			<button
+				onclick={cancelBlitz}
+				class="w-full cursor-pointer rounded-lg bg-yellow-600 py-2 text-sm font-semibold transition-colors hover:bg-yellow-500"
+			>
+				Cancel Blitz
+			</button>
+		</div>
+	{:else if !interaction.sourceRegionId}
 		<p class="text-sm text-gray-500">
-			<span class="text-xs text-gray-400">Step 1/3:</span> Select your region (2+ troops)
+			<span class="text-xs text-gray-400">Step 1:</span> Select your region (2+ troops)
 		</p>
 	{:else if !interaction.targetRegionId}
 		<div class="space-y-2">
@@ -93,7 +205,10 @@
 				>
 			</div>
 			<p class="text-sm text-gray-500">
-				<span class="text-xs text-gray-400">Step 2/3:</span> Select an enemy target
+				<span class="text-xs text-gray-400">Step 2:</span> Click enemy to attack
+			</p>
+			<p class="text-xs text-gray-600">
+				Hold Shift for custom troop count
 			</p>
 			<button
 				onclick={() => moveState.setAttackSource('')}
@@ -133,22 +248,35 @@
 				<div class="text-xs text-red-400">{action.error}</div>
 			{/if}
 
-			<button
-				onclick={handleAttack}
-				disabled={action.submitting}
-				data-testid="attack-btn"
-				class="w-full cursor-pointer rounded-lg bg-red-600 py-2 text-sm font-semibold transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
-			>
-				{action.submitting ? 'Attacking...' : `Attack with ${interaction.attackingTroops}`}
-			</button>
+			<div class="flex gap-2">
+				<button
+					onclick={handleAttack}
+					disabled={action.submitting}
+					data-testid="attack-btn"
+					class="flex-1 cursor-pointer rounded-lg bg-red-600 py-2 text-sm font-semibold transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+				>
+					{action.submitting ? 'Attacking...' : `Attack with ${interaction.attackingTroops}`}
+				</button>
+				<button
+					onclick={handleBlitz}
+					disabled={action.submitting}
+					data-testid="blitz-btn"
+					class="cursor-pointer rounded-lg bg-orange-600 px-3 py-2 text-sm font-semibold transition-colors hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
+					title="Repeat attacks until one side is depleted"
+				>
+					Blitz
+				</button>
+			</div>
 		</div>
 	{/if}
 
-	<button
-		onclick={handleAdvance}
-		data-testid="skip-attack-btn"
-		class="w-full cursor-pointer rounded-lg bg-surface-600 py-2 text-sm transition-colors hover:bg-surface-500"
-	>
-		Skip to Reinforce
-	</button>
+	{#if !blitzActive}
+		<button
+			onclick={handleAdvance}
+			data-testid="skip-attack-btn"
+			class="w-full cursor-pointer rounded-lg bg-surface-600 py-2 text-sm transition-colors hover:bg-surface-500"
+		>
+			Skip to Reinforce
+		</button>
+	{/if}
 </div>

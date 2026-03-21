@@ -28,6 +28,7 @@
 		deployableTroops: number;
 		conquerState: ConquerPhaseState | null;
 		moveState: ReturnType<typeof createMoveState>;
+		onNextBoardState: () => Promise<void>;
 	}
 
 	let {
@@ -38,7 +39,8 @@
 		regionMap,
 		deployableTroops,
 		conquerState,
-		moveState
+		moveState,
+		onNextBoardState
 	}: Props = $props();
 
 	let mobileCollapsed = $state(false);
@@ -64,6 +66,8 @@
 				attackingTroops: number;
 			}}
 			{moveState}
+			{conquerState}
+			{onNextBoardState}
 		/>
 	{:else if interaction.phase === 'conquer' && conquerState}
 		<ConquerAction

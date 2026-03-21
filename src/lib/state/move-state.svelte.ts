@@ -46,6 +46,7 @@ export type MoveInteraction =
  */
 export function createMoveState() {
 	let interaction = $state<MoveInteraction>({ phase: 'idle' });
+	let lastConqueredRegionId = $state<string | null>(null);
 
 	/** Return to idle state, discarding any in-progress interaction. */
 	function reset() {
@@ -196,6 +197,15 @@ export function createMoveState() {
 	return {
 		get interaction() {
 			return interaction;
+		},
+		get lastConqueredRegionId() {
+			return lastConqueredRegionId;
+		},
+		setLastConqueredRegionId(regionId: string) {
+			lastConqueredRegionId = regionId;
+		},
+		clearLastConqueredRegionId() {
+			lastConqueredRegionId = null;
 		},
 		reset,
 		startPhase,
