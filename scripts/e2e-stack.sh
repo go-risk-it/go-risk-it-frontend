@@ -51,7 +51,7 @@ wait_for_service() {
 cmd_up() {
     check_backend_dir
     info "Starting backend stack from $BACKEND_DIR..."
-    compose up -d db auth kong risk-it jaeger || true
+    compose up -d db auth kong risk-it lgtm
 
     wait_for_service "$BACKEND_STATUS_URL" "backend" 30 || die "Backend failed to start.
 Check logs with: $0 logs"
@@ -111,7 +111,7 @@ usage() {
 Usage: $0 <command>
 
 Commands:
-  up      Start the backend stack (db, auth, kong, risk-it, jaeger)
+  up      Start the backend stack (db, auth, kong, risk-it, lgtm)
   down    Stop the backend stack
   reset   Stop, remove volumes, and restart (fixes pgsodium errors)
   status  Show service status and health checks
