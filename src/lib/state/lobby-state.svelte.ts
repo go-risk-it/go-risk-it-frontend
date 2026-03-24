@@ -9,7 +9,7 @@ import { createBaseWebSocket } from '$lib/state/base-websocket.svelte';
 
 /**
  * Create a WebSocket connection for a lobby.
- * @param lobbyId - The lobby identifier used in the WS URL query parameter.
+ * @param lobbyId - The lobby identifier used in the WS URL path.
  * @returns Reactive lobby state and connection controls.
  */
 export function createLobbyWebSocket(lobbyId: string) {
@@ -17,7 +17,7 @@ export function createLobbyWebSocket(lobbyId: string) {
 
 	const base = createBaseWebSocket({
 		buildUrl: (baseUrl, token) => ({
-			url: `${baseUrl}?lobbyID=${lobbyId}`,
+			url: `${baseUrl}/api/v1/lobbies/${lobbyId}/ws`,
 			protocols: ['risk-it.websocket.auth.token', token]
 		}),
 		onMessage: (data) => {

@@ -47,10 +47,10 @@ describe('createWebSocket', () => {
 	});
 
 	describe('URL building', () => {
-		it('builds URL with gameID query parameter', () => {
+		it('builds URL with gameID in path', () => {
 			createWebSocket('game-42');
 			const { url } = capturedOptions.buildUrl('ws://example.com', 'tok');
-			expect(url).toBe('ws://example.com?gameID=game-42');
+			expect(url).toBe('ws://example.com/api/v1/games/game-42/ws');
 		});
 
 		it('includes auth token in protocols', () => {
