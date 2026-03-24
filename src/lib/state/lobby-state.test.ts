@@ -33,10 +33,10 @@ describe('createLobbyWebSocket', () => {
 	});
 
 	describe('URL building', () => {
-		it('builds URL with lobbyID query parameter', () => {
+		it('builds URL with lobbyID in path', () => {
 			createLobbyWebSocket('lobby-99');
 			const { url } = capturedOptions.buildUrl('ws://example.com', 'tok');
-			expect(url).toBe('ws://example.com?lobbyID=lobby-99');
+			expect(url).toBe('ws://example.com/api/v1/lobbies/lobby-99/ws');
 		});
 
 		it('includes auth token in protocols', () => {

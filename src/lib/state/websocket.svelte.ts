@@ -12,7 +12,7 @@ type MessageHandler = (msg: WebSocketMessage) => void;
 
 /**
  * Create a WebSocket connection for a specific game.
- * @param gameId - The game identifier used in the WS URL query parameter.
+ * @param gameId - The game identifier used in the WS URL path.
  * @returns Reactive connection state, lifecycle controls, and an onMessage registration method.
  */
 export function createWebSocket(gameId: string | number) {
@@ -20,7 +20,7 @@ export function createWebSocket(gameId: string | number) {
 
 	const base = createBaseWebSocket({
 		buildUrl: (baseUrl, token) => ({
-			url: `${baseUrl}?gameID=${gameId}`,
+			url: `${baseUrl}/api/v1/games/${gameId}/ws`,
 			protocols: ['risk-it.websocket.auth.token', token]
 		}),
 		onMessage: (data) => {

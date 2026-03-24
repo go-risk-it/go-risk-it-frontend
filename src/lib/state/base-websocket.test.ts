@@ -93,7 +93,7 @@ describe('createBaseWebSocket', () => {
 		it('creates WebSocket with correct url and protocols', () => {
 			const ws = createBaseWebSocket(defaultOptions());
 			ws.connect();
-			expect(MockWebSocket).toHaveBeenCalledWith('ws://localhost:8080/ws?token=test-token', [
+			expect(MockWebSocket).toHaveBeenCalledWith('ws://localhost:8080?token=test-token', [
 				'protocol',
 				'test-token'
 			]);
@@ -337,7 +337,7 @@ describe('createBaseWebSocket', () => {
 			ws.reconnectWithNewToken();
 			expect(mockInstances[0].close).toHaveBeenCalled();
 			expect(mockInstances).toHaveLength(2);
-			expect(mockInstances[1].url).toBe('ws://localhost:8080/ws?token=new-token');
+			expect(mockInstances[1].url).toBe('ws://localhost:8080?token=new-token');
 		});
 
 		it('does nothing when teardown requested', () => {
